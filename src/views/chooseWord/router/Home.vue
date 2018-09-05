@@ -289,7 +289,19 @@
   .rule_center ul{width: 93.33%; margin: 0 auto;   }
   .rule_center ul li{line-height:0.50rem; font-size: 0.26rem; color:#fff; text-align:justify; }
   /*游戏样式*/
-  .bigdiv {margin: 0; padding: 0; position:fixed; top: 0; left:0; right:0; bottom:0; overflow: hidden; background:url('../assets/img/bj.png') no-repeat bottom left ; background-size: 100% auto; z-index: 100; }
+  .bigdiv {
+    margin: 0;
+    padding: 0;
+    position:fixed;
+    top: 0;
+    left:0;
+    right:0;
+    bottom:0;
+    overflow: hidden;
+    background:url('../assets/img/bj.png') no-repeat bottom left ;
+    background-size: 100% auto;
+    z-index: 100;
+  }
   .backward{ width: 100%; background:#ccc; opacity: 0.5; position: absolute; top: 0; bottom: 0;left: 0; right: 0; z-index: 100;}
   .backward span{display: inline-block; width: 4rem; height: 4rem; color: #000; font-weight: bold; position: absolute; top: 0; left: 0; right: 0; bottom: 0; margin: auto;text-align: center; font-size: 3rem;}
   .backward div{width: 100%; height: 4rem; line-height: 4rem; color: #000; font-weight: bold; position: absolute; top: 0; left: 0; right: 0; bottom: 0; margin: auto;text-align: center; font-size: 1.4rem;}
