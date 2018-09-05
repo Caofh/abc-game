@@ -42,9 +42,9 @@
 //  import '../assets/js/util/util'
 //  import '../assets/js/util/root'
 
-  import '../assets/js/games'
-  import '../assets/js/util/dialog'
-  import '../assets/js/util/qmcai'
+//  import '../assets/js/games'
+//  import '../assets/js/util/dialog'
+//  import '../assets/js/util/qmcai'
 
 
 
