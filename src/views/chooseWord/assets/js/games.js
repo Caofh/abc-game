@@ -8,7 +8,8 @@ import img_xs from '../../assets/img/xs.png' // 字母点击图片效果
 import { outWord } from '../../assets/js/computed/word26'
 
 var index = {
-  speed: 150, // 字母下降的速度（ms），值越大越慢
+  moveSpeed: 150, // 字母下降的速度（ms）,值越大越慢
+  speed: 150, // 字母增加的速度（ms）,值越大越慢
   ledoucount: 0,
   imagestest: new Image(),
   win: (parseInt($("body").css("width"))) - 60,
@@ -90,7 +91,7 @@ var index = {
     var douimgstr = index.wordRandom()
 
     var hb = index.durationValue(index.randomFloat(9, 1))
-    var Wh = index.durationValue(index.randomFloat(60, 20)) //随机大小
+    var Wh = index.durationValue(index.randomFloat(70, 40)) //随机大小(最大、最小)
     var Left = index.durationValue(index.randomFloat(index.win, 0))
     var rot = index.durationValue(index.randomFloat(640, -640))+"deg";
     var canvas;
@@ -122,10 +123,10 @@ var index = {
     $(".ledoucontent").append(canvas);
     setTimeout(function(){
       $(canvas).css({
-        'transition-duration': (120-Wh)*100+'ms',
-        '-webkit-transition-duration': (120-Wh)*100+'ms',
-        'transition': 'transform '+(120-Wh)*100+'ms, opacity 0s',
-        '-webkit-transition': 'transform '+(120-Wh)*100+'ms, opacity 0s',
+        'transition-duration': (120 - Wh) * index.moveSpeed + 'ms', // 字母下降速度
+        '-webkit-transition-duration': (120 - Wh) * index.moveSpeed + 'ms', // 字母下降速度
+        'transition': 'transform '+ (120 - Wh) * index.moveSpeed + 'ms, opacity 0s', // 字母下降速度
+        '-webkit-transition': 'transform '+ (120 - Wh) * index.moveSpeed + 'ms, opacity 0s', // 字母下降速度
         'transform': 'translate3d('+Left+'px,'+($(document).height()+100)+'px,0px) rotate(' + rot + ')',
         '-webkit-transform': 'translate3d('+Left+'px,'+($(document).height()+100)+'px,0px) rotate(' + rot + ')'
       })
