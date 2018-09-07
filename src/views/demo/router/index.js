@@ -18,6 +18,10 @@ export default new Router({
       path: '/hamster',
       name: 'Hamster',
       component: () => import('./Hamster')
+    }, {
+      path: '/rankings',
+      name: 'Rankings',
+      component: () => import('./Rankings')
     }
   ]
 })
