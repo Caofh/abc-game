@@ -4,6 +4,7 @@ import Vue from 'vue'
 import router from './router'
 import store from './store/index'
 import App from './App'
+import '@/assets/css/index.scss' // 主css.
 
 Vue.config.productionTip = false
 

@@ -3,17 +3,17 @@
  */
 
 import img_3 from '../../assets/img/3.png' // 炸弹图片
-import img_z from '../../assets/img/z.png' // 炸弹爆炸图片
-import img_xs from '../../assets/img/xs.png' // 字母点击图片效果
 import { outWord } from '../../assets/js/computed/word26'
 
 var index = {
   moveSpeed: 150, // 字母下降的速度（ms）,值越大越慢
   speed: 150, // 字母增加的速度（ms）,值越大越慢
   ledoucount: 0,
-  imagestest: new Image(),
   win: (parseInt($("body").css("width"))) - 60,
   num: 10, // canvas的id，递增形成canvas的id唯一性
+  allWordArr: [], // 当前涉及到的所有字母
+
+  removeTimer: '', // 移出元素的定时器
 
   init () {
     this.helper()
@@ -26,60 +26,23 @@ var index = {
       "overflow":'hidden'
     })
 
-    // 点击字母逻辑
-    $(document).on("touchstart",'.ledoucontent .canvasevent', index.stopanimation);
   },
 
-  // 点击字母逻辑
-  stopanimation (event) {
-    $(event.currentTarget).removeClass("canvasevent");
-    var startTop=$(event.target).offset().top;
-    var startLeft=$(event.target).offset().left;
-    var wid=$(event.currentTarget).data("width");
-    if($(event.currentTarget).hasClass("canvas3"))
-    {
-      index.imagestest.src = img_z;
-      index.imagestest.width=wid;
-      index.imagestest.height=wid;
-      $(event.currentTarget).attr('width',wid);
-      $(event.currentTarget).attr('height',wid);
-      $(event.currentTarget).get(0).getContext("2d").drawImage(index.imagestest, 0, 0,wid,wid);
-      $(event.currentTarget).css({
-        'opacity':0,
-        'transform': 'translate3d('+startLeft+'px,'+startTop+'px,0px)',
-        '-webkit-transform': 'translate3d('+startLeft+'px,'+startTop+'px,0px)',
-        'transition': 'transform 0s, opacity 2.8s',
-        '-webkit-transition': '-webkit-transform 0s, opacity 2.8s'
-      })
-      setTimeout(function(){
-        $(event.currentTarget).remove()
-      },2800)
-      index.ledoucount = index.ledoucount-2;
-      if(index.ledoucount <= 0){
-        index.ledoucount = 0;
-      }
-      $(".gamenumber").html(index.ledoucount);
-    }else{
+  // 更新本地游戏所涉及到的所有字母(而非26个英文字母，降低难度)
+  updateAllWord (wordStr) {
+    let allData = []
 
-      index.imagestest.src = img_xs;
-      index.imagestest.width=wid;
-      index.imagestest.height=wid;
-      $(event.currentTarget).attr('width',wid);
-      $(event.currentTarget).attr('height',wid);
-      $(event.currentTarget).get(0).getContext("2d").drawImage(index.imagestest, 0, 0,wid,wid);
-      $(event.currentTarget).css({
-        'opacity':0,
-        'transition': 'transform 0s, opacity 800ms',
-        '-webkit-transition': 'transform 0s, opacity 800ms',
-        'transform': 'translate3d('+startLeft+'px,'+startTop+'px,0px)',
-        '-webkit-transform': 'translate3d('+startLeft+'px,'+startTop+'px,0px)',
+    wordStr.split('').map((item) => {
+      outWord().map( itemSon => {
+        if (item == itemSon.str) {
+          allData.push(itemSon)
+        }
+
       })
-      setTimeout(function(){
-        $(event.currentTarget).remove()
-      },400)
-      index.ledoucount++
-      $(".gamenumber").html(index.ledoucount);
-    }
+
+    })
+
+    index.allWordArr = allData
 
   },
 
@@ -102,14 +65,14 @@ var index = {
       Wh = 70;
 
     }else{
-
-      imgpic.src = douimgstr
+      imgpic.src = douimgstr.base64
     }
     imgpic.width = Wh;
     imgpic.height = Wh;
     canvas = index.convertImageToCanvas(imgpic)
     canvas.id = 'canvas' + index.num;
 
+    canvas.setAttribute("data-word", douimgstr.str);
     canvas.setAttribute("class","canvas"+hb+" canvasevent");
     canvas.setAttribute("data-width",Wh);
     $(canvas).css({
@@ -132,14 +95,32 @@ var index = {
       })
     },200)
 
-    index.cleartime = setTimeout(index.add, index.speed)//乐豆数量
+    // 当字母下到屏幕下方后删除(避免页面dom元素过多导致页面卡顿)
+    if ($('.canvasevent').length >= 200) {
+      for (let i = 0; i < 40; i++) {
+        $('.canvasevent').eq(i).remove()
+      }
+    }
+
+    index.cleartime = setTimeout(index.add, index.speed) //乐豆数量
   },
 
   // 26个英文字母随机算法(a-z祖母随机选择一个)
   wordRandom () {
-    const random = Math.floor(Math.random() * 26)
 
-    return outWord()[random]
+    // 区分游戏是否开始的情况(开始后，更改字母数据源)
+    if (index.allWordArr.length) {
+      const random = Math.floor(Math.random() * index.allWordArr.length)
+
+      return index.allWordArr[random]
+
+    } else {
+      const random = Math.floor(Math.random() * 26)
+
+      return outWord()[random]
+
+    }
+
   },
 
   // 清除添加字母方法的定时
@@ -149,7 +130,7 @@ var index = {
 
   // 字符串 => 数字
   durationValue (value) {
-    return parseInt(value) ;
+    return parseInt(value);
   },
 
   // canvas位置随机算法
