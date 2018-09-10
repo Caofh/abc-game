@@ -6,8 +6,8 @@ import img_3 from '../../assets/img/3.png' // 炸弹图片
 import { outWord } from '../../assets/js/computed/word26'
 
 var index = {
-  moveSpeed: 150, // 字母下降的速度（ms）,值越大越慢
-  speed: 150, // 字母增加的速度（ms）,值越大越慢
+  moveSpeed: 200, // 字母下降的速度（ms）,值越大越慢（建议值：150）
+  speed: 300, // 字母增加的速度（ms）,值越大越慢（建议值：150）
   ledoucount: 0,
   win: (parseInt($("body").css("width"))) - 60,
   num: 10, // canvas的id，递增形成canvas的id唯一性
@@ -25,6 +25,13 @@ var index = {
       'height':$(window).height(),
       "overflow":'hidden'
     })
+
+  },
+
+  // 选择难度方法(type: 1:easy; 2:normal; 3:crazy)；默认是2：normal
+  changeDiff (type = 2) {
+    index.moveSpeed = type == 1 ? 300 : (type == 2 ? 200 : 100)
+    index.speed = type == 1 ? 400 : (type == 2 ? 300 : 150)
 
   },
 

@@ -4,9 +4,24 @@
     <!--游戏首页浮层-->
     <div v-if="homeMark" class="start abc-flex-y-start">
       <div class="title">点一点</div>
+
       <div class="btn abc-flex-x-center">
         <div class="icon"><div class="abc-img"><img src="../assets/img/home/start.png"></div></div>
         <div @click="startGame" class="start-game">开始游戏</div>
+      </div>
+
+      <div @click="chooseDiffcult" class="difficulty abc-flex-y-start">
+        <div class="show-info abc-flex-x-center">
+          <div>难度：</div>
+          <div>{{ diffcultValue == 1 ? 'easy' : (diffcultValue == 2 ? 'normal' : 'crazy') }}</div>
+          <div class="abc-img" :class="diffcultMark ? 'selected' : ''"><img src="../assets/img/home/down_blue.png"></div>
+        </div>
+
+        <div class="options abc-flex-y-center" :class="diffcultMark ? 'selected' : ''">
+          <div @click="chooseDiff(1)">easy</div>
+          <div @click="chooseDiff(2)">normal</div>
+          <div @click="chooseDiff(3)">crazy</div>
+        </div>
       </div>
     </div>
 
@@ -130,6 +145,9 @@
         tipMark: true, // 昵称是否已存在标识
         rankingData: [], // 排行榜数据
         meData: [], // 当前用户的排行数据
+
+        diffcultMark: false, // 选择难度options展示标识
+        diffcultValue: 2, // 1:easy; 2:normal; 3:crazy；默认是2
       }
     },
     computed: {
@@ -161,6 +179,24 @@
 
     },
     methods: {
+      // 页面初始化(模拟背景闪屏效果)
+      start () {
+        let that = this // 外部vue对象
+
+
+        $(".bigdiv").show();
+        $("body").addClass("body");
+
+        game.add() // 游戏开始方法
+        setTimeout(() => {
+          if (that.wordArr.length) return
+
+          // 清除添加字母方法的定时
+          game.clearAdd()
+        }, 5000)
+
+      },
+
       // 开始游戏按钮方法
       startGame () {
         this.homeMark = false
@@ -245,10 +281,8 @@
       // 再来一局方法
       startGameAgain () {
         this.backHome() // 初始化
-        this.homeMark = false // 直接将首页隐藏，进入游戏
 
         game.clearAdd() // 清除添加字母方法的定时
-        this.gameBegin() // 启动游戏
       },
 
       // 返回上一层方法
@@ -294,6 +328,9 @@
           const dataList = await updateUser(data)
 //          console.log(dataList)
 
+          // 展示成绩板
+          doc.vueObj.resultShow = true
+
         } catch (error) {
           console.log(error)
         }
@@ -329,22 +366,14 @@
 
       },
 
-      // 初始化
-      start () {
-        let that = this // 外部vue对象
-
-
-        $(".bigdiv").show();
-        $("body").addClass("body");
-
-        game.add() // 游戏开始方法
-        setTimeout(() => {
-          if (that.wordArr.length) return
-
-          // 清除添加字母方法的定时
-          game.clearAdd()
-        }, 5000)
-
+      // 选择难度
+      chooseDiffcult () {
+        this.diffcultMark = !this.diffcultMark
+      },
+      // 点击难度方法
+      chooseDiff (type) {
+        game.changeDiff(type)
+        this.diffcultValue = type
       }
 
     },
@@ -459,14 +488,11 @@
         doc.vueObj.gameResult = timeResult
 //        console.log(timeResult)
 
-        // 上传成绩方法
-        doc.vueObj.updateScore()
-
         // 停止游戏
         game.clearAdd()
 
-        // 展示成绩板
-        doc.vueObj.resultShow = true
+        // 上传成绩方法
+        doc.vueObj.updateScore()
 
       }
     },
@@ -495,6 +521,15 @@
 <style lang="scss">
   @import "../../../assets/css/pr2rem";
   @import "../assets/css/index";
+
+  // 0.4秒动画设置，用于下面被继承
+  .trans {
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    -ms-transition: all 0.4s ease-in-out;
+    -o-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+  }
 
   .game-home {
     position: relative;
@@ -540,6 +575,61 @@
           font-size: pr(50);
           color: #000;
           margin-left: pr(10);
+        }
+
+      }
+
+      .difficulty {
+        position: absolute;
+        bottom: pr(10);
+        width: pr(405);
+        height: pr(240);
+        cursor: pointer;
+        color: #fff;
+        font-size: pr(30);
+
+        .show-info {
+          margin-bottom: pr(10);
+          & > div {
+            margin-right: pr(10);
+          }
+          .abc-img {
+            /*继承0.4秒动画设置*/
+            @extend .trans;
+
+            width: pr(40);
+            height: pr(40);
+
+            &.selected {
+              /*继承0.4秒动画设置*/
+              @extend .trans;
+
+              -webkit-transform: rotate(-180deg);
+              -moz-transform: rotate(-180deg);
+              -ms-transform: rotate(-180deg);
+              -o-transform: rotate(-180deg);
+              transform: rotate(-180deg);
+
+            }
+          }
+        }
+
+        .options {
+          /*继承0.4秒动画设置*/
+          @extend .trans;
+
+          width: pr(140);
+          height: 0;
+          background: rgba(255, 255, 255, 0.3);
+          border-radius: pr(10);
+          overflow: hidden;
+
+          &.selected {
+            /*继承0.4秒动画设置*/
+            @extend .trans;
+
+            height: pr(165);
+          }
         }
 
       }
