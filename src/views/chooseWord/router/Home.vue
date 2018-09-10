@@ -13,8 +13,11 @@
     <!--输入昵称浮层-->
     <div v-if="nicknameMark" class="nickname-par abc-flex-y-center">
       <div class="content abc-flex-x-center">
-        <div class="content-nickname"><input type="text" placeholder="请填写昵称"></div>
+        <div class="content-nickname"><input @input="nicknameInput" v-model="nickname" type="text" placeholder="请填写昵称"></div>
         <div @click="nickGo" class="btn">Go</div>
+
+        <div v-if="nickname && tipMark" class="tip abc-img"><img src="../assets/img/home/tip_yes.png"></div>
+        <div v-if="nickname && !tipMark" class="tip abc-img"><img src="../assets/img/home/tip_no.png"></div>
       </div>
     </div>
 
@@ -24,9 +27,9 @@
       <div class="popdialogue">
         <a @click="backHome" href="javascript:;" class="clearBtn"></a>
         <div class="ledoutext">用时&nbsp;
-          <i class="LDcont">{{ gameResult ? gameResult.split(':')[0] : '' }}</i>&nbsp;分
-          <i class="LDcont">{{ gameResult ? gameResult.split(':')[1] : '' }}</i>&nbsp;秒
-          <i class="LDcont">{{ gameResult ? gameResult.split(':')[2] : '' }}</i>&nbsp;毫秒
+          <i class="LDcont">{{ gameResult ? gameResult.timeResult.split(':')[0] : '' }}</i>&nbsp;分
+          <i class="LDcont">{{ gameResult ? gameResult.timeResult.split(':')[1] : '' }}</i>&nbsp;秒
+          <i class="LDcont">{{ gameResult ? gameResult.timeResult.split(':')[2] : '' }}</i>&nbsp;毫秒
         </div>
 
         <a @click="look" href="javascript:;" class="selectBtn"></a>
@@ -34,10 +37,35 @@
     </div>
 
     <!--排行榜浮层-->
-    <div v-if="rankingList" class="loadingbig">
-      <div class="poploding">
-        排行榜
-      </div>
+    <div v-if="rankingList" class="loadingbig abc-flex-y-center">
+        <div class="title">排行榜</div>
+
+        <div class="list abc-flex-y-center">
+          <div v-for="(item, index) in rankingData" class="item abc-flex-x-center">
+            <div class="order">{{ (index + 1) }}</div>
+            <div class="name">{{ item.nickname || '' }}</div>
+            <div class="time">{{ item.use_time && item.use_time != 'null' ?
+              item.use_time.split(':')[0] + '分' + item.use_time.split(':')[1] + '秒' + item.use_time.split(':')[2] + '毫秒' : '-' }}</div>
+          </div>
+        </div>
+
+        <div v-for="(item, index) in meData" class="me-grade abc-flex-x-center">
+          <div class="order">-</div>
+          <div class="name">{{ item.nickname || '' }}</div>
+          <div class="time">{{ item.use_time && item.use_time != 'null' ?
+            item.use_time.split(':')[0] + '分' + item.use_time.split(':')[1] + '秒' + item.use_time.split(':')[2] + '毫秒' : '-' }}</div>
+        </div>
+
+        <div class="btn-group abc-flex-x-center">
+          <div @click="backLast" class="back abc-flex-x-center"><img src="../assets/img/home/back.png"></div>
+
+          <div class="again-start abc-flex-x-center">
+            <div class="icon"><div class="abc-img"><img src="../assets/img/home/refresh.png"></div></div>
+            <div @click="startGameAgain" class="start-game">再玩一局</div>
+          </div>
+
+        </div>
+
     </div>
 
     <!--游戏开始-->
@@ -68,6 +96,7 @@
   import { mapState } from "vuex"
   import moment from 'moment'
   import MobileDetect from'mobile-detect'
+  import { addUser, updateUser, getUserList } from '@/api/chooseWord'
 
   import { randomWords } from '../assets/js/computed/word26'
   import '@/assets/js/m'
@@ -95,7 +124,12 @@
 
         startstamp: '', // 游戏开始时间戳
         endstamp: '', // 游戏结束时间戳
-        gameResult: '', // 游戏成绩
+        gameResult: {}, // 游戏成绩
+
+        nickname: '', // 用户昵称
+        tipMark: true, // 昵称是否已存在标识
+        rankingData: [], // 排行榜数据
+        meData: [], // 当前用户的排行数据
       }
     },
     computed: {
@@ -121,27 +155,75 @@
       // doc操作初始化
       doc.init(this)
 
-
-
-
-
 //      const md = new MobileDetect(window.navigator.userAgent);
 //      console.log(md)
 //      console.log(md.phone())
 
     },
     methods: {
-      // 开始游戏按钮
+      // 开始游戏按钮方法
       startGame () {
         this.homeMark = false
-        this.nicknameMark = true
         // 清除添加字母方法的定时
         game.clearAdd()
+
+        // 判断是否登录过
+        const storageNickname = window.localStorage.getItem('abcGame_nickname')
+        if (storageNickname) {
+          this.gameBegin() // 启动游戏
+
+        } else {
+          this.nicknameMark = true
+        }
+
       },
 
-      // 修改昵称方法
-      nickGo () {
-        this.nicknameMark = false
+      // 检索昵称是否被其他人注册
+      async nicknameInput () {
+
+        try {
+          const para = this.nickname ? 'nickname=' + this.nickname : ''
+          const dataList = await getUserList(para)
+
+          // 如果当前库中存在此用户名，则弹出提示
+          this.tipMark = true
+          if (dataList.data && dataList.data.length) {
+            this.tipMark = false
+          }
+
+        } catch (error) {
+
+        }
+
+      },
+      // 新用户注册昵称方法
+      async nickGo () {
+        const nickname = this.nickname
+        const data = {
+          nickname: nickname
+        }
+        if (nickname) {
+          // 如果此昵称已经被注册过得话，则禁止注册
+          if (!this.tipMark) return
+
+          try {
+            const dataList = await addUser(data)
+
+            window.localStorage.setItem('abcGame_nickname', nickname) // 将本次nickname加入到locaStorage中
+            this.nicknameMark = false
+            this.gameBegin() // 启动游戏
+
+          } catch (error) {
+            console.log(error)
+          }
+
+        } else {
+          console.log('未填写昵称')
+        }
+
+      },
+      // 游戏启动
+      gameBegin () {
         this.gameStartMark = true
 
         // 从单词库中随机生成的三个不重复的单词
@@ -158,7 +240,21 @@
         game.add() // 游戏开始方法
 
         this.startstamp = moment().format('x')
+      },
 
+      // 再来一局方法
+      startGameAgain () {
+        this.backHome() // 初始化
+        this.homeMark = false // 直接将首页隐藏，进入游戏
+
+        game.clearAdd() // 清除添加字母方法的定时
+        this.gameBegin() // 启动游戏
+      },
+
+      // 返回上一层方法
+      backLast () {
+        this.resultShow = true
+        this.rankingList = false
       },
 
       // 回到首页方法
@@ -182,10 +278,55 @@
 
       },
 
+      // 提交游戏成绩方法
+      async updateScore () {
+        const nickname = window.localStorage.getItem('abcGame_nickname')
+        const use_time = this.gameResult.timeResult || ''
+        const time_stamp = this.gameResult.timestamp || ''
+
+        const data = {
+          nickname,
+          use_time,
+          time_stamp
+        }
+
+        try {
+          const dataList = await updateUser(data)
+//          console.log(dataList)
+
+        } catch (error) {
+          console.log(error)
+        }
+
+      },
+
       // 显示榜单
-      look () {
+      async look () {
         this.rankingList = true
         this.resultShow = false
+        this.gameStartMark = false
+
+        try {
+          const nickname = window.localStorage.getItem('abcGame_nickname') || ''
+          const para = nickname ? 'nickname=' + nickname : ''
+
+          // Promise.all同时请求两接口
+          Promise.all([getUserList(), getUserList(para)]).then((data) => {
+            const dataList = data[0] // 榜单数据
+            const meData = data[1] // 个人排名数据
+
+            const dataResult = dataList.data && dataList.data.length ? dataList.data : []
+            const meDataResult = meData.data && meData.data.length ? meData.data : []
+
+            this.rankingData = dataResult // 填充榜单数据
+            this.meData = meDataResult // 填充个人排名数据
+
+          })
+
+        } catch (error) {
+          console.log(error)
+        }
+
       },
 
       // 初始化
@@ -318,6 +459,9 @@
         doc.vueObj.gameResult = timeResult
 //        console.log(timeResult)
 
+        // 上传成绩方法
+        doc.vueObj.updateScore()
+
         // 停止游戏
         game.clearAdd()
 
@@ -328,12 +472,17 @@
     },
     // 计算最终时间格式化算法(时间戳 => 分：秒：毫秒:1:35:258)
     computeTime (intervalTime) {
+      const timestamp = doc.vueObj.endstamp - doc.vueObj.startstamp
+
       const timeResult =
         moment.duration(doc.vueObj.endstamp - doc.vueObj.startstamp).minutes() + ':' +
         moment.duration(doc.vueObj.endstamp - doc.vueObj.startstamp).seconds() + ':' +
         moment.duration(doc.vueObj.endstamp - doc.vueObj.startstamp).milliseconds()
 
-      return timeResult
+      return {
+        timestamp,
+        timeResult
+      }
     }
 
 
@@ -410,6 +559,7 @@
       z-index: 999;
 
       .content {
+        position: relative;
         width: pr(550);
         height: pr(100);
         margin-top: pr(-100);
@@ -445,6 +595,14 @@
           &:hover, &:active {
             background: rgba(78, 134, 13, 0.7);
           }
+        }
+
+        .tip {
+          position: absolute;
+          right: pr(-15);
+          top: pr(25);
+          width: pr(60);
+          height: pr(60);
         }
       }
     }
@@ -483,6 +641,121 @@
             height: pr(50);
           }
         }
+      }
+
+    }
+
+    .loadingbig {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right:0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 999;
+      color: #fff;
+
+      .title {
+        font-size: pr(50);
+      }
+
+      .list {
+        width: pr(650);
+        height: pr(780);
+        background: rgba(58, 56, 59, 0.7);
+        margin-top: pr(40);
+
+        .item {
+          font-size: pr(36);
+          margin-bottom: pr(10);
+
+          .order {
+            margin-right: pr(60);
+            margin-left: pr(30);
+          }
+
+          .name {
+            text-align: left;
+            width: pr(230);
+          }
+
+          .time {
+            font-size: pr(30);
+            text-align: left;
+            width: pr(260);
+          }
+        }
+      }
+
+      .me-grade {
+        margin-top: pr(30);
+        width: pr(650);
+        height: pr(125);
+        background: rgba(58, 56, 59, 0.7);
+        font-size: pr(36);
+
+        .order {
+          margin-right: pr(60);
+          margin-left: pr(30);
+        }
+
+        .name {
+          text-align: left;
+          width: pr(230);
+        }
+
+        .time {
+          font-size: pr(30);
+          text-align: left;
+          width: pr(260);
+        }
+
+      }
+
+      .btn-group {
+        margin-top: pr(30);
+        width: pr(650);
+        height: pr(125);
+
+        .back {
+          width: pr(110);
+          height: pr(110);
+          background: #fff;
+          border-radius: 50%;
+          margin-right: pr(200);
+
+          img {
+            width: pr(58);
+            height: pr(58);
+          }
+        }
+
+        .again-start {
+          border-radius: pr(100);
+          background: #fff;
+          width: pr(315);
+          height: pr(110);
+          cursor: pointer;
+
+          .icon {
+            width: pr(58);
+            height: pr(58);
+
+            .abc-img {
+              width: 100%;
+              height: 100%;
+            }
+          }
+
+          .start-game {
+            font-size: pr(36);
+            color: #000;
+            margin-left: pr(10);
+          }
+        }
+
       }
 
     }
