@@ -10,8 +10,8 @@
         <div @click="startGame" class="start-game">开始游戏</div>
       </div>
 
-      <div @click="chooseDiffcult" class="difficulty abc-flex-y-start">
-        <div class="show-info abc-flex-x-center">
+      <div class="difficulty abc-flex-y-start">
+        <div @click="chooseDiffcult" class="show-info abc-flex-x-center">
           <div>难度：</div>
           <div>{{ diffcultValue == 1 ? 'easy' : (diffcultValue == 2 ? 'normal' : 'crazy') }}</div>
           <div class="abc-img" :class="diffcultMark ? 'selected' : ''"><img src="../assets/img/home/down_blue.png"></div>
@@ -92,6 +92,8 @@
       <!--<div v-if="gameStartMark" class="gamenumber">0</div>-->
 
       <div v-if="gameStartMark" class="show-board">
+        <div class="hand-deriction abc-img"><img src="../assets/img/home/deriction_down.png"></div>
+
         <div v-for="item in wordArr" class="board-item abc-flex-x-between">
           <div class="item-title">
             <span v-for="itemSon in item" class="item-word">{{ itemSon }}</span>
@@ -102,6 +104,9 @@
       </div>
 
     </div>
+
+    <audio class="click-audio" src="/static/mp3/click.mp3" style="display: none;"></audio>
+    <audio class="click-audio-Bomb" src="/static/mp3/blast.mp3" style="display: none;"></audio>
 
   </div>
 
@@ -160,10 +165,10 @@
 
     },
     watch: {
-      gameProgressArr (newValue, oldValue) {
-        // 将老数据暂存，用于回退数据
-        this.gameProgressLast = oldValue
-      }
+//      gameProgressArr (newValue, oldValue) {
+//        // 将老数据暂存，用于回退数据
+//        this.gameProgressLast = oldValue
+//      }
 
     },
     mounted () {
@@ -269,6 +274,17 @@
         // 数值主进度
         this.gameProgressArr = this.wordArr.reduce((prev, next) => prev + next)
         this.wordAllLength = this.gameProgressArr.length
+        this.gameProgressLast = this.gameProgressArr.slice()
+
+        this.$nextTick(() => {
+          $('.item-word').eq(0).addClass('animation')
+
+          // 展板上方小手展示方法(1s后隐藏)
+          $('.hand-deriction').show()
+          setTimeout(() => {
+            $('.hand-deriction').hide()
+          }, 3000)
+        })
 
         // 将当前涉及到的所有字母传入game组件
         game.updateAllWord(this.gameProgressArr)
@@ -303,6 +319,8 @@
         this.wordAllLength = ''
         this.startstamp = ''
         this.endstamp = ''
+
+        this.diffcultMark = false // 隐层难度选框
 
         // 初始化
         this.start()
@@ -374,6 +392,7 @@
       chooseDiff (type) {
         game.changeDiff(type)
         this.diffcultValue = type
+        this.diffcultMark = false
       }
 
     },
@@ -409,6 +428,8 @@
       var startTop=$(event.target).offset().top;
       var startLeft=$(event.target).offset().left;
       var wid=$(event.currentTarget).data("width");
+
+      // 区分点击炸弹还是字母方法
       if($(event.currentTarget).hasClass("canvas3"))
       {
         doc.imagestest.src = img_z;
@@ -430,6 +451,31 @@
 
         console.log('点击炸弹')
 
+        // 音效
+        let audio = $(".click-audio-Bomb")[0];
+        audio.play(); // 播放音效
+
+        // 减去一个单词
+        const index = (doc.vueObj.wordAllLength - doc.vueObj.gameProgressArr.length)
+
+        if (index > 0) {
+          const newArr = doc.vueObj.gameProgressLast.substr(index - 1, doc.vueObj.gameProgressLast.length)
+
+          doc.vueObj.gameProgressArr = newArr
+
+          // 控制样式
+          $('.item-word').eq(index - 1).removeClass('selected')
+
+          // 单词的跳动
+          console.log(index)
+          $('.item-word').removeClass('animation')
+          $('.item-word').eq(index - 1).addClass('animation')
+
+          // 对号的展示
+          doc.showBtn(index)
+
+        }
+
       }else{
 
         doc.imagestest.src = img_xs;
@@ -450,15 +496,25 @@
         },400)
 
         console.log('点击字母')
+
+        // 音效
+        let audio = $(".click-audio")[0];
+        audio.play(); // 播放音效
+
         const nowWord = $(event.currentTarget).attr('data-word')
         // 判断是否点击中了方法
         if (nowWord == doc.vueObj.gameProgressArr[0]) {
 
           doc.vueObj.gameProgressArr = doc.vueObj.gameProgressArr.substr(1, doc.vueObj.gameProgressArr.length)
+          console.log(doc.vueObj.gameProgressArr)
 
           // 当前点击单词的索引
           const index = (doc.vueObj.wordAllLength - doc.vueObj.gameProgressArr.length - 1)
           $('.item-word').eq(index).addClass('selected')
+
+          // 单词的跳动
+          $('.item-word').removeClass('animation')
+          $('.item-word').eq(index + 1).addClass('animation')
 
           // 对号的展示
           doc.showBtn(index)
@@ -554,7 +610,7 @@
 
       .btn {
         position: absolute;
-        bottom: pr(260);
+        bottom: pr(280);
         border-radius: pr(100);
         background: #fff;
         width: pr(405);
@@ -581,12 +637,12 @@
 
       .difficulty {
         position: absolute;
-        bottom: pr(10);
+        bottom: 0;
         width: pr(405);
-        height: pr(240);
+        height: pr(270);
         cursor: pointer;
         color: #fff;
-        font-size: pr(30);
+        font-size: pr(34);
 
         .show-info {
           margin-bottom: pr(10);
@@ -615,20 +671,19 @@
         }
 
         .options {
-          /*继承0.4秒动画设置*/
-          @extend .trans;
-
           width: pr(140);
           height: 0;
           background: rgba(255, 255, 255, 0.3);
           border-radius: pr(10);
           overflow: hidden;
 
-          &.selected {
-            /*继承0.4秒动画设置*/
-            @extend .trans;
+          & > div {
+            font-size: pr(34);
+            margin-bottom: pr(10)
+          }
 
-            height: pr(165);
+          &.selected {
+            height: pr(200);
           }
         }
 
@@ -707,6 +762,29 @@
         background: rgba(255, 255, 255, 0.7);
         padding: 0 pr(5);
 
+        .hand-deriction {
+          position: absolute;
+          width: pr(100);
+          height: pr(100);
+          top: pr(-120);
+          left: pr(20);
+
+          -webkit-animationn: handMove 1s infinite;
+          -moz-animation: handMove 1s infinite;
+          -o-animation: handMove 1s infinite;
+          animation: handMove 1s infinite;
+
+          @keyframes handMove{
+            50% {
+              top: pr(-150);
+            }
+            100% {
+              top: pr(-120);
+            }
+          }
+
+        }
+
         .board-item {
           .item-title {
             width: pr(230);
@@ -714,7 +792,7 @@
 
             span {
               display: inline-block;
-              height: pr(60);
+              height: pr(55);
               line-height: pr(60);
               padding: 0 pr(5);
               font-size: pr(30);
@@ -723,6 +801,57 @@
               &.selected {
                 color: #f71;
               }
+
+              &.animation {
+                font-size: pr(40);
+                color: #ff0000;
+                text-shadow: 0 0 pr(5) #1AFA29;
+
+                -webkit-animationn: dance 1s infinite;
+                -moz-animation: dance 1s infinite;
+                -o-animation: dance 1s infinite;
+                animation: dance 1s infinite;
+
+                @keyframes dance{
+                  0% {
+                    -webkit-transform: rotate(0);
+                    -moz-transform: rotate(0);
+                    -ms-transform: rotate(0);
+                    -o-transform: rotate(0);
+                    transform: rotate(0);
+                  }
+                  25% {
+                    -webkit-transform: rotate(-25deg);
+                    -moz-transform: rotate(-25deg);
+                    -ms-transform: rotate(-25deg);
+                    -o-transform: rotate(-25deg);
+                    transform: rotate(-25deg);
+                  }
+                  50% {
+                    -webkit-transform: rotate(0);
+                    -moz-transform: rotate(0);
+                    -ms-transform: rotate(0);
+                    -o-transform: rotate(0);
+                    transform: rotate(0);
+                  }
+                  75% {
+                    -webkit-transform: rotate(25deg);
+                    -moz-transform: rotate(25deg);
+                    -ms-transform: rotate(25deg);
+                    -o-transform: rotate(25deg);
+                    transform: rotate(25deg);
+                  }
+                  100% {
+                    -webkit-transform: rotate(0);
+                    -moz-transform: rotate(0);
+                    -ms-transform: rotate(0);
+                    -o-transform: rotate(0);
+                    transform: rotate(0);
+                  }
+                }
+
+              }
+
             }
           }
           .item-icon {
