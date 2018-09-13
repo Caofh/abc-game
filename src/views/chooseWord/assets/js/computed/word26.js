@@ -33,7 +33,7 @@ const wordArr = [
   'PIG',
   'TIGER',
   'PANDA',
-  'RABBIT'
+  'BIRD'
 ]
 const num = 3 // 随机选择单词的数量
 

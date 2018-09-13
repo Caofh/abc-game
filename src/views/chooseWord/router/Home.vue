@@ -93,7 +93,8 @@
 
       <!--<div v-if="gameStartMark" class="gamenumber">0</div>-->
 
-      <div v-if="gameStartMark" class="show-board">
+      <div class="show-board" :class="gameStartMark ? 'show' : ''">
+        <div class="board-bg abc-img"><img src="../assets/img/home/sun.png"></div>
         <div class="hand-deriction abc-img"><img src="../assets/img/home/deriction_up.png"></div>
 
         <div v-for="item in wordArr" class="board-item abc-flex-x-between">
@@ -172,7 +173,7 @@
       ]),
     },
     created () {
-      this.changeBg() // 切换背景定时器
+//      this.changeBg() // 切换背景定时器(已废弃)
 
 
     },
@@ -625,8 +626,13 @@
         $('.item-icon').eq(0).addClass('selected')
 
         // 整排跳动（阶段性晋级）
-        if (index == doc.vueObj.wordArr[0].length - 1 && type == 'add') {
-          doc.stageJump(0) // 第一排整行跳动跳动
+        if (index == doc.vueObj.wordArr[0].length - 1) {
+          if ( type == 'add') {
+            doc.stageJump(0) // 第一排整行跳动跳动
+          } else {
+            $('.item-icon').eq(0).removeClass('selected')
+          }
+
         }
 
       }
@@ -635,8 +641,13 @@
         $('.item-icon').eq(1).addClass('selected')
 
         // 整排跳动（阶段性晋级）
-        if (index == doc.vueObj.wordArr[0].length + doc.vueObj.wordArr[1].length - 1 && type == 'add') {
-          doc.stageJump(1) // 第一排整行跳动跳动
+        if (index == doc.vueObj.wordArr[0].length + doc.vueObj.wordArr[1].length - 1) {
+          if ( type == 'add') {
+            doc.stageJump(1) // 第二排整行跳动跳动
+          } else {
+            $('.item-icon').eq(1).removeClass('selected')
+          }
+
         }
 
       }
@@ -644,8 +655,11 @@
         $('.item-icon').addClass('selected')
 
         // 整排跳动（阶段性晋级）
-        if (index == doc.vueObj.wordArr[0].length + doc.vueObj.wordArr[1].length + doc.vueObj.wordArr[2].length - 1 && type == 'add') {
-          doc.stageJump(2) // 第一排整行跳动跳动
+        if (index == doc.vueObj.wordArr[0].length + doc.vueObj.wordArr[1].length + doc.vueObj.wordArr[2].length - 1) {
+          if ( type == 'add') {
+            doc.stageJump(2) // 第三排整行跳动跳动
+          }
+
         }
 
         // 计算成绩
@@ -875,13 +889,27 @@
       @extend .trans;
 
       .show-board {
+        display: none;
         position: absolute;
         top: 0;
         left: 0;
         width: pr(295);
         height: pr(175);
-        background: rgba(255, 255, 255, 0.7);
+        /*background: rgba(255, 255, 255, 0.7);*/
+        /*background: url("../assets/img/home/sun.png") no-repeat 100px 100px / 100% auto;*/
         padding: 0 pr(5);
+
+        &.show {
+          display: block;
+        }
+
+        .board-bg {
+          position: absolute;
+          top: pr(-90);
+          left: pr(-90);
+          width: pr(360);
+          height: pr(360);
+        }
 
         .hand-deriction {
           position: absolute;
@@ -1008,6 +1036,7 @@
             display: none;
             width: pr(50);
             height: pr(50);
+            opacity: 0;
 
             &.selected {
               display: block;
