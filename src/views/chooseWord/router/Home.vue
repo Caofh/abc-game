@@ -94,7 +94,7 @@
       <!--<div v-if="gameStartMark" class="gamenumber">0</div>-->
 
       <div v-if="gameStartMark" class="show-board">
-        <div class="hand-deriction abc-img"><img src="../assets/img/home/deriction_down.png"></div>
+        <div class="hand-deriction abc-img"><img src="../assets/img/home/deriction_up.png"></div>
 
         <div v-for="item in wordArr" class="board-item abc-flex-x-between">
           <div class="item-title">
@@ -876,7 +876,7 @@
 
       .show-board {
         position: absolute;
-        bottom: 0;
+        top: 0;
         left: 0;
         width: pr(295);
         height: pr(175);
@@ -887,7 +887,7 @@
           position: absolute;
           width: pr(100);
           height: pr(100);
-          top: pr(-120);
+          bottom: pr(-120);
           left: pr(20);
 
           -webkit-animationn: handMove 1s infinite;
@@ -897,10 +897,10 @@
 
           @keyframes handMove{
             50% {
-              top: pr(-150);
+              bottom: pr(-150);
             }
             100% {
-              top: pr(-120);
+              bottom: pr(-120);
             }
           }
 
@@ -990,46 +990,16 @@
 
                 @keyframes dance_stage{
                   0% {
-                    -webkit-transform: rotate(0);
-                    -moz-transform: rotate(0);
-                    -ms-transform: rotate(0);
-                    -o-transform: rotate(0);
-                    transform: rotate(0);
                     top: 0;
-                  }
-                  25% {
-                    -webkit-transform: rotate(-25deg);
-                    -moz-transform: rotate(-25deg);
-                    -ms-transform: rotate(-25deg);
-                    -o-transform: rotate(-25deg);
-                    transform: rotate(-25deg);
-                    top: pr(-4);
                   }
                   50% {
-                    -webkit-transform: rotate(0);
-                    -moz-transform: rotate(0);
-                    -ms-transform: rotate(0);
-                    -o-transform: rotate(0);
-                    transform: rotate(0);
                     top: pr(-8);
                   }
-                  75% {
-                    -webkit-transform: rotate(25deg);
-                    -moz-transform: rotate(25deg);
-                    -ms-transform: rotate(25deg);
-                    -o-transform: rotate(25deg);
-                    transform: rotate(25deg);
-                    top: pr(-4);
-                  }
                   100% {
-                    -webkit-transform: rotate(0);
-                    -moz-transform: rotate(0);
-                    -ms-transform: rotate(0);
-                    -o-transform: rotate(0);
-                    transform: rotate(0);
-                    top: 0;
+                    top: pr(0);
                   }
                 }
+
               }
 
             }
