@@ -904,6 +904,23 @@
           left: pr(-90);
           width: pr(360);
           height: pr(360);
+
+          -webkit-animationn: board 4s infinite;
+          -moz-animation: board 4s infinite;
+          -o-animation: board 4s infinite;
+          animation: board 4s infinite;
+
+          @keyframes board{
+            0% {
+              opacity: .5;
+            }
+            50% {
+              opacity: .9;
+            }
+            100% {
+              opacity: .5;
+            }
+          }
         }
 
         .hand-deriction {
@@ -919,6 +936,9 @@
           animation: handMove 1s infinite;
 
           @keyframes handMove{
+            0% {
+              bottom: pr(-120);
+            }
             50% {
               bottom: pr(-150);
             }
