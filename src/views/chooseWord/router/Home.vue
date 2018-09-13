@@ -93,7 +93,7 @@
 
       <!--<div v-if="gameStartMark" class="gamenumber">0</div>-->
 
-      <div class="show-board" :class="gameStartMark ? 'show' : ''">
+      <div v-if="gameStartMark" class="show-board">
         <div class="board-bg abc-img"><img src="../assets/img/home/sun.png"></div>
         <div class="hand-deriction abc-img"><img src="../assets/img/home/deriction_up.png"></div>
 
@@ -889,7 +889,6 @@
       @extend .trans;
 
       .show-board {
-        display: none;
         position: absolute;
         top: 0;
         left: 0;
@@ -898,10 +897,6 @@
         /*background: rgba(255, 255, 255, 0.7);*/
         /*background: url("../assets/img/home/sun.png") no-repeat 100px 100px / 100% auto;*/
         padding: 0 pr(5);
-
-        &.show {
-          display: block;
-        }
 
         .board-bg {
           position: absolute;
