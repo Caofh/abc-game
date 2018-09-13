@@ -66,7 +66,7 @@
         </div>
 
         <div v-for="(item, index) in meData" class="me-grade abc-flex-x-center">
-          <div class="order">-</div>
+          <div class="order">{{ item.ranking || '-' }}</div>
           <div class="name">{{ item.nickname || '' }}</div>
           <div class="time">{{ item.use_time && item.use_time != 'null' ?
             item.use_time.split(':')[0] + '分' + item.use_time.split(':')[1] + '秒' + item.use_time.split(':')[2] + '毫秒' : '-' }}</div>
