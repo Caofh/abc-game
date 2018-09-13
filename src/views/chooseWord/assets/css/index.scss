@@ -3,7 +3,7 @@ html{color:#000;background:#fff;overflow-y:scroll;-webkit-text-size-adjust:100%;
 .clear{clear: both;}
 /*body,html{overflow: hidden;}*/
 html{overflow: hidden;/*-webkit-overflow-scrolling : touch*/ }
-body{overflow: auto; -webkit-overflow-scrolling:touch; height: 100%;/*-webkit-overflow-scrolling : touch*/ }
+body{overflow: auto; background: #41BFF5; -webkit-overflow-scrolling:touch; height: 100%;/*-webkit-overflow-scrolling : touch*/ }
 .body{ position: fixed; top: 0; left: 0; right: 0; bottom: 0; overflow: hidden; }
 div,nav,ul,li,span,em,a,img,header,footer { -webkit-tap-highlight-color:transparent;}
 a {text-decoration:none;}
@@ -129,7 +129,7 @@ i{font-style:normal;}
     right:0;
     bottom:0;
     overflow: hidden;
-    background-image:url('../assets/img/home/bg/sayabc_bg_4.png');
+    background-image:url('../assets/img/home/bg/sayabc_bg.png');
     background-repeat:no-repeat;
     background-position: bottom left;
     background-size: cover;

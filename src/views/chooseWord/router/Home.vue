@@ -85,7 +85,8 @@
     </div>
 
     <!--游戏开始-->
-    <div class="bigdiv" :style="{display: 'none', 'background-image': 'url(' + bgResource + ')'}">
+    <!--<div class="bigdiv" :style="{display: 'none', 'background-image': 'url(' + bgResource + ')'}">-->
+    <div class="bigdiv" :style="{display: 'none'}">
       <div class="ledoucontent">
 
       </div>
