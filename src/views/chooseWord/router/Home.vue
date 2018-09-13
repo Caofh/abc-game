@@ -53,6 +53,7 @@
 
     <!--排行榜浮层-->
     <div v-if="rankingList" class="loadingbig abc-flex-y-center">
+    <!--<div v-if="true" class="loadingbig abc-flex-y-center">-->
         <div class="title">排行榜</div>
 
         <div class="list abc-flex-y-center">
@@ -84,7 +85,7 @@
     </div>
 
     <!--游戏开始-->
-    <div class="bigdiv" style=" display: none;">
+    <div class="bigdiv" :style="{display: 'none', 'background-image': 'url(' + bgResource + ')'}">
       <div class="ledoucontent">
 
       </div>
@@ -125,6 +126,11 @@
 
   import img_z from '../assets/img/z.png' // 炸弹爆炸图片
   import img_xs from '../assets/img/xs.png' // 字母点击图片效果
+  import bg from '../assets/img/home/bg/sayabc_bg.png' // 背景图1
+  import bg_1 from '../assets/img/home/bg/sayabc_bg_1.png' // 背景图2
+  import bg_2 from '../assets/img/home/bg/sayabc_bg_2.png' // 背景图3
+  import bg_3 from '../assets/img/home/bg/sayabc_bg_3.png' // 背景图4
+  import bg_4 from '../assets/img/home/bg/sayabc_bg_4.png' // 背景图5
 
   export default {
     name: 'Home',
@@ -153,6 +159,10 @@
 
         diffcultMark: false, // 选择难度options展示标识
         diffcultValue: 2, // 1:easy; 2:normal; 3:crazy；默认是2
+
+        bgResource: '', // 背景资源
+//        bgTimer: 1 * 60 * 1000 // 每1分钟切换一次背景（时间）
+        bgTimer: 30 * 1000 // 每半分钟切换一次背景（时间）
       }
     },
     computed: {
@@ -161,7 +171,8 @@
       ]),
     },
     created () {
-//      console.log(randomWords())
+      this.changeBg() // 切换背景定时器
+
 
     },
     watch: {
@@ -187,7 +198,6 @@
       // 页面初始化(模拟背景闪屏效果)
       start () {
         let that = this // 外部vue对象
-
 
         $(".bigdiv").show();
         $("body").addClass("body");
@@ -284,6 +294,7 @@
           setTimeout(() => {
             $('.hand-deriction').hide()
           }, 3000)
+
         })
 
         // 将当前涉及到的所有字母传入game组件
@@ -393,6 +404,36 @@
         game.changeDiff(type)
         this.diffcultValue = type
         this.diffcultMark = false
+      },
+
+      // 每2分钟切换背景方法
+      changeBg () {
+        let that = this
+        this.bgResource = bg_1
+
+        setInterval(() => {
+          let bgResource = ''
+          const random = Math.floor(Math.random() * 6)
+
+          // 共5张背景，增大sayabc主题背景几率
+          switch (random) {
+            case (0): bgResource = bg; break;
+            case (1): bgResource = bg; break;
+            case (2): bgResource = bg_1; break;
+            case (3): bgResource = bg_2; break;
+            case (4): bgResource = bg_3; break;
+            case (5): bgResource = bg_4; break;
+          }
+
+          $('.bigdiv').css({
+            'background-color': '#fff'
+          })
+          setTimeout(() => {
+            that.bgResource = bgResource
+          }, 500)
+
+        }, this.bgTimer)
+
       }
 
     },
@@ -455,26 +496,8 @@
         let audio = $(".click-audio-Bomb")[0];
         audio.play(); // 播放音效
 
-        // 减去一个单词
-        const index = (doc.vueObj.wordAllLength - doc.vueObj.gameProgressArr.length)
-
-        if (index > 0) {
-          const newArr = doc.vueObj.gameProgressLast.substr(index - 1, doc.vueObj.gameProgressLast.length)
-
-          doc.vueObj.gameProgressArr = newArr
-
-          // 控制样式
-          $('.item-word').eq(index - 1).removeClass('selected')
-
-          // 单词的跳动
-          console.log(index)
-          $('.item-word').removeClass('animation')
-          $('.item-word').eq(index - 1).addClass('animation')
-
-          // 对号的展示
-          doc.showBtn(index)
-
-        }
+        // 点中炸弹，减去一排单词
+        doc.subRowWord()
 
       }else{
 
@@ -505,38 +528,124 @@
         // 判断是否点击中了方法
         if (nowWord == doc.vueObj.gameProgressArr[0]) {
 
-          doc.vueObj.gameProgressArr = doc.vueObj.gameProgressArr.substr(1, doc.vueObj.gameProgressArr.length)
-          console.log(doc.vueObj.gameProgressArr)
+          doc.addWord() // 点对单词，增加单词方法
 
-          // 当前点击单词的索引
-          const index = (doc.vueObj.wordAllLength - doc.vueObj.gameProgressArr.length - 1)
-          $('.item-word').eq(index).addClass('selected')
+        } else {
 
-          // 单词的跳动
-          $('.item-word').removeClass('animation')
-          $('.item-word').eq(index + 1).addClass('animation')
-
-          // 对号的展示
-          doc.showBtn(index)
+          doc.subWord() // 点错单词，减少一个单词
 
         }
 
       }
 
     },
-    // 展示对号方法
-    showBtn (index) {
-      $('.item-icon').hide()
+    // 点对单词，增加一个单词方法
+    addWord () {
+      doc.vueObj.gameProgressArr = doc.vueObj.gameProgressArr.substr(1, doc.vueObj.gameProgressArr.length)
+
+      // 当前点击单词的索引
+      const index = (doc.vueObj.wordAllLength - doc.vueObj.gameProgressArr.length - 1)
+      $('.item-word').eq(index).addClass('selected')
+
+      // 单词的跳动
+      $('.item-word').removeClass('animation')
+      $('.item-word').eq(index + 1).addClass('animation')
+
+      // 对号的展示
+      doc.showBtn(index, 'add')
+    },
+    // 点错单词，减少一个单词方法
+    subWord () {
+      // 当前点击单词的索引
+      const index = (doc.vueObj.wordAllLength - doc.vueObj.gameProgressArr.length)
+
+      if (index > 0) {
+        const newArr = doc.vueObj.gameProgressLast.substr(index - 1, doc.vueObj.gameProgressLast.length)
+
+        doc.vueObj.gameProgressArr = newArr
+
+        // 控制样式
+        $('.item-word').eq(index - 1).removeClass('selected')
+
+        // 单词的跳动
+        $('.item-word').removeClass('animation')
+        $('.item-word').eq(index - 1).addClass('animation')
+
+        // 对号的展示
+        doc.showBtn(index - 1, 'sub')
+
+      }
+    },
+    // 点中炸弹，减去一排单词方法
+    subRowWord () {
+
+      const wordOne = doc.vueObj.wordArr[0] // 看板中第一个单词
+      const wordTwo = doc.vueObj.wordArr[1] // 看板中第二个单词
+      const wordThree = doc.vueObj.wordArr[2] // 看板中第三个单词
+
+      // 通过对号的数量，判断当前游戏进度在第几行（0：第一行；1：第二行；2：第三行）
+      const yesIcon = $('.item-icon.selected').length
+      let progressNew = ''
+
+      switch (yesIcon) {
+        case 0: {
+          progressNew = doc.vueObj.gameProgressLast
+          break
+        }
+        case 1: {
+          progressNew = doc.vueObj.gameProgressLast.replace(wordOne, '')
+          break
+        }
+        case 2: {
+          progressNew = doc.vueObj.gameProgressLast.replace(wordOne, '').replace(wordTwo, '')
+          break
+        }
+      }
+
+      // 为游戏进度重新赋值
+      doc.vueObj.gameProgressArr = progressNew
+
+      // 当前点击单词的索引
+      const index = (doc.vueObj.wordAllLength - doc.vueObj.gameProgressArr.length)
+
+      // 控制样式
+      $('.item-title').eq(yesIcon).children('.item-word').removeClass('selected')
+
+      // 单词的跳动
+      $('.item-word').removeClass('animation')
+      $('.item-word').eq(index).addClass('animation')
+
+    },
+    // 展示对号方法(index:索引； type：调用的类型（add:增加单词调用；sub：减去单词调用）)
+    showBtn (index, type) {
+      $('.item-icon').removeClass('selected')
 
       if (index >= doc.vueObj.wordArr[0].length - 1) {
-        $('.item-icon').eq(0).show()
+        $('.item-icon').eq(0).addClass('selected')
+
+        // 整排跳动（阶段性晋级）
+        if (index == doc.vueObj.wordArr[0].length - 1 && type == 'add') {
+          doc.stageJump(0) // 第一排整行跳动跳动
+        }
+
       }
       if (index >= doc.vueObj.wordArr[0].length + doc.vueObj.wordArr[1].length - 1) {
-        $('.item-icon').eq(0).show()
-        $('.item-icon').eq(1).show()
+        $('.item-icon').eq(0).addClass('selected')
+        $('.item-icon').eq(1).addClass('selected')
+
+        // 整排跳动（阶段性晋级）
+        if (index == doc.vueObj.wordArr[0].length + doc.vueObj.wordArr[1].length - 1 && type == 'add') {
+          doc.stageJump(1) // 第一排整行跳动跳动
+        }
+
       }
       if (index >= doc.vueObj.wordArr[0].length + doc.vueObj.wordArr[1].length + doc.vueObj.wordArr[2].length - 1) {
-        $('.item-icon').show()
+        $('.item-icon').addClass('selected')
+
+        // 整排跳动（阶段性晋级）
+        if (index == doc.vueObj.wordArr[0].length + doc.vueObj.wordArr[1].length + doc.vueObj.wordArr[2].length - 1 && type == 'add') {
+          doc.stageJump(2) // 第一排整行跳动跳动
+        }
 
         // 计算成绩
         doc.vueObj.endstamp = moment().format('x')
@@ -552,6 +661,15 @@
 
       }
     },
+    // 阶段性整排跳动方法(stage参数： 0：第一排整行跳动；1：第二排；3：第三排)
+    stageJump (stage) {
+      const node = $('.item-title').eq(stage).children('.item-word')
+      node.addClass('animation-stage')
+      setTimeout(() => {
+        node.removeClass('animation-stage')
+      }, 600)
+    },
+
     // 计算最终时间格式化算法(时间戳 => 分：秒：毫秒:1:35:258)
     computeTime (intervalTime) {
       const timestamp = doc.vueObj.endstamp - doc.vueObj.startstamp
@@ -753,6 +871,8 @@
     }
 
     .bigdiv {
+      @extend .trans;
+
       .show-board {
         position: absolute;
         bottom: 0;
@@ -786,12 +906,16 @@
         }
 
         .board-item {
+          height: pr(55);
+
           .item-title {
             width: pr(230);
+            height: pr(55);
             text-align: left;
 
             span {
               display: inline-block;
+              position: relative;
               height: pr(55);
               line-height: pr(60);
               padding: 0 pr(5);
@@ -852,12 +976,71 @@
 
               }
 
+              &.animation-stage {
+                @extend .trans;
+
+                color: #f71;
+                text-shadow: 0 0 pr(5) #1AFA29;
+
+                -webkit-animationn: dance_stage 0.3s infinite;
+                -moz-animation: dance_stage 0.3s infinite;
+                -o-animation: dance_stage 0.3s infinite;
+                animation: dance_stage 0.3s infinite;
+
+                @keyframes dance_stage{
+                  0% {
+                    -webkit-transform: rotate(0);
+                    -moz-transform: rotate(0);
+                    -ms-transform: rotate(0);
+                    -o-transform: rotate(0);
+                    transform: rotate(0);
+                    top: 0;
+                  }
+                  25% {
+                    -webkit-transform: rotate(-25deg);
+                    -moz-transform: rotate(-25deg);
+                    -ms-transform: rotate(-25deg);
+                    -o-transform: rotate(-25deg);
+                    transform: rotate(-25deg);
+                    top: pr(-4);
+                  }
+                  50% {
+                    -webkit-transform: rotate(0);
+                    -moz-transform: rotate(0);
+                    -ms-transform: rotate(0);
+                    -o-transform: rotate(0);
+                    transform: rotate(0);
+                    top: pr(-8);
+                  }
+                  75% {
+                    -webkit-transform: rotate(25deg);
+                    -moz-transform: rotate(25deg);
+                    -ms-transform: rotate(25deg);
+                    -o-transform: rotate(25deg);
+                    transform: rotate(25deg);
+                    top: pr(-4);
+                  }
+                  100% {
+                    -webkit-transform: rotate(0);
+                    -moz-transform: rotate(0);
+                    -ms-transform: rotate(0);
+                    -o-transform: rotate(0);
+                    transform: rotate(0);
+                    top: 0;
+                  }
+                }
+              }
+
             }
           }
           .item-icon {
             display: none;
             width: pr(50);
             height: pr(50);
+
+            &.selected {
+              display: block;
+            }
           }
         }
       }
@@ -884,10 +1067,11 @@
         width: pr(650);
         height: pr(780);
         background: rgba(58, 56, 59, 0.7);
-        margin-top: pr(40);
+        margin-top: pr(15);
 
         .item {
           font-size: pr(36);
+          height: pr(60);
           margin-bottom: pr(10);
 
           .order {
@@ -909,9 +1093,9 @@
       }
 
       .me-grade {
-        margin-top: pr(30);
+        margin-top: pr(15);
         width: pr(650);
-        height: pr(125);
+        height: pr(100);
         background: rgba(58, 56, 59, 0.7);
         font-size: pr(36);
 
@@ -934,7 +1118,7 @@
       }
 
       .btn-group {
-        margin-top: pr(30);
+        margin-top: pr(15);
         width: pr(650);
         height: pr(125);
 
