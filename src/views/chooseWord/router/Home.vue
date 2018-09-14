@@ -77,7 +77,7 @@
 
     <!--排行榜浮层-->
     <div v-if="rankingList" class="loadingbig abc-flex-y-center">
-        <div class="title">排行榜</div>
+        <div class="title">全球排行榜</div>
 
         <div class="list abc-flex-y-center">
           <div v-for="(item, index) in rankingData" class="item abc-flex-x-center">
@@ -162,6 +162,9 @@
   import bg_2 from '../assets/img/home/bg/sayabc_bg_2.png' // 背景图3
   import bg_3 from '../assets/img/home/bg/sayabc_bg_3.png' // 背景图4
   import bg_4 from '../assets/img/home/bg/sayabc_bg_4.png' // 背景图5
+
+  // Qos打点
+  import log from '@/api/log'
 
   export default {
     name: 'Home',
@@ -249,6 +252,16 @@
         this.homeMark = false
 
         this.look() // 调用显示榜单方法
+
+        // Qos数据统计
+        log.log({
+          event: 'ABC_GAME_CLICKONECLICK',
+          subEvent: 'CLICK_LOOKRANKING_HOME',
+          extra: {
+            msg: window.localStorage.getItem('abcGame_nickname') || '无注册用户',
+            message: new Date().getTime()
+          }
+        });
       },
 
       // 开始游戏按钮方法
@@ -303,6 +316,16 @@
             this.nicknameMark = false
             this.gameBegin() // 启动游戏
 
+            // Qos数据统计
+            log.log({
+              event: 'ABC_GAME_CLICKONECLICK',
+              subEvent: 'CLICK_NEWUSER_REGISTER',
+              extra: {
+                msg: nickname,
+                message: new Date().getTime()
+              }
+            });
+
           } catch (error) {
             console.log(error)
           }
@@ -312,6 +335,7 @@
         }
 
       },
+
       // 游戏启动
       gameBegin () {
         this.gameStartMark = true
@@ -409,8 +433,18 @@
           const dataList = await updateUser(data)
 //          console.log(dataList)
 
-          // 展示成绩板
-          doc.vueObj.resultShow = true
+          // 取历史最好成绩方法
+          this.getBestGrade()
+
+          // Qos数据统计
+          log.log({
+            event: 'ABC_GAME_CLICKONECLICK',
+            subEvent: 'CLICK_UPDATE_GRADE',
+            extra: {
+              msg: nickname,
+              message: new Date().getTime() + ' , ' + use_time
+            }
+          });
 
         } catch (error) {
           console.log(error)
@@ -457,6 +491,9 @@
 
           const meDataResult = dataList.data && dataList.data.length ? dataList.data : []
           this.meData = meDataResult // 填充个人排名数据
+
+          // 展示成绩板
+          doc.vueObj.resultShow = true
 
         } catch (error) {
           console.log(error)
@@ -745,9 +782,6 @@
 
         // 上传成绩方法
         doc.vueObj.updateScore()
-
-        // 取历史最好成绩方法
-        doc.vueObj.getBestGrade()
 
         // 停止背景音乐
         let bgAudio = $(".audio-bg")[0];
