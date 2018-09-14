@@ -5,6 +5,8 @@
     <div v-if="homeMark" class="start abc-flex-y-start">
       <div class="title">点一点</div>
 
+      <div @click="rankShow" class="ranking-icon abc-img"><img src="../assets/img/home/ranking.png"></div>
+
       <div class="btn abc-flex-x-center">
         <div class="icon"><div class="abc-img"><img src="../assets/img/home/start.png"></div></div>
         <div @click="startGame" class="start-game">开始游戏</div>
@@ -53,7 +55,6 @@
 
     <!--排行榜浮层-->
     <div v-if="rankingList" class="loadingbig abc-flex-y-center">
-    <!--<div v-if="true" class="loadingbig abc-flex-y-center">-->
         <div class="title">排行榜</div>
 
         <div class="list abc-flex-y-center">
@@ -72,12 +73,12 @@
             item.use_time.split(':')[0] + '分' + item.use_time.split(':')[1] + '秒' + item.use_time.split(':')[2] + '毫秒' : '-' }}</div>
         </div>
 
-        <div class="btn-group abc-flex-x-center">
+        <div class="btn-group abc-flex-x-between">
           <div @click="backLast" class="back abc-flex-x-center"><img src="../assets/img/home/back.png"></div>
 
-          <div class="again-start abc-flex-x-center">
+          <div @click="startGameAgain" v-if="!homeRanking" class="again-start abc-flex-x-center">
             <div class="icon"><div class="abc-img"><img src="../assets/img/home/refresh.png"></div></div>
-            <div @click="startGameAgain" class="start-game">再玩一局</div>
+            <div class="start-game">再玩一局</div>
           </div>
 
         </div>
@@ -110,6 +111,9 @@
 
     <audio class="click-audio" src="/static/mp3/click.mp3" style="display: none;"></audio>
     <audio class="click-audio-Bomb" src="/static/mp3/blast.mp3" style="display: none;"></audio>
+    <!--<audio class="audio-bg" src="/static/mp3/bg_1.mp3" loop style="display: none;"></audio>-->
+    <audio class="audio-bg" src="/static/mp3/bg_2.mp3" loop autoplay="autoplay" style="display: none;"></audio>
+    <!--<audio class="audio-bg" src="/static/mp3/bg_3.mp3" loop autoplay="autoplay" style="display: none;"></audio>-->
 
   </div>
 
@@ -163,8 +167,9 @@
         diffcultValue: 2, // 1:easy; 2:normal; 3:crazy；默认是2
 
         bgResource: '', // 背景资源
-//        bgTimer: 1 * 60 * 1000 // 每1分钟切换一次背景（时间）
-        bgTimer: 30 * 1000 // 每半分钟切换一次背景（时间）
+        bgTimer: 30 * 1000, // 每半分钟切换一次背景（时间）（已废弃）
+
+        homeRanking: false, // 首页点击排行榜标识
       }
     },
     computed: {
@@ -174,7 +179,6 @@
     },
     created () {
 //      this.changeBg() // 切换背景定时器(已废弃)
-
 
     },
     watch: {
@@ -212,6 +216,14 @@
           game.clearAdd()
         }, 5000)
 
+      },
+
+      // 首页查看排行榜方法
+      rankShow () {
+        this.homeRanking = true // 首页点击排行榜标识
+        this.homeMark = false
+
+        this.look() // 调用显示榜单方法
       },
 
       // 开始游戏按钮方法
@@ -288,6 +300,11 @@
         this.wordAllLength = this.gameProgressArr.length
         this.gameProgressLast = this.gameProgressArr.slice()
 
+
+        // 背景音乐
+        let bgAudio = $(".audio-bg")[0];
+        bgAudio.play(); // 播放背景音乐
+
         this.$nextTick(() => {
           $('.item-word').eq(0).addClass('animation')
 
@@ -316,8 +333,17 @@
 
       // 返回上一层方法
       backLast () {
-        this.resultShow = true
-        this.rankingList = false
+        if (this.homeRanking) {
+          this.rankingList = false
+          this.homeMark = true
+
+          this.homeRanking = false // 首页点击排行榜标识
+
+        } else {
+          this.resultShow = true
+          this.rankingList = false
+        }
+
       },
 
       // 回到首页方法
@@ -447,7 +473,8 @@
 
   var doc = {
     vueObj: '', // vue对象
-    imagestest: new Image(),
+    imageBlast: new Image(),
+    imageWord: new Image(),
 
     init (that) {
       this.vueObj = that
@@ -455,7 +482,12 @@
       this.helper()
       this.bind()
     },
-    helper () {},
+    helper () {
+      // 预加载炸弹爆炸效果和字母点击效果的图片.
+      doc.imageBlast.src = img_z;
+      doc.imageWord.src = img_xs;
+
+    },
     bind () {
       // 点击字母逻辑
       this.vueObj.$nextTick(() => {
@@ -475,12 +507,12 @@
       // 区分点击炸弹还是字母方法
       if($(event.currentTarget).hasClass("canvas3"))
       {
-        doc.imagestest.src = img_z;
-        doc.imagestest.width=wid;
-        doc.imagestest.height=wid;
+//        doc.imagestest.src = img_z;
+        doc.imageBlast.width=wid;
+        doc.imageBlast.height=wid;
         $(event.currentTarget).attr('width',wid);
         $(event.currentTarget).attr('height',wid);
-        $(event.currentTarget).get(0).getContext("2d").drawImage(doc.imagestest, 0, 0,wid,wid);
+        $(event.currentTarget).get(0).getContext("2d").drawImage(doc.imageBlast, 0, 0,wid,wid);
         $(event.currentTarget).css({
           'opacity':0,
           'transform': 'translate3d('+startLeft+'px,'+startTop+'px,0px)',
@@ -503,12 +535,12 @@
 
       }else{
 
-        doc.imagestest.src = img_xs;
-        doc.imagestest.width=wid;
-        doc.imagestest.height=wid;
+//        doc.imagestest.src = img_xs;
+        doc.imageWord.width=wid;
+        doc.imageWord.height=wid;
         $(event.currentTarget).attr('width',wid);
         $(event.currentTarget).attr('height',wid);
-        $(event.currentTarget).get(0).getContext("2d").drawImage(doc.imagestest, 0, 0,wid,wid);
+        $(event.currentTarget).get(0).getContext("2d").drawImage(doc.imageWord, 0, 0,wid,wid);
         $(event.currentTarget).css({
           'opacity':0,
           'transition': 'transform 0s, opacity 800ms',
@@ -674,6 +706,11 @@
         // 上传成绩方法
         doc.vueObj.updateScore()
 
+        // 停止背景音乐
+        let bgAudio = $(".audio-bg")[0];
+        bgAudio.pause(); // 停止播放背景音乐
+        bgAudio.currentTime = 0.0 // 背景音乐时间重置
+
       }
     },
     // 阶段性整排跳动方法(stage参数： 0：第一排整行跳动；1：第二排；3：第三排)
@@ -739,6 +776,62 @@
         margin-top: pr(180);
         font-size: pr(100);
         color: #fff;
+      }
+
+      .ranking-icon {
+        position: absolute;
+        bottom: pr(400);
+        width: pr(120);
+        height: pr(120);
+
+          -webkit-animationn: rankingAni 4s infinite;
+          -moz-animation: rankingAni 4s infinite;
+          -o-animation: rankingAni 4s infinite;
+          animation: rankingAni 4s infinite;
+
+          @keyframes rankingAni{
+            0% {
+              bottom: pr(400);
+            }
+            5% {
+              bottom: pr(420);
+            }
+            10% {
+              bottom: pr(400);
+            }
+            12% {
+              -webkit-transform: rotate(0);
+              -moz-transform: rotate(0);
+              -ms-transform: rotate(0);
+              -o-transform: rotate(0);
+              transform: rotate(0);
+            }
+            15% {
+              -webkit-transform: rotate(-20deg);
+              -moz-transform: rotate(-20deg);
+              -ms-transform: rotate(-20deg);
+              -o-transform: rotate(-20deg);
+              transform: rotate(-20deg);
+            }
+            21% {
+              -webkit-transform: rotate(20deg);
+              -moz-transform: rotate(20deg);
+              -ms-transform: rotate(20deg);
+              -o-transform: rotate(20deg);
+              transform: rotate(20deg);
+            }
+            24% {
+              -webkit-transform: rotate(0);
+              -moz-transform: rotate(0);
+              -ms-transform: rotate(0);
+              -o-transform: rotate(0);
+              transform: rotate(0);
+            }
+            100% {
+
+            }
+          }
+
       }
 
       .btn {
@@ -1136,13 +1229,13 @@
         margin-top: pr(15);
         width: pr(650);
         height: pr(125);
+        padding: 0 pr(10);
 
         .back {
           width: pr(110);
           height: pr(110);
           background: #fff;
           border-radius: 50%;
-          margin-right: pr(200);
 
           img {
             width: pr(58);
