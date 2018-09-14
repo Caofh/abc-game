@@ -148,7 +148,7 @@
   import { mapState } from "vuex"
   import moment from 'moment'
   import MobileDetect from'mobile-detect'
-  import { addUser, updateUser, getUserList } from '@/api/chooseWord'
+  import { addUser, updateUser, getUserList, getRandomWords } from '@/api/chooseWord'
 
   import { randomWords } from '../assets/js/computed/word26'
   import '@/assets/js/m'
@@ -170,6 +170,8 @@
     name: 'Home',
     data(){
       return {
+        wordCount: 3, // 从单词库中随机生成的单词的数量，支持后续修改.
+
         rankingList: false, // 排行榜弹窗标识(弹窗)
         resultShow: false, // 游戏结果显示(弹窗)
         homeMark: true, // home弹窗显示标识(弹窗)
@@ -231,7 +233,7 @@
     },
     methods: {
       // 页面初始化(模拟背景闪屏效果)
-      start () {
+      async start () {
         let that = this // 外部vue对象
 
         $(".bigdiv").show();
@@ -244,6 +246,18 @@
           // 清除添加字母方法的定时
           game.clearAdd()
         }, 5000)
+
+        // 从单词库中随机生成的三个不重复的单词
+        try {
+          const para = 'count=' + this.wordCount
+          const dataList = await getRandomWords(para)
+          const wordArr = dataList.data.map(item => item.word)
+
+          this.wordArr = wordArr // 赋值随机的单词
+        } catch (error) {
+          console.log(error)
+        }
+
 
       },
 
@@ -346,10 +360,6 @@
       // 游戏启动
       gameBegin () {
         this.gameStartMark = true
-
-        // 从单词库中随机生成的三个不重复的单词
-        const wordArr = randomWords()
-        this.wordArr = wordArr
 
         // 数值主进度
         this.gameProgressArr = this.wordArr.reduce((prev, next) => prev + next)

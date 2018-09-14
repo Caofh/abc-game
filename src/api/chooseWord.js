@@ -18,3 +18,10 @@ export function getUserList (para) {
 
   return axios.get('/getUserList' + data)
 }
+
+// 获取随机单词接口（.../getRandomWords?count=3）
+export function getRandomWords (para) {
+  const data = para ? '?' + para : ''
+
+  return axios.get('/getRandomWords' + data)
+}
