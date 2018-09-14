@@ -986,7 +986,7 @@
         position: relative;
         width: pr(550);
         height: pr(550);
-        background: rgba(155, 155, 155, 0.5);
+        background: rgba(155, 155, 155, 0.7);
         color: #fff;
         margin-bottom: pr(200);
         box-shadow: pr(5) pr(5) pr(10) rgba(255, 255, 255, 0.6);
@@ -1025,7 +1025,7 @@
           bottom: 0;
           width: 100%;
           height: pr(110);
-          background: rgba(151, 151, 151, 0.4);
+          background: rgba(0, 0, 0, 0.1);
 
           .sub-title {
             font-size: pr(36);
