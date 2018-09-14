@@ -805,6 +805,7 @@
               -ms-transform: rotate(0);
               -o-transform: rotate(0);
               transform: rotate(0);
+              bottom: pr(400);
             }
             15% {
               -webkit-transform: rotate(-20deg);
@@ -812,6 +813,7 @@
               -ms-transform: rotate(-20deg);
               -o-transform: rotate(-20deg);
               transform: rotate(-20deg);
+              bottom: pr(400);
             }
             21% {
               -webkit-transform: rotate(20deg);
@@ -819,6 +821,7 @@
               -ms-transform: rotate(20deg);
               -o-transform: rotate(20deg);
               transform: rotate(20deg);
+              bottom: pr(400);
             }
             24% {
               -webkit-transform: rotate(0);
@@ -826,9 +829,10 @@
               -ms-transform: rotate(0);
               -o-transform: rotate(0);
               transform: rotate(0);
+              bottom: pr(400);
             }
             100% {
-
+              bottom: pr(400);
             }
           }
 
