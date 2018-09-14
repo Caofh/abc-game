@@ -5,26 +5,30 @@
     <div v-if="homeMark" class="start abc-flex-y-start">
       <div class="title">点一点</div>
 
-      <div @click="rankShow" class="ranking-icon abc-img"><img src="../assets/img/home/ranking.png"></div>
+      <div class="btn-group abc-flex-y-start">
+        <div @click="rankShow" class="ranking-icon abc-img"><img src="../assets/img/home/ranking.png"></div>
 
-      <div class="btn abc-flex-x-center">
-        <div class="icon"><div class="abc-img"><img src="../assets/img/home/start.png"></div></div>
-        <div @click="startGame" class="start-game">开始游戏</div>
-      </div>
-
-      <div class="difficulty abc-flex-y-start">
-        <div @click="chooseDiffcult" class="show-info abc-flex-x-center">
-          <div>难度：</div>
-          <div>{{ diffcultValue == 1 ? 'easy' : (diffcultValue == 2 ? 'normal' : 'crazy') }}</div>
-          <div class="abc-img" :class="diffcultMark ? 'selected' : ''"><img src="../assets/img/home/down_blue.png"></div>
+        <div class="btn abc-flex-x-center">
+          <div class="icon"><div class="abc-img"><img src="../assets/img/home/start.png"></div></div>
+          <div @click="startGame" class="start-game">开始游戏</div>
         </div>
 
-        <div class="options abc-flex-y-center" :class="diffcultMark ? 'selected' : ''">
-          <div @click="chooseDiff(1)">easy</div>
-          <div @click="chooseDiff(2)">normal</div>
-          <div @click="chooseDiff(3)">crazy</div>
+        <div class="difficulty abc-flex-y-start">
+          <div @click="chooseDiffcult" class="show-info abc-flex-x-center">
+            <div>难度：</div>
+            <div>{{ diffcultValue == 1 ? 'easy' : (diffcultValue == 2 ? 'normal' : 'crazy') }}</div>
+            <div class="abc-img" :class="diffcultMark ? 'selected' : ''"><img src="../assets/img/home/down_blue.png"></div>
+          </div>
+
+          <div class="options abc-flex-y-center" :class="diffcultMark ? 'selected' : ''">
+            <div @click="chooseDiff(1)">easy</div>
+            <div @click="chooseDiff(2)">normal</div>
+            <div @click="chooseDiff(3)">crazy</div>
+          </div>
         </div>
+
       </div>
+
     </div>
 
     <!--输入昵称浮层-->
@@ -778,11 +782,17 @@
         color: #fff;
       }
 
-      .ranking-icon {
+      .btn-group {
         position: absolute;
-        bottom: pr(400);
-        width: pr(120);
-        height: pr(120);
+        bottom: 0;
+        width: 100%;
+        height: pr(540);
+
+        .ranking-icon {
+          position: absolute;
+          top: pr(0);
+          width: pr(120);
+          height: pr(120);
 
           -webkit-animationn: rankingAni 4s infinite;
           -moz-animation: rankingAni 4s infinite;
@@ -791,13 +801,13 @@
 
           @keyframes rankingAni{
             0% {
-              bottom: pr(400);
+              top: pr(0);
             }
             5% {
-              bottom: pr(420);
+              top: pr(-20);
             }
             10% {
-              bottom: pr(400);
+              top: pr(0);
             }
             12% {
               -webkit-transform: rotate(0);
@@ -805,7 +815,7 @@
               -ms-transform: rotate(0);
               -o-transform: rotate(0);
               transform: rotate(0);
-              bottom: pr(400);
+              top: pr(0);
             }
             15% {
               -webkit-transform: rotate(-20deg);
@@ -813,7 +823,7 @@
               -ms-transform: rotate(-20deg);
               -o-transform: rotate(-20deg);
               transform: rotate(-20deg);
-              bottom: pr(400);
+              top: pr(0);
             }
             21% {
               -webkit-transform: rotate(20deg);
@@ -821,7 +831,7 @@
               -ms-transform: rotate(20deg);
               -o-transform: rotate(20deg);
               transform: rotate(20deg);
-              bottom: pr(400);
+              top: pr(0);
             }
             24% {
               -webkit-transform: rotate(0);
@@ -829,92 +839,94 @@
               -ms-transform: rotate(0);
               -o-transform: rotate(0);
               transform: rotate(0);
-              bottom: pr(400);
+              top: pr(0);
             }
             100% {
-              bottom: pr(400);
+              top: pr(0);
             }
           }
 
-      }
-
-      .btn {
-        position: absolute;
-        bottom: pr(280);
-        border-radius: pr(100);
-        background: #fff;
-        width: pr(405);
-        height: pr(115);
-        cursor: pointer;
-
-        .icon {
-          width: pr(50);
-          height: pr(50);
-
-          .abc-img {
-            width: 100%;
-            height: 100%;
-          }
         }
 
-        .start-game {
-          font-size: pr(50);
-          color: #000;
-          margin-left: pr(10);
+        .btn {
+          position: absolute;
+          top: pr(130);
+          border-radius: pr(100);
+          background: #fff;
+          width: pr(405);
+          height: pr(115);
+          cursor: pointer;
+
+          .icon {
+            width: pr(50);
+            height: pr(50);
+
+            .abc-img {
+              width: 100%;
+              height: 100%;
+            }
+          }
+
+          .start-game {
+            font-size: pr(50);
+            color: #000;
+            margin-left: pr(10);
+          }
+
         }
 
-      }
+        .difficulty {
+          position: absolute;
+          top: pr(250);
+          width: pr(405);
+          height: pr(270);
+          cursor: pointer;
+          color: #fff;
+          font-size: pr(34);
 
-      .difficulty {
-        position: absolute;
-        bottom: 0;
-        width: pr(405);
-        height: pr(270);
-        cursor: pointer;
-        color: #fff;
-        font-size: pr(34);
-
-        .show-info {
-          margin-bottom: pr(10);
-          & > div {
-            margin-right: pr(10);
-          }
-          .abc-img {
-            /*继承0.4秒动画设置*/
-            @extend .trans;
-
-            width: pr(40);
-            height: pr(40);
-
-            &.selected {
+          .show-info {
+            margin-bottom: pr(10);
+            & > div {
+              margin-right: pr(10);
+            }
+            .abc-img {
               /*继承0.4秒动画设置*/
               @extend .trans;
 
-              -webkit-transform: rotate(-180deg);
-              -moz-transform: rotate(-180deg);
-              -ms-transform: rotate(-180deg);
-              -o-transform: rotate(-180deg);
-              transform: rotate(-180deg);
+              width: pr(40);
+              height: pr(40);
 
+              &.selected {
+                /*继承0.4秒动画设置*/
+                @extend .trans;
+
+                -webkit-transform: rotate(-180deg);
+                -moz-transform: rotate(-180deg);
+                -ms-transform: rotate(-180deg);
+                -o-transform: rotate(-180deg);
+                transform: rotate(-180deg);
+
+              }
             }
           }
-        }
 
-        .options {
-          width: pr(140);
-          height: 0;
-          background: rgba(255, 255, 255, 0.3);
-          border-radius: pr(10);
-          overflow: hidden;
+          .options {
+            width: pr(140);
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: pr(10);
+            overflow: hidden;
 
-          & > div {
-            font-size: pr(34);
-            margin-bottom: pr(10)
+            & > div {
+              font-size: pr(34);
+              margin-bottom: pr(10)
+            }
+
+            &.selected {
+              height: pr(200);
+            }
           }
 
-          &.selected {
-            height: pr(200);
-          }
         }
 
       }
