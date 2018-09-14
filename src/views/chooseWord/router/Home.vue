@@ -453,11 +453,10 @@
         const para = nickname ? 'nickname=' + nickname : ''
 
         try {
-          const dataList = getUserList(para)
+          const dataList = await getUserList(para)
 
-          const meDataResult = meData.data && meData.data.length ? meData.data : []
+          const meDataResult = dataList.data && dataList.data.length ? dataList.data : []
           this.meData = meDataResult // 填充个人排名数据
-
 
         } catch (error) {
           console.log(error)
