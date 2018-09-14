@@ -198,6 +198,7 @@
         bgTimer: 30 * 1000, // 每半分钟切换一次背景（时间）（已废弃）
 
         homeRanking: false, // 首页点击排行榜标识
+        registerMark: true, // 禁止重复注册标识
       }
     },
     computed: {
@@ -309,6 +310,10 @@
           // 如果此昵称已经被注册过得话，则禁止注册
           if (!this.tipMark) return
 
+          // 禁止重复注册
+          if (!this.registerMark) return
+          this.registerMark = false
+
           try {
             const dataList = await addUser(data)
 
@@ -327,6 +332,8 @@
             });
 
           } catch (error) {
+            this.registerMark = true // 恢复重复注册开关
+
             console.log(error)
           }
 
