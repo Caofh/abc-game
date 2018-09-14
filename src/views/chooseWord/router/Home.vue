@@ -42,19 +42,37 @@
       </div>
     </div>
 
-
     <!--游戏结果浮层-->
-    <div v-if="resultShow" class="popcontent">
-      <div class="popdialogue">
-        <a @click="backHome" href="javascript:;" class="clearBtn"></a>
-        <div class="ledoutext">用时&nbsp;
-          <i class="LDcont">{{ gameResult ? gameResult.timeResult.split(':')[0] : '' }}</i>&nbsp;分
-          <i class="LDcont">{{ gameResult ? gameResult.timeResult.split(':')[1] : '' }}</i>&nbsp;秒
-          <i class="LDcont">{{ gameResult ? gameResult.timeResult.split(':')[2] : '' }}</i>&nbsp;毫秒
+    <div v-if="resultShow" class="game-result abc-flex-y-center">
+      <div class="result-content abc-flex-y-start">
+        <div class="title">恭喜您</div>
+
+        <div class="grade-title">本次所用时间</div>
+
+        <div class="time-grade">
+          {{ gameResult && gameResult.timeResult ? gameResult.timeResult.split(':')[0] : '-' }}分
+          {{ gameResult && gameResult.timeResult ? gameResult.timeResult.split(':')[1] : '-' }}秒
+          {{ gameResult && gameResult.timeResult ? gameResult.timeResult.split(':')[2] : '-' }}毫秒
         </div>
 
-        <a @click="look" href="javascript:;" class="selectBtn"></a>
+        <div class="history-grade abc-flex-x-center">
+          <div>历史最高：</div>
+          <div>{{ meData &&  meData.length && meData[0].use_time && meData[0].use_time != 'null' ?
+            meData[0].use_time.split(':')[0] + '分' + meData[0].use_time.split(':')[1] + '秒' + meData[0].use_time.split(':')[2] + '毫秒' : '-' }}</div>
+        </div>
+
+        <div @click="look" class="look-more abc-flex-x-center">
+          <div class="sub-title">查看全部排行</div>
+          <div class="abc-img"><img src="../assets/img/home/right.png"/></div>
+        </div>
+
       </div>
+
+      <div @click="startGameAgain" v-if="!homeRanking" class="again-start abc-flex-x-center">
+        <div class="icon"><div class="abc-img"><img src="../assets/img/home/refresh.png"></div></div>
+        <div class="start-game">再玩一局</div>
+      </div>
+
     </div>
 
     <!--排行榜浮层-->
@@ -70,11 +88,13 @@
           </div>
         </div>
 
-        <div v-for="(item, index) in meData" class="me-grade abc-flex-x-center">
-          <div class="order">{{ item.ranking || '-' }}</div>
-          <div class="name">{{ item.nickname || '' }}</div>
-          <div class="time">{{ item.use_time && item.use_time != 'null' ?
-            item.use_time.split(':')[0] + '分' + item.use_time.split(':')[1] + '秒' + item.use_time.split(':')[2] + '毫秒' : '-' }}</div>
+        <div v-if="meData.length <= 1" class="me-grade abc-flex-x-center">
+          <div class="order">{{ meData &&  meData.length ? meData[0].ranking : '-' }}</div>
+          <div class="name">{{ meData &&  meData.length ? meData[0].nickname : '' }}</div>
+          <div class="time">{{ meData &&  meData.length && meData[0].use_time && meData[0].use_time != 'null' ?
+            meData[0].use_time.split(':')[0] + '分' + meData[0].use_time.split(':')[1] + '秒' + meData[0].use_time.split(':')[2] + '毫秒' : '-' }}</div>
+
+          <div class="me-icon abc-img"><img src="../assets/img/home/record.png"></div>
         </div>
 
         <div class="btn-group abc-flex-x-between">
@@ -113,10 +133,11 @@
 
     </div>
 
+    <!--音乐（音效）资源-->
     <audio class="click-audio" src="/static/mp3/click.mp3" style="display: none;"></audio>
     <audio class="click-audio-Bomb" src="/static/mp3/blast.mp3" style="display: none;"></audio>
-    <!--<audio class="audio-bg" src="/static/mp3/bg_1.mp3" loop style="display: none;"></audio>-->
     <audio class="audio-bg" src="/static/mp3/bg_2.mp3" loop autoplay="autoplay" style="display: none;"></audio>
+    <!--<audio class="audio-bg" src="/static/mp3/bg_1.mp3" loop style="display: none;"></audio>-->
     <!--<audio class="audio-bg" src="/static/mp3/bg_3.mp3" loop autoplay="autoplay" style="display: none;"></audio>-->
 
   </div>
@@ -304,7 +325,6 @@
         this.wordAllLength = this.gameProgressArr.length
         this.gameProgressLast = this.gameProgressArr.slice()
 
-
         // 背景音乐
         let bgAudio = $(".audio-bg")[0];
         bgAudio.play(); // 播放背景音乐
@@ -425,6 +445,23 @@
           console.log(error)
         }
 
+      },
+
+      // 取历史最好成绩
+      async getBestGrade () {
+        const nickname = window.localStorage.getItem('abcGame_nickname') || ''
+        const para = nickname ? 'nickname=' + nickname : ''
+
+        try {
+          const dataList = getUserList(para)
+
+          const meDataResult = meData.data && meData.data.length ? meData.data : []
+          this.meData = meDataResult // 填充个人排名数据
+
+
+        } catch (error) {
+          console.log(error)
+        }
       },
 
       // 选择难度
@@ -710,6 +747,9 @@
         // 上传成绩方法
         doc.vueObj.updateScore()
 
+        // 取历史最好成绩方法
+        doc.vueObj.getBestGrade()
+
         // 停止背景音乐
         let bgAudio = $(".audio-bg")[0];
         bgAudio.pause(); // 停止播放背景音乐
@@ -929,6 +969,99 @@
 
         }
 
+      }
+
+    }
+
+    // 游戏结果弹窗
+    .game-result {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 200;
+
+      .result-content {
+        position: relative;
+        width: pr(550);
+        height: pr(550);
+        background: rgba(155, 155, 155, 0.5);
+        color: #fff;
+        margin-bottom: pr(200);
+        box-shadow: pr(5) pr(5) pr(10) rgba(255, 255, 255, 0.6);
+        border-radius: pr(10);
+
+        .title {
+          position: absolute;
+          top: pr(-40);
+          width: pr(179);
+          height: pr(83);
+          line-height: pr(83);
+          text-align: center;
+          font-size: pr(36);
+          background: url("../assets/img/home/result-title-bg.png") no-repeat center / 100% 100%;
+        }
+
+        .grade-title {
+          font-size: pr(48);
+          margin-top: pr(100);
+          margin-bottom: pr(20);
+        }
+
+        .time-grade {
+          font-size: pr(60);
+          color: #7ED321;
+          margin-bottom: pr(60);
+        }
+
+        .history-grade {
+          font-size: pr(32);
+        }
+
+        .look-more {
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          width: 100%;
+          height: pr(110);
+          background: rgba(151, 151, 151, 0.4);
+
+          .sub-title {
+            font-size: pr(36);
+          }
+          .abc-img {
+            width: pr(45);
+            height: pr(45);
+            margin-left: pr(10);
+          }
+
+        }
+
+      }
+
+      .again-start {
+        border-radius: pr(100);
+        background: #fff;
+        width: pr(315);
+        height: pr(110);
+        cursor: pointer;
+
+        .icon {
+          width: pr(58);
+          height: pr(58);
+
+          .abc-img {
+            width: 100%;
+            height: 100%;
+          }
+        }
+
+        .start-game {
+          font-size: pr(36);
+          color: #000;
+          margin-left: pr(10);
+        }
       }
 
     }
@@ -1199,7 +1332,8 @@
           margin-bottom: pr(10);
 
           .order {
-            margin-right: pr(60);
+            width: pr(50);
+            margin-right: pr(30);
             margin-left: pr(30);
           }
 
@@ -1217,6 +1351,7 @@
       }
 
       .me-grade {
+        position: relative;
         margin-top: pr(15);
         width: pr(650);
         height: pr(100);
@@ -1237,6 +1372,14 @@
           font-size: pr(30);
           text-align: left;
           width: pr(260);
+        }
+
+        .me-icon {
+          position: absolute;
+          right: pr(-40);
+          top: pr(-10);
+          width: pr(100);
+          height: pr(85);
         }
 
       }
