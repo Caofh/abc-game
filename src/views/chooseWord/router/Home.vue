@@ -27,6 +27,11 @@
           </div>
         </div>
 
+        <div @click="homeMusicControl" class="music-part abc-flex-y-center">
+          <div class="abc-img"><img :class="[{'move': musicMark}]" src="../assets/img/home/home_music.png"/></div>
+          <div class="control"><img :class="[{'close': !musicMark}]" src="../assets/img/home/open_control.png"></div>
+        </div>
+
       </div>
 
     </div>
@@ -120,6 +125,8 @@
     <!--游戏开始-->
     <!--<div class="bigdiv" :style="{display: 'none', 'background-image': 'url(' + bgResource + ')'}">-->
     <div class="bigdiv" :style="{display: 'none'}">
+      <div v-if="gameStartMark" @click="musicControl" :class="['music-control', {'open': musicMark, 'close': !musicMark}]"></div>
+
       <div class="ledoucontent">
 
       </div>
@@ -179,6 +186,7 @@
     data(){
       return {
         wordCount: 3, // 从单词库中随机生成的单词的数量，支持后续修改.
+        musicMark: false, // 声音的开关(默认关闭)
 
         rankingList: false, // 排行榜弹窗标识(弹窗)
         resultShow: false, // 游戏结果显示(弹窗)
@@ -273,6 +281,33 @@
         }
 
 
+      },
+
+      // 声音控制方法
+      musicControl () {
+
+        let bgAudio = $(".audio-bg")[0];
+
+        if (this.musicMark) {
+          // 停止背景音乐
+          bgAudio.pause(); // 停止播放背景音乐
+          bgAudio.currentTime = 0.0 // 背景音乐时间重置
+
+          this.musicMark = false
+
+        } else {
+          // 播放背景音乐
+          bgAudio.play();
+
+          this.musicMark = true
+
+        }
+
+      },
+
+      // 首页声音开关
+      homeMusicControl () {
+        this.musicMark = !this.musicMark
       },
 
       // 首页查看排行榜方法
@@ -381,8 +416,10 @@
         this.gameProgressLast = this.gameProgressArr.slice()
 
         // 背景音乐
-        let bgAudio = $(".audio-bg")[0];
-        bgAudio.play(); // 播放背景音乐
+        if (this.musicMark) {
+          let bgAudio = $(".audio-bg")[0];
+          bgAudio.play(); // 播放背景音乐
+        }
 
         this.$nextTick(() => {
           $('.item-word').eq(0).addClass('animation')
@@ -895,6 +932,8 @@
         .ranking-icon {
           position: absolute;
           top: pr(0);
+          left: 50%;
+          margin-left: pr(-60);
           width: pr(120);
           height: pr(120);
 
@@ -955,6 +994,8 @@
         .btn {
           position: absolute;
           top: pr(130);
+          left: 50%;
+          margin-left: pr(-202.5);
           border-radius: pr(100);
           background: #fff;
           width: pr(405);
@@ -982,6 +1023,8 @@
         .difficulty {
           position: absolute;
           top: pr(250);
+          left: 50%;
+          margin-left: pr(-202.5);
           width: pr(405);
           height: pr(270);
           cursor: pointer;
@@ -1033,6 +1076,80 @@
 
         }
 
+        .music-part {
+          position: absolute;
+          right: pr(20);
+          bottom: pr(20);
+          width: pr(120);
+          height: pr(120);
+
+          .abc-img {
+            width: pr(60);
+            height: pr(60);
+            margin-bottom: pr(6);
+
+            img{
+              &.move {
+                -webkit-animationn: imgMove 4s infinite;
+                -moz-animation: imgMove 4s infinite;
+                -o-animation: imgMove 4s infinite;
+                animation: imgMove 4s infinite;
+
+                @keyframes imgMove{
+                  0% {
+                    -webkit-transform: rotate(0);
+                    -moz-transform: rotate(0);
+                    -ms-transform: rotate(0);
+                    -o-transform: rotate(0);
+                    transform: rotate(0);
+
+                    opacity: 1;
+                  }
+                  50% {
+                    -webkit-transform: rotate(360deg);
+                    -moz-transform: rotate(360deg);
+                    -ms-transform: rotate(360deg);
+                    -o-transform: rotate(360deg);
+                    transform: rotate(360deg);
+
+                    opacity: .5;
+                  }
+                  100% {
+                    -webkit-transform: rotate(0);
+                    -moz-transform: rotate(0);
+                    -ms-transform: rotate(0);
+                    -o-transform: rotate(0);
+                    transform: rotate(0);
+
+                    opacity: 1;
+                  }
+                }
+              }
+            }
+          }
+
+          .control {
+            position: relative;
+            width: pr(87.5);
+            height: pr(35);
+            border-radius: pr(20);
+            overflow: hidden;
+
+            img {
+              position: relative;
+              width: pr(140);
+              height: pr(35);
+              left: 0;
+
+              @extend .trans;
+
+              &.close {
+                left: pr(-52.5);
+              }
+            }
+          }
+        }
+
       }
 
     }
@@ -1058,6 +1175,8 @@
         .title {
           position: absolute;
           top: pr(-40);
+          left: 50%;
+          margin-left: pr(-89.5);
           width: pr(179);
           height: pr(83);
           line-height: pr(83);
@@ -1393,6 +1512,20 @@
         }
       }
 
+      .music-control {
+        position: absolute;
+        top: pr(5);
+        right: pr(5);
+        width: pr(70);
+        height: pr(70);
+
+        &.open {
+          background: url("../assets/img/home/music_open.png") no-repeat left top / 100% auto;
+        }
+        &.close {
+          background: url("../assets/img/home/music_close.png") no-repeat left top / pr(50) auto;
+        }
+      }
     }
 
     .loadingbig {
