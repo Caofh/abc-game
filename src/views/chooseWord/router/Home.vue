@@ -68,6 +68,13 @@
 
       </div>
 
+      <div class="word-mean abc-flex-y-center">
+        <div class="mean-item abc-flex-x-between" v-for="item in originData">
+          <div>{{ item.word || '' }}</div>
+          <div class="cn">{{ item.cn || '' }}</div>
+        </div>
+      </div>
+
       <div @click="startGameAgain" v-if="!homeRanking" class="again-start abc-flex-x-center">
         <div class="icon"><div class="abc-img"><img src="../assets/img/home/refresh.png"></div></div>
         <div class="start-game">再玩一局</div>
@@ -80,6 +87,7 @@
         <div class="title">全球排行榜</div>
 
         <div class="list abc-flex-y-center">
+          <div class="refresh-notice"><div class="notice-content">每周一凌晨刷新</div></div>
           <div v-for="(item, index) in rankingData" class="item abc-flex-x-center">
             <div class="order">{{ (index + 1) }}</div>
             <div class="name">{{ item.nickname || '' }}</div>
@@ -179,6 +187,7 @@
 
         gameStartMark: false, // 游戏开始标识，游戏总开关(游戏控制步骤 =》 1：此开关打开；2：add方法调用；3：clearAdd方法结束游戏)
 
+        originData: [], // 随机单词的原始数据，包好中文意义
         wordArr: [], // 从单词库中随机生成的三个不重复的单词
         gameProgressLast: [], // 之前数组暂存
         gameProgressArr: [],
@@ -251,8 +260,13 @@
         try {
           const para = 'count=' + this.wordCount
           const dataList = await getRandomWords(para)
-          const wordArr = dataList.data.map(item => item.word)
 
+          // 将原始数据暂存，用户结果展示
+          const data = dataList.data ? dataList.data : []
+          this.originData = data
+
+          // 取word字段
+          const wordArr = dataList.data.map(item => item.word)
           this.wordArr = wordArr // 赋值随机的单词
         } catch (error) {
           console.log(error)
@@ -1038,7 +1052,6 @@
         height: pr(550);
         background: rgba(155, 155, 155, 0.7);
         color: #fff;
-        margin-bottom: pr(200);
         box-shadow: pr(5) pr(5) pr(10) rgba(255, 255, 255, 0.6);
         border-radius: pr(10);
 
@@ -1088,6 +1101,34 @@
 
         }
 
+      }
+
+      .word-mean {
+        position: relative;
+        width: pr(550);
+        height: pr(270);
+        background: rgba(255, 255, 255, 0.6);
+        color: #fff;
+        margin-top: pr(40);
+        margin-bottom: pr(40);
+        border-radius: pr(10);
+
+        .mean-item {
+          width: pr(480);
+          margin-bottom: pr(10);
+
+          & > div {
+            font-size: pr(36);
+            color: #000;
+            font-weight: 600;
+          }
+
+          & > .cn {
+            width: pr(90);
+            text-align: left;
+          }
+
+        }
       }
 
       .again-start {
@@ -1372,9 +1413,23 @@
 
       .list {
         width: pr(650);
-        height: pr(780);
+        height: pr(800);
         background: rgba(58, 56, 59, 0.7);
         margin-top: pr(15);
+
+        .refresh-notice {
+          width: 100%;
+          height: pr(25);
+          text-align: left;
+          font-size: pr(24);
+          padding-left: pr(70);
+          margin-bottom: pr(10);
+
+          .notice-content {
+            position: relative;
+            top: pr(-20);
+          }
+        }
 
         .item {
           font-size: pr(36);
