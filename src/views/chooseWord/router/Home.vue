@@ -250,7 +250,7 @@
 
         game.add() // 游戏开始方法
         setTimeout(() => {
-          if (that.wordArr.length) return
+          if (that.gameStartMark) return
 
           // 清除添加字母方法的定时
           game.clearAdd()
