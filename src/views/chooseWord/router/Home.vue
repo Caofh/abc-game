@@ -1427,7 +1427,7 @@
 
           .notice-content {
             position: relative;
-            top: pr(-20);
+            top: pr(-12);
           }
         }
 
