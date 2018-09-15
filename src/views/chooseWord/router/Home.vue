@@ -1134,6 +1134,7 @@
             height: pr(35);
             border-radius: pr(20);
             overflow: hidden;
+            z-index:1;
 
             img {
               position: relative;
@@ -1141,7 +1142,11 @@
               height: pr(35);
               left: 0;
 
-              @extend .trans;
+              -webkit-transition: all 0.2s ease-in-out;
+              -moz-transition: all 0.2s ease-in-out;
+              -ms-transition: all 0.2s ease-in-out;
+              -o-transition: all 0.2s ease-in-out;
+              transition: all 0.2s ease-in-out;
 
               &.close {
                 left: pr(-52.5);
