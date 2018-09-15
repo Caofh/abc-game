@@ -1248,7 +1248,7 @@
           }
 
           & > .cn {
-            width: pr(90);
+            /*width: pr(120);*/
             text-align: left;
           }
 
