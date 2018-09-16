@@ -91,14 +91,18 @@
     <div v-if="rankingList" class="loadingbig abc-flex-y-center">
         <div class="title">全球排行榜</div>
 
-        <div class="list abc-flex-y-center">
-          <div class="refresh-notice"><div class="notice-content">每周一凌晨刷新</div></div>
-          <div v-for="(item, index) in rankingData" class="item abc-flex-x-center">
-            <div class="order">{{ (index + 1) }}</div>
-            <div class="name">{{ item.nickname || '' }}</div>
-            <div class="time">{{ item.use_time && item.use_time != 'null' ?
-              item.use_time.split(':')[0] + '分' + item.use_time.split(':')[1] + '秒' + item.use_time.split(':')[2] + '毫秒' : '-' }}</div>
+        <div class="list abc-flex-y-start">
+          <div class="refresh-notice abc-flex-y-center" style="align-items: flex-start;"><div class="notice-content">每周日凌晨刷新</div></div>
+
+          <div class="real-info abc-flex-y-start">
+            <div v-for="(item, index) in rankingData" class="item abc-flex-x-center">
+              <div class="order">{{ (index + 1) }}</div>
+              <div class="name">{{ item.nickname || '' }}</div>
+              <div class="time">{{ item.use_time && item.use_time != 'null' ?
+                item.use_time.split(':')[0] + '分' + item.use_time.split(':')[1] + '秒' + item.use_time.split(':')[2] + '毫秒' : '-' }}</div>
+            </div>
           </div>
+
         </div>
 
         <div v-if="meData.length <= 1" class="me-grade abc-flex-x-center">
@@ -1557,7 +1561,7 @@
 
         .refresh-notice {
           width: 100%;
-          height: pr(25);
+          height: pr(60);
           text-align: left;
           font-size: pr(24);
           padding-left: pr(70);
@@ -1565,32 +1569,37 @@
 
           .notice-content {
             position: relative;
-            top: pr(-12);
           }
         }
 
-        .item {
-          font-size: pr(36);
-          height: pr(60);
-          margin-bottom: pr(10);
+        .real-info {
+          width: 100%;
+          height: pr(710);
 
-          .order {
-            width: pr(50);
-            margin-right: pr(30);
-            margin-left: pr(30);
-          }
+          .item {
+            font-size: pr(36);
+            height: pr(60);
+            margin-bottom: pr(10);
 
-          .name {
-            text-align: left;
-            width: pr(230);
-          }
+            .order {
+              width: pr(50);
+              margin-right: pr(30);
+              margin-left: pr(30);
+            }
 
-          .time {
-            font-size: pr(30);
-            text-align: left;
-            width: pr(260);
+            .name {
+              text-align: left;
+              width: pr(230);
+            }
+
+            .time {
+              font-size: pr(30);
+              text-align: left;
+              width: pr(260);
+            }
           }
         }
+
       }
 
       .me-grade {
