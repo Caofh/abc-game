@@ -10,20 +10,44 @@
       </span>
     </div>
     <div class="wordImg">
-      <img v-show="wordImg" style="width:100px;height:100px;vertical-align: middle" :src='wordImg' alt="单词对应的图片">
+      <img v-show="wordImg" :src='wordImg' alt="单词对应的图片">
     </div>
     <div class="content">
       <div class="hole-box">
-        <div>
-          <div @click="choseWord(index,letter.letter)" v-for="(letter,index) in letters" class="hole">
+        <div class="first-row">
+          <div @click="choseWord(index,letter.letter)" v-for="(letter,index) in letters" class="hole"
+               v-if="index===0||index===1||index===2">
+            <div class="hole-img"></div>
+            <div class="slice-hole-img"></div>
             <div class="hamster" ref="hamster">
               <span class="word">{{letter.letter}}</span>
             </div>
-            <div class="slice-hole"></div>
+          </div>
+        </div>
+        <div class="two-row">
+          <div v-if="index===3||index===4||index===5" @click="choseWord(index,letter.letter)"
+               v-for="(letter,index) in letters" class="hole">
+            <div class="hole-img"></div>
+            <div class="slice-hole-img"></div>
+            <div class="hamster" ref="hamster">
+              <span class="word" v-show="letter.letter">{{letter.letter}}</span>
+            </div>
+          </div>
+        </div>
+        <div class="three-row">
+          <div v-if="index===6||index===7||index===8" @click="choseWord(index,letter.letter)"
+               v-for="(letter,index) in letters" class="hole">
+            <div class="hole-img"></div>
+            <div class="slice-hole-img"></div>
+            <div class="hamster" ref="hamster">
+              <span class="word" v-show="letter.letter">
+                {{letter.letter}}
+                <i></i>
+              </span>
+            </div>
           </div>
         </div>
       </div>
-
     </div>
     <div class="footer">
       <div class="go">
@@ -41,152 +65,211 @@
     <div class="congratulate" v-show="good">
       <div>good</div>
     </div>
+    <div class="gameOver" v-show="isGameOver">
+      <p class="score">
+        得分:{{score}}
+      </p>
+      <div class="buttonBox">
+        <button class="onceMore" @click="onceMore"></button>
+        <button class="rank" @click="goToRank"></button>
+      </div>
+    </div>
   </div>
 </template>
 <style lang="scss" scoped>
   .box {
-    display: -webkit-flex;
-    display: flex;
-    flex-direction: column;
     width: 100%;
     height: 100%;
     background: url('../../../../assets/img/hamster/grassland.png');
-  }
-
-  .header {
-    overflow: hidden;
-    padding: 10px;
-    .score, .time {
-      float: right;
-      color: #ffc107;
+    background-size: cover;
+    position: relative;
+    .header {
+      width: 100%;
+      height: 40px;
+      overflow: hidden;
+      color: #ffa61f;
       font-weight: 600;
-      font-size: 16px;
-    }
-    .time {
-      float: left;
-    }
-  }
-
-  .selectWord {
-    text-align: center;
-    font-weight: 600;
-    color: #1389cf;
-    font-size: 18px;
-    height: 60px;
-    line-height: 60px;
-  }
-
-  .congratulate {
-    position: absolute;
-    z-index: 100;
-    width: 100px;
-    height: 60px;
-    background: #ffc107;
-    opacity: 0.8;
-    top: 30%;
-    left: 50%;
-    margin-left: -50px;
-    color: #fff;
-  }
-
-  .content {
-    position: relative;
-    flex-grow: 1;
-    /*background: url('../../../../assets/img/hamster/grassland.jpg');*/
-    background-size: 100% 100%;
-  }
-
-  .hole-box {
-    position: absolute;
-    bottom: 40px;
-    text-align: center;
-    width: 100%
-  }
-
-  .hole {
-    float: left;
-    width: 100px;
-    height: 43px;
-    background: url('../../../../assets/img/hamster/hole.png');
-    background-size: 100% 100%;
-    margin-left: 20px;
-    margin-bottom: 20px;
-    color: #fff;
-    position: relative;
-
-    overflow: hidden;
-    .hamster {
-      width: 80px;
-      height: 70px;
-      background: red;
-      /*display: block;*/
-      background: url('../../../../assets/img/hamster/hamster_2.png') no-repeat;
-      background-size: 100% 100%;
-      position: absolute;
-      left:50%;
-      margin-left:-40px;
-      top: 20px;
-      transition: top 0.2s;
-      -moz-transition: top 0.2s; /* Firefox 4 */
-      -webkit-transition: top 0.2s; /* Safari and Chrome */
-      -o-transition: top 0.2s; /* Opera */
-      .word {
-        position: absolute;
-        width: 20px;
-        height: 20px;
-        background: #fff;
-        border-radius: 50%;
-        top: -20px;
-        color: #ffa61f;
+      padding: 10px;
+      box-sizing: border-box;
+      .time {
+        float: left;
+      }
+      .score {
+        float: right;
       }
     }
-    .slice-hole {
-      width: 100px;
-      height: 20px;
-      background: url('../../../../assets/img/hamster/slice-holes.png') no-repeat;
-      background-size: 100% 100%;
+    .selectWord {
+      width: 100%;
+      height: 40px;
+      line-height: 40px;
+      font-size: 20px;
+      color: #1389cf;
+      font-weight: 600;
+      text-align: center;
+    }
+    .wordImg {
+      width: 100%;
+      height: 100px;
+      text-align: center;
+      img {
+        width: 100px;
+        height: 100px;
+      }
+    }
+    .content {
+      position: absolute;
+      top: 180px;
+      left: 0;
+      right: 0;
+      bottom: 60px;
+      .hole-box {
+        position: absolute;
+        bottom: 20px;
+        width: 100%;
+        .first-row, .two-row, .three-row {
+          display: flex;
+          display: -webkit-flex;
+          justify-content: space-around;
+        }
+        .hole {
+          width: 70px;
+          height: 85px;
+          position: relative;
+          overflow: hidden;
+          .hole-img {
+            width: 100%;
+            height: 40px;
+            background: url('../../../../assets/img/hamster/hole.png');
+            background-size: 100% 100%;
+            position: absolute;
+            bottom: 0;
+          }
+          .slice-hole-img {
+            width: 100%;
+            height: 20px;
+            background: url('../../../../assets/img/hamster/slice-holes.png');
+            background-size: 100% 100%;
+            position: absolute;
+            bottom: 0;
+            z-index: 1;
+          }
+          .hamster {
+            width: 50px;
+            height: 50px;
+            background: url('../../../../assets/img/hamster/hamster_2.png');
+            background-size: 100% 100%;
+            position: absolute;
+            left: 50%;
+            margin-left: -25px;
+            top: 120px;
+            transition: top 0.2s;
+            -moz-transition: top .2s; /* Firefox 4 */
+            -webkit-transition: top .2s; /* Safari 和 Chrome */
+            -o-transition: top .2s; /* Opera */
+            .word {
+              position: absolute;
+              width: 40px;
+              height: 25px;
+              text-align: center;
+              background: url('../../../../assets/img/hamster/wordbg.png');
+              background-size: 100% 100%;
+              top: -25px;
+              left: 15px;
+              transform: rotate(15deg);
+              color: #007aff;
+              font-weight: 600;
+            }
+          }
+        }
+      }
+    }
+    .footer {
+      box-sizing: border-box;
+      width: 100%;
+      height: 60px;
       position: absolute;
       bottom: 0;
-    }
-
-  }
-
-  .footer {
-    overflow: hidden;
-    padding: 20px;
-    button {
-      width: 60px;
-      height: 40px;
-      border-radius: 10px;
-      background: #ffc107;
-      color: #fff;
-      font-size: 18px;
-      outline: none;
-      font-weight: 600;
-      border: none;
-      outline: none;
-    }
-    .go {
-      float: left;
-      .beging span {
-        display: inline-block;
-        width: 30px;
-        height: 30px;
-        background: url('../../../../assets/img/hamster/horn.png') no-repeat;
+      padding: 10px;
+      .go {
+        float: left;
+        .beging span {
+          display: inline-block;
+          width: 30px;
+          height: 25px;
+          background: url('../../../../assets/img/hamster/horn.png');
+          background-size: 100% 100%;
+        }
+      }
+      .next {
+        float: right;
+      }
+      .next button, .go button {
+        width: 50px;
+        height: 35px;
+        background: #ffa61f;
+        border-radius: 5px;
+        color: #fff;
+        border: none;
+        font-size: 16px;
+        outline: none;
+        font-weight: 600;
+      }
+      .back {
+        margin: 0 auto;
+        width: 35px;
+        height: 35px;
+        background: url('../../../../assets/img/hamster/back.png');
         background-size: 100% 100%;
+        border: none;
+        outline: none;
       }
     }
-    .next {
-      float: right;
-    }
-    .back {
-      margin: 0 auto;
-      width: 40px;
-      height: 40px;
-      background: url('../../../../assets/img/hamster/back.png');
+    .gameOver {
+      position: absolute;
+      width: 220px;
+      height: 300px;
+      top: 40%;
+      left: 50%;
+      margin-top: -150px;
+      margin-left: -100px;
+      /*background: #d8d8d8;*/
+      background: url('../../../../assets/img/hamster/dialog.png') no-repeat;
       background-size: 100% 100%;
-      border-radius: 10px;
-      vertical-align: middle;
+      z-index: 100;
+      .score {
+        width: 100px;
+        padding: 0;
+        color: #9b6412;
+        font-size: 16px;
+        font-weight: 600;
+        position: absolute;
+        left: 50%;
+        margin: 0 0 0 -50px;
+        bottom: 75px;
+      }
+      .buttonBox {
+        position: absolute;
+        width: 110px;
+        bottom: 20px;
+        left: 50%;
+        margin-left: -55px;
+        button {
+          border: none;
+          outline: none;
+          width: 30px;
+          height: 30px;
+        }
+        .onceMore {
+          background: url('../../../../assets/img/hamster/onceMore.png') no-repeat;
+          background-size: 100% 100%;
+          margin-right: 10px;
+        }
+        .rank {
+          background: url('../../../../assets/img/hamster/rankBtn.png') no-repeat;
+          background-size: 100% 100%;
+          margin-left: 10px;
+        }
+      }
     }
   }
 </style>
@@ -212,6 +295,7 @@
 
   let num = 0
   let giveLetterTimer, hideHamsterTime
+  let time = 6000
   export default {
     name: "HamsterItem",
     data() {
@@ -219,21 +303,22 @@
         //单词对应的图片
         wordImg: '',
         //洞中对应的单词队列
-        letters: [{letter: '', showTime: 0}, {letter: '', showTime: 0}, {letter: '', showTime: 0}, {
-          letter: '',
+        letters: [{letter: 'a', showTime: 0}, {letter: 'b', showTime: 0}, {letter: 'c', showTime: 0}, {
+          letter: 'd',
           showTime: 0
-        }, {letter: '', showTime: 0}, {letter: '', showTime: 0}, {letter: '', showTime: 0}, {
-          letter: '',
+        }, {letter: 'e', showTime: 0}, {letter: 'f', showTime: 0}, {letter: 'g', showTime: 0}, {
+          letter: 'h',
           showTime: 0
-        }, {letter: '', showTime: 0}],
+        }, {letter: 'i', showTime: 0}],
         //倒计时
-        time: 180000,
+        time: time,
         //得分
         score: 0,
         holeNum: 9,
         good: false,
         isBegin: false,
-        selectWord: ''
+        selectWord: '',
+        isGameOver: false
       }
     },
     computed: {
@@ -241,10 +326,25 @@
         let m = Math.floor(this.time / 1000 / 60),
           s = (this.time - m * 60 * 1000) / 1000;
         return `${m}′${s}″`
-      }
+      },
+      // firstRow(){
+      //   let firstRow=this.letters.splice(0,3)
+      //   console.log(firstRow,'firstRow')
+      //   return firstRow
+      // },
+      // twoRow(){
+      //   let twoRow=this.letters.splice(3,6)
+      //   console.log(twoRow,'twoRow')
+      //   return twoRow
+      // },
+      // threeRow(){
+      //   let threeRow=this.letters.splice(6,9)
+      //   console.log(threeRow,'threeRow')
+      //   return threeRow
+      // }
     },
     mounted() {
-
+      console.log(this.$router, 'router is :')
     },
     beforeDestroy() {
       clearTimeout(giveLetterTimer)
@@ -257,13 +357,19 @@
         this.wordImg = require(`../../../../assets/img/hamster/${word}.jpeg`)
       },
       gameOver() {
-        MessageBox({
-          title: 'game over',
-          message: `恭喜，你的得分是 ${this.score}，你可以邀请你的小伙伴一起玩，或者查看你的排名哦`,
-          showCancelButton: true,
-          confirmButtonText: '邀请',
-          cancelButtonText: '排行'
-        });
+        // MessageBox({
+        //   title: 'game over',
+        //   message: `恭喜，你的得分是 ${this.score}，你可以邀请你的小伙伴一起玩，或者查看你的排名哦`,
+        //   showCancelButton: true,
+        //   confirmButtonText: '邀请',
+        //   cancelButtonText: '排行'
+        // });
+        this.isGameOver = true;
+        this.isBegin = false;
+        this.wordImg = '';
+      },
+      goToRank() {
+        this.$router.push('/rankings')
       },
       /*
       * 游戏开始
@@ -314,11 +420,11 @@
             let letterIndex = Math.floor(random(0, word.length))
             let letter = word[letterIndex]
             this.letters.splice(index, 1, {letter: letter, showTime: Date.now()})
-            if (this.$refs['hamster'][index].style.top === '-35px') {
+            if (this.$refs['hamster'][index].style.top === '25px') {
               this.showHamster(index, false)
               setTimeout(() => {
                 this.showHamster(index, true)
-              }, 300)
+              }, 400)
 
             } else {
               this.showHamster(index, true)
@@ -332,12 +438,15 @@
         }, 500)
       },
       showHamster(index, isShow) {
-        this.$refs['hamster'][index].style.top = isShow ? '-35px' : '20px';
+        this.$refs['hamster'][index].style.top = isShow ? '25px' : '120px';
       },
       /*
       * 选择正确时，得分，开始下一个单词
       * */
       choseWord(index, letter) {
+        if (!this.isBegin) {
+          return false;
+        }
         this.showHamster(index, false)
         this.letters.splice(index, 1, {letter: '', showTime: 0})
         this.selectWord += letter
@@ -352,8 +461,14 @@
             this.begin()
           }, 1000)
         }
+      },
+      onceMore() {
+        this.isGameOver = false;
+        this.time = time;
+        this.selectWord = '';
       }
     }
+
   }
 </script>
 
