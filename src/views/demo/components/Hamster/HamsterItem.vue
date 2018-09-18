@@ -295,7 +295,7 @@
 
   let num = 0
   let giveLetterTimer, hideHamsterTime
-  let time = 6000
+  let time =3*60*1000
   export default {
     name: "HamsterItem",
     data() {
