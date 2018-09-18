@@ -162,10 +162,10 @@
             left: 50%;
             margin-left: -25px;
             top: 120px;
-            transition: top 0.2s;
-            -moz-transition: top .2s; /* Firefox 4 */
-            -webkit-transition: top .2s; /* Safari 和 Chrome */
-            -o-transition: top .2s; /* Opera */
+            transition: top 0.1s;
+            -moz-transition: top .1s; /* Firefox 4 */
+            -webkit-transition: top .1s; /* Safari 和 Chrome */
+            -o-transition: top .1s; /* Opera */
             .word {
               position: absolute;
               width: 40px;
@@ -213,6 +213,7 @@
         font-size: 16px;
         outline: none;
         font-weight: 600;
+        text-align:center;
       }
       .back {
         margin: 0 auto;
@@ -295,7 +296,7 @@
 
   let num = 0
   let giveLetterTimer, hideHamsterTime
-  let time =3*60*1000
+  let time =1*60*1000
   export default {
     name: "HamsterItem",
     data() {
@@ -424,7 +425,7 @@
               this.showHamster(index, false)
               setTimeout(() => {
                 this.showHamster(index, true)
-              }, 400)
+              }, 200)
 
             } else {
               this.showHamster(index, true)
