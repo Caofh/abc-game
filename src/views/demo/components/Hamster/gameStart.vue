@@ -50,7 +50,6 @@
       width: 300px;
       max-width: 100%;
       /*height: 150px;*/
-      border: 1px solid red;
       margin: 0 auto;
       /*background: url('../../../../assets/img/hamster/userName.png') no-repeat;*/
       /*background-size: 100% 100%;*/
