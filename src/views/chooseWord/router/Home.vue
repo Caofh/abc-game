@@ -74,8 +74,11 @@
       </div>
 
       <div class="word-mean abc-flex-y-center">
-        <div class="mean-item abc-flex-x-between" v-for="item in originData">
-          <div>{{ item.word || '' }}</div>
+        <div class="mean-item abc-flex-x-between" v-for="(item, index) in originData">
+          <div class="word-content abc-flex-x-between">
+            <div>{{ item.word || '' }}</div>
+            <div @click="read(index)" class="read"></div>
+          </div>
           <div class="cn">{{ item.cn || '' }}</div>
         </div>
       </div>
@@ -156,8 +159,9 @@
     <audio class="click-audio" src="/static/mp3/click.mp3" style="display: none;"></audio>
     <audio class="click-audio-Bomb" src="/static/mp3/blast.mp3" style="display: none;"></audio>
     <audio class="audio-bg" src="/static/mp3/bg_2.mp3" loop autoplay="autoplay" style="display: none;"></audio>
-    <!--<audio class="audio-bg" src="/static/mp3/bg_1.mp3" loop style="display: none;"></audio>-->
-    <!--<audio class="audio-bg" src="/static/mp3/bg_3.mp3" loop autoplay="autoplay" style="display: none;"></audio>-->
+    <audio class="word-read word-one" :src="wordOne" style="display: none;"></audio>
+    <audio class="word-read word-two" :src="wordTwo" style="display: none;"></audio>
+    <audio class="word-read word-three" :src="wordThree" style="display: none;"></audio>
 
   </div>
 
@@ -222,11 +226,15 @@
 
         homeRanking: false, // 首页点击排行榜标识
         registerMark: true, // 禁止重复注册标识
+
+        wordOne: '', // 单词一的拼读资源
+        wordTwo: '', // 单词二的拼读资源
+        wordThree: '' // 单词三的拼读资源
       }
     },
     computed: {
       ...mapState([
-        'test' // 当前选中的tab
+        'resourceUrl' // 静态资源路径，服务器静态资源的host
       ]),
     },
     created () {
@@ -277,6 +285,10 @@
           const data = dataList.data ? dataList.data : []
           this.originData = data
 
+          this.wordOne = this.originData[0].resource_url || ''
+          this.wordTwo = this.originData[1].resource_url || ''
+          this.wordThree = this.originData[2].resource_url || ''
+
           // 取word字段
           const wordArr = dataList.data.map(item => item.word)
           this.wordArr = wordArr // 赋值随机的单词
@@ -285,6 +297,12 @@
         }
 
 
+      },
+
+      // 拼读单词
+      read (index) {
+        // 播放单词拼读
+        $('.word-read').eq(index)[0].play()
       },
 
       // 声音控制方法
@@ -1249,6 +1267,21 @@
             font-size: pr(36);
             color: #000;
             font-weight: 600;
+          }
+
+          .word-content {
+            width: pr(340);
+            text-align: left;
+
+            .read {
+              width: pr(50);
+              height: pr(50);
+              background: url("../assets/img/home/play_blue.png") no-repeat 0 0 / 100% auto;
+
+              &:active {
+                background: url("../assets/img/home/play_deepBlue.png") no-repeat 0 0 / 100% auto;
+              }
+            }
           }
 
           & > .cn {
