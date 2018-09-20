@@ -1,8 +1,16 @@
 <template>
   <div class="box">
     <header class="header">
-      <div class="time">倒计时：{{countDown}}</div>
-      <div class="score">得分：{{score}}</div>
+      <div class="timeAndScore">
+        <div class="time">倒计时：{{countDown}}</div>
+        <div class="score">得分：{{score}}</div>
+      </div>
+      <div class="bgMusic bgMusicAnimate" @click="stopOrPlay" ref="bgMusicBox" id="bgMusicBox">
+        <audio autoplay loop  ref="bgMusic">
+          <source src="../../../../assets/music/hamster.mp3" >
+          您的浏览器不支持 audio 元素。
+        </audio>
+      </div>
     </header>
     <div class="selectWord">
       <span>
@@ -11,6 +19,10 @@
     </div>
     <div class="wordImg">
       <img v-show="wordImg" :src='wordImg' alt="单词对应的图片">
+      <audio hidden ref="audio" controls>
+        <source :src="audioSource" >
+        您的浏览器不支持 audio 元素。
+      </audio>
     </div>
     <div class="content">
       <div class="hole-box">
@@ -50,14 +62,9 @@
       </div>
     </div>
     <div class="footer">
-      <div class="go">
-        <button class="begin" @click="begin" v-show="!isBegin">GO</button>
-        <button class="beging" v-show="isBegin">
-          <span></span>
-        </button>
+      <div class="back">
+        <button @click="back"></button>
       </div>
-      <button class="back" @click="back">
-      </button>
       <div class="next">
         <button @click="nextWord">next</button>
       </div>
@@ -74,6 +81,9 @@
         <button class="rank" @click="goToRank"></button>
       </div>
     </div>
+    <div class="go" v-show="!isBegin">
+       <button @click="begin"></button>
+    </div>
   </div>
 </template>
 <style lang="scss" scoped>
@@ -85,17 +95,44 @@
     position: relative;
     .header {
       width: 100%;
-      height: 40px;
       overflow: hidden;
       color: #ffa61f;
       font-weight: 600;
       padding: 10px;
       box-sizing: border-box;
-      .time {
-        float: left;
+      .timeAndScore{
+        float:left;
       }
-      .score {
+      .bgMusic{
         float: right;
+        width:30px;
+        height:30px;
+        border-radius: 50%;
+        background:url('../../../../assets/img/hamster/music.png') no-repeat;
+        background-size: cover;
+      }
+      .bgMusicAnimate{
+        animation:mymove 3s infinite linear;
+        -webkit-animation:mymove 3s infinite linear; /*Safari and Chrome*/
+      }
+      @keyframes mymove
+      {
+        from {
+          -webkit-transform: rotate(0deg);
+        }
+        to {
+          -webkit-transform: rotate(360deg);
+        }
+      }
+
+      @-webkit-keyframes mymove /*Safari and Chrome*/
+      {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
       }
     }
     .selectWord {
@@ -190,20 +227,13 @@
       position: absolute;
       bottom: 0;
       padding: 10px;
-      .go {
-        float: left;
-        .beging span {
-          display: inline-block;
-          width: 30px;
-          height: 25px;
-          background: url('../../../../assets/img/hamster/horn.png');
-          background-size: 100% 100%;
-        }
-      }
       .next {
         float: right;
       }
-      .next button, .go button {
+      .back{
+        float: left;
+      }
+      .next button {
         width: 50px;
         height: 35px;
         background: #ffa61f;
@@ -213,9 +243,9 @@
         font-size: 16px;
         outline: none;
         font-weight: 600;
-        text-align:center;
+        text-align: center;
       }
-      .back {
+      .back button {
         margin: 0 auto;
         width: 35px;
         height: 35px;
@@ -272,6 +302,28 @@
         }
       }
     }
+    .go{
+      position: absolute;
+      top:0;
+      left:0;
+      bottom:0;
+      right:0;
+      z-index:2;
+      button{
+        position: absolute;
+        width:80px;
+        height:80px;
+        background: url('../../../../assets/img/hamster/go.png') no-repeat;
+        background-size: 100% 100%;
+        border-radius: 50%;
+        top:50%;
+        left:50%;
+        margin-left:-40px;
+        margin-top:-40px;
+        border: none;
+        outline: none;
+      }
+    }
   }
 </style>
 <script>
@@ -283,7 +335,7 @@
   import allWords from './words.json'
 
   let wordLength = allWords.length;
-  let trueWord = '';
+  let trueWordObj = {};
   // let thisGameWords = [], randomIndex;
   // //获取本轮游戏的10个单词
   // for (let n = 0; n < 10; n++) {
@@ -296,7 +348,7 @@
 
   let num = 0
   let giveLetterTimer, hideHamsterTime
-  let time =1*60*1000
+  let time = 1 * 60 * 1000
   export default {
     name: "HamsterItem",
     data() {
@@ -319,7 +371,8 @@
         good: false,
         isBegin: false,
         selectWord: '',
-        isGameOver: false
+        isGameOver: false,
+        audioSource:'',
       }
     },
     computed: {
@@ -353,9 +406,24 @@
     },
 
     methods: {
+      stopOrPlay(e){
+        let bgMusic=this.$refs['bgMusic'];
+        let bgMusicBox=this.$refs['bgMusicBox'];
+        if(bgMusic.paused){
+          bgMusic.play();
+          bgMusicBox.classList.add('bgMusicAnimate')
+        }else{
+          bgMusic.pause();
+          bgMusicBox.classList.remove('bgMusicAnimate')
+        }
+      },
       //根据单词获取对应的图片
-      getImg(word) {
-        this.wordImg = require(`../../../../assets/img/hamster/${word}.jpeg`)
+      getImg(trueWordObj) {
+        this.wordImg = require(`../../../../assets/img/hamster/${trueWordObj.word}.jpeg`)
+      },
+      getAudioSource(trueWordObj){
+        this.audioSource = require(`../../../../assets/pronunciation/${trueWordObj.word}.mp3`)
+        this.$refs['audio'].load();
       },
       gameOver() {
         // MessageBox({
@@ -382,9 +450,10 @@
         clearInterval(giveLetterTimer)
         clearInterval(hideHamsterTime)
         this.getTrueWord();
-        console.log(trueWord, 'trueWord is ')
-        this.getImg(trueWord);
-        this.giveLetter(trueWord);
+        this.getImg(trueWordObj);
+        this.getAudioSource(trueWordObj);
+        this.giveLetter(trueWordObj);
+        this.speakWord();
         this.hideHamster();
       },
       hideHamster() {
@@ -393,27 +462,28 @@
           let i = 0
           for (; i < len; i++) {
             let item = this.letters[i]
-            if (item.letter && (Date.now() - item.showTime > 2000)) {
+            if (item.letter && item.showTime && (Date.now() - item.showTime > 1000)) {
               this.letters.splice(i, 1, {letter: '', showTime: 0})
               this.showHamster(i, false)
-              console.log(i, 'index is :======')
-              break;
             }
           }
         }, 1500)
       },
       getTrueWord() {
-        trueWord = allWords[Math.floor(random(0, wordLength))]
+        trueWordObj = allWords[Math.floor(random(0, wordLength))]
       },
       /*下一个单词*/
       nextWord() {
-        this.selectWord = ''
-        this.begin()
+        if(this.isBegin){
+          this.selectWord = ''
+          this.begin()
+        }
       },
       back() {
         this.selectWord = this.selectWord.substr(0, this.selectWord.length - 1)
       },
-      giveLetter(word) {
+      giveLetter(trueWordObj) {
+        let word = trueWordObj.word;
         let _this = this;
         setTimeout(() => {
           giveLetterTimer = setInterval(() => {
@@ -452,14 +522,13 @@
         this.letters.splice(index, 1, {letter: '', showTime: 0})
         this.selectWord += letter
         console.log(this.selectWord, 'selectWord')
-        if (this.selectWord === trueWord) {
+        if (this.selectWord === trueWordObj.word) {
           this.score++
-          this.selectWord = ''
+          this.nextWord();
           this.good = true
           let time = setTimeout(() => {
             this.good = false
             clearTimeout(time)
-            this.begin()
           }, 1000)
         }
       },
@@ -467,6 +536,9 @@
         this.isGameOver = false;
         this.time = time;
         this.selectWord = '';
+      },
+      speakWord(){
+        this.$refs['audio'].play();
       }
     }
 
