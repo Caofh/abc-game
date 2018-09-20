@@ -100,7 +100,7 @@
           <div class="real-info abc-flex-y-start">
             <div v-for="(item, index) in rankingData" class="item abc-flex-x-center">
               <div class="order">{{ (index + 1) }}</div>
-              <div class="name">{{ item.nickname || '' }}</div>
+              <div class="name abc-ellipsis-single">{{ item.nickname || '' }}</div>
               <div class="time">{{ item.use_time && item.use_time != 'null' ?
                 item.use_time.split(':')[0] + '分' + item.use_time.split(':')[1] + '秒' + item.use_time.split(':')[2] + '毫秒' : '-' }}</div>
             </div>
@@ -455,7 +455,9 @@
         })
 
         // 将当前涉及到的所有字母传入game组件
-        game.updateAllWord(this.gameProgressArr)
+//        game.updateAllWord(this.gameProgressArr)
+        game.updateAllWord(doc.vueObj.wordArr[0])
+
         // 游戏开始
         game.add() // 游戏开始方法
 
@@ -791,14 +793,23 @@
       switch (yesIcon) {
         case 0: {
           progressNew = doc.vueObj.gameProgressLast
+
+          // 将当前涉及到的所有字母传入game组件
+          game.updateAllWord(doc.vueObj.wordArr[0])
           break
         }
         case 1: {
           progressNew = doc.vueObj.gameProgressLast.replace(wordOne, '')
+
+          // 将当前涉及到的所有字母传入game组件
+          game.updateAllWord(doc.vueObj.wordArr[1])
           break
         }
         case 2: {
           progressNew = doc.vueObj.gameProgressLast.replace(wordOne, '').replace(wordTwo, '')
+
+          // 将当前涉及到的所有字母传入game组件
+          game.updateAllWord(doc.vueObj.wordArr[2])
           break
         }
       }
@@ -828,13 +839,23 @@
         if (index == doc.vueObj.wordArr[0].length - 1) {
           if ( type == 'add') {
             doc.stageJump(0) // 第一排整行跳动跳动
+
+            // 将当前涉及到的所有字母传入game组件
+            game.updateAllWord(doc.vueObj.wordArr[1])
           } else {
             $('.item-icon').eq(0).removeClass('selected')
+
+            // 将当前涉及到的所有字母传入game组件
+            game.updateAllWord(doc.vueObj.wordArr[0])
           }
 
         }
 
+      } else {
+        // 将当前涉及到的所有字母传入game组件
+        game.updateAllWord(doc.vueObj.wordArr[0])
       }
+
       if (index >= doc.vueObj.wordArr[0].length + doc.vueObj.wordArr[1].length - 1) {
         $('.item-icon').eq(0).addClass('selected')
         $('.item-icon').eq(1).addClass('selected')
@@ -843,8 +864,14 @@
         if (index == doc.vueObj.wordArr[0].length + doc.vueObj.wordArr[1].length - 1) {
           if ( type == 'add') {
             doc.stageJump(1) // 第二排整行跳动跳动
+
+            // 将当前涉及到的所有字母传入game组件
+            game.updateAllWord(doc.vueObj.wordArr[2])
           } else {
             $('.item-icon').eq(1).removeClass('selected')
+
+            // 将当前涉及到的所有字母传入game组件
+            game.updateAllWord(doc.vueObj.wordArr[1])
           }
 
         }
