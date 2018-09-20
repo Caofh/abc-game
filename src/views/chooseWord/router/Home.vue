@@ -446,11 +446,11 @@
         this.$nextTick(() => {
           $('.item-word').eq(0).addClass('animation')
 
-          // 展板上方小手展示方法(1s后隐藏)
+          // 展板上方小手展示方法(5s后隐藏)
           $('.hand-deriction').show()
           setTimeout(() => {
             $('.hand-deriction').hide()
-          }, 3000)
+          }, 5000)
 
         })
 
