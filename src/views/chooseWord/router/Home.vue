@@ -110,7 +110,7 @@
 
         <div v-if="meData.length <= 1" class="me-grade abc-flex-x-center">
           <div class="order">{{ meData &&  meData.length ? meData[0].ranking : '-' }}</div>
-          <div class="name">{{ meData &&  meData.length ? meData[0].nickname : '' }}</div>
+          <div class="name abc-ellipsis-single">{{ meData &&  meData.length ? meData[0].nickname : '' }}</div>
           <div class="time">{{ meData &&  meData.length && meData[0].use_time && meData[0].use_time != 'null' ?
             meData[0].use_time.split(':')[0] + '分' + meData[0].use_time.split(':')[1] + '秒' + meData[0].use_time.split(':')[2] + '毫秒' : '-' }}</div>
 
