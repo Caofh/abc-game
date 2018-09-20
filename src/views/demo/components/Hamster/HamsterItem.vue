@@ -5,12 +5,12 @@
         <div class="time">倒计时：{{countDown}}</div>
         <div class="score">得分：{{score}}</div>
       </div>
-      <div class="bgMusic bgMusicAnimate" @click="stopOrPlay" ref="bgMusicBox" id="bgMusicBox">
-        <audio autoplay loop  ref="bgMusic">
-          <source src="../../../../assets/music/hamster.mp3" >
-          您的浏览器不支持 audio 元素。
-        </audio>
-      </div>
+      <!--<div class="bgMusic bgMusicAnimate" @click="stopOrPlay" ref="bgMusicBox" id="bgMusicBox">-->
+        <!--<audio autoplay loop  ref="bgMusic">-->
+          <!--<source src="../../../../assets/music/hamster.mp3" >-->
+          <!--您的浏览器不支持 audio 元素。-->
+        <!--</audio>-->
+      <!--</div>-->
     </header>
     <div class="selectWord">
       <span>
@@ -403,6 +403,8 @@
     mounted() {
       console.log(this.$router, 'router is :')
       wordAudio=this.$refs['audio']
+
+      this.getTrueWord();
     },
     beforeDestroy() {
       clearTimeout(giveLetterTimer)
@@ -456,7 +458,7 @@
         this.isBegin = true
         clearInterval(giveLetterTimer)
         clearInterval(hideHamsterTime)
-        this.getTrueWord();
+//        this.getTrueWord();
         this.getImg(trueWordObj);
         this.getAudioSource(trueWordObj);
         this.giveLetter(trueWordObj);
@@ -483,6 +485,8 @@
       nextWord() {
         if(this.isBegin){
           this.selectWord = ''
+          this.getTrueWord();
+
           this.begin()
         }
       },
