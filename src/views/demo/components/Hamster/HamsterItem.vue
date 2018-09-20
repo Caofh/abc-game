@@ -104,6 +104,8 @@
         float:left;
       }
       .bgMusic{
+        position: relative;
+        z-index:3;
         float: right;
         width:30px;
         height:30px;
@@ -349,6 +351,7 @@
   let num = 0
   let giveLetterTimer, hideHamsterTime
   let time = 1 * 60 * 1000
+  let wordAudio;
   export default {
     name: "HamsterItem",
     data() {
@@ -399,6 +402,7 @@
     },
     mounted() {
       console.log(this.$router, 'router is :')
+      wordAudio=this.$refs['audio']
     },
     beforeDestroy() {
       clearTimeout(giveLetterTimer)
@@ -423,7 +427,8 @@
       },
       getAudioSource(trueWordObj){
         this.audioSource = require(`../../../../assets/pronunciation/${trueWordObj.word}.mp3`)
-        this.$refs['audio'].load();
+        wordAudio.load();
+        wordAudio.play();
       },
       gameOver() {
         // MessageBox({
@@ -436,6 +441,8 @@
         this.isGameOver = true;
         this.isBegin = false;
         this.wordImg = '';
+        this.time=time;
+        this.score=0;
       },
       goToRank() {
         this.$router.push('/rankings')
@@ -453,7 +460,7 @@
         this.getImg(trueWordObj);
         this.getAudioSource(trueWordObj);
         this.giveLetter(trueWordObj);
-        this.speakWord();
+        //this.speakWord();
         this.hideHamster();
       },
       hideHamster() {
@@ -536,9 +543,6 @@
         this.isGameOver = false;
         this.time = time;
         this.selectWord = '';
-      },
-      speakWord(){
-        this.$refs['audio'].play();
       }
     }
 
