@@ -19,10 +19,10 @@
     </div>
     <div class="wordImg">
       <img v-show="wordImg" :src='wordImg' alt="单词对应的图片">
-      <audio hidden ref="audio" controls>
-        <source :src="audioSource" >
-        您的浏览器不支持 audio 元素。
-      </audio>
+      <!--<audio hidden ref="audio" controls>-->
+        <!--<source :src="audioSource" >-->
+        <!--您的浏览器不支持 audio 元素。-->
+      <!--</audio>-->
     </div>
     <div class="content">
       <div class="hole-box">
@@ -460,7 +460,7 @@
         clearInterval(hideHamsterTime)
 //        this.getTrueWord();
         this.getImg(trueWordObj);
-        this.getAudioSource(trueWordObj);
+//        this.getAudioSource(trueWordObj);
         this.giveLetter(trueWordObj);
         //this.speakWord();
         this.hideHamster();

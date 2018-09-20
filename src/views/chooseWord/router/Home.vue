@@ -158,7 +158,7 @@
     <!--音乐（音效）资源-->
     <audio class="click-audio" src="/static/mp3/click.mp3" style="display: none;"></audio>
     <audio class="click-audio-Bomb" src="/static/mp3/blast.mp3" style="display: none;"></audio>
-    <audio class="audio-bg" src="/static/mp3/bg_2.mp3" loop autoplay="autoplay" style="display: none;"></audio>
+    <audio class="audio-bg" src="/static/mp3/bg_2.mp3" loop style="display: none;"></audio>
     <audio class="word-read word-one" :src="wordOne" style="display: none;"></audio>
     <audio class="word-read word-two" :src="wordTwo" style="display: none;"></audio>
     <audio class="word-read word-three" :src="wordThree" style="display: none;"></audio>
