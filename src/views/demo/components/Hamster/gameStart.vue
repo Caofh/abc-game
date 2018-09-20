@@ -8,13 +8,10 @@
         <div class="userName">
           <label for="userName">Your Name</label>
           <input type="text" id="userName" v-model="username">
+          <button :disabled="!username" class="begin-button" @click="beginGame">PLAY</button>
         </div>
       </div>
     </div>
-    <div class="begin">
-      <mt-button :disabled="!username" class="begin-button" @click="beginGame">PLAY</mt-button>
-    </div>
-
   </div>
 </template>
 
@@ -70,7 +67,7 @@
         position: relative;
       }
       .userName {
-        width: 290px;
+        width: 100%;
         margin: 0 auto;
         position: absolute;
         bottom: 10px;
@@ -88,7 +85,7 @@
           font-size: 14px;
         }
         input {
-          width: 120px;
+          width: 100px;
           height: 31px;
           border: 1px solid #db9403;
           border-radius: 0 5px 5px 0;
@@ -100,15 +97,13 @@
         }
       }
     }
-    .begin {
-      position: absolute;
-      bottom: 30px;
-      width: 100%;
-      .begin-button {
-        margin: 0 auto;
-        background: #db9403;
-        color: #fff;
-      }
+    .begin-button {
+      background: #db9403;
+      color: #fff;
+      padding: 10px;
+      border:0;
+      border-radius: 50%;
+      outline: none;
     }
   }
 </style>
