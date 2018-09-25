@@ -21,7 +21,7 @@
         </tbody>
       </table>
     </div>
-    <button class="onceMore" @click="onceMore">再来一局</button>
+    <button class="onceMore" @touchstart="onceMore">再来一局</button>
   </div>
 </template>
 
@@ -54,7 +54,7 @@
     },
     methods: {
       onceMore() {
-        this.$router.push('/demo')
+        this.$emit('onceMore',2)
       }
     }
   }
@@ -64,7 +64,7 @@
   .rank {
     width: 100%;
     height: 100%;
-    background: url('../../../../assets/img/hamster/rank.png') no-repeat;
+    background: url('../../../assets/img/hamster/rank.png') no-repeat;
     background-size: 100% 100%;
     display: flex;
     display: -webkit-flex;

@@ -8,7 +8,7 @@
         <div class="userName">
           <label for="userName">Your Name</label>
           <input type="text" id="userName" v-model="username">
-          <button :disabled="!username" class="begin-button" @click="beginGame">PLAY</button>
+          <button :disabled="!username" class="begin-button" @touchstart="play">PLAY</button>
         </div>
       </div>
     </div>
@@ -16,10 +16,6 @@
 </template>
 
 <script>
-  import {Button} from 'mint-ui';
-  import Vue from 'vue';
-
-  Vue.component(Button.name, Button);
   export default {
     name: "gameStart",
     data() {
@@ -28,9 +24,8 @@
       }
     },
     methods: {
-      beginGame() {
-        console.log(this, 'this is ')
-        this.$router.push({name: 'Hamster', params: {username: this.username}})
+      play() {
+        this.$emit('play',2)
       }
     }
   }
@@ -40,7 +35,7 @@
   .box {
     width: 100%;
     height: 100%;
-    background: url('../../../../assets/img/hamster/gameStart.png') no-repeat;
+    background: url('../../../assets/img/hamster/gameStart.png') no-repeat;
     background-size: 100% 100%;
     position: relative;
     .userNameBox {
@@ -54,14 +49,14 @@
       .userNameTop {
         width: 233px;
         height: 80px;
-        background: url('../../../../assets/img/hamster/userNameTop.png') no-repeat;
+        background: url('../../../assets/img/hamster/userNameTop.png') no-repeat;
         background-size: 100% 100%;
         margin: 0 auto;
       }
       .userNameBottom {
         width: 100%;
         height: 70px;
-        background: url('../../../../assets/img/hamster/userNameBottom.png') no-repeat;
+        background: url('../../../assets/img/hamster/userNameBottom.png') no-repeat;
         background-size: 100% 100%;
         margin-top: -24px;
         position: relative;
@@ -86,7 +81,7 @@
         }
         input {
           width: 100px;
-          height: 31px;
+          height: 33px;
           border: 1px solid #db9403;
           border-radius: 0 5px 5px 0;
           font-size: 16px;

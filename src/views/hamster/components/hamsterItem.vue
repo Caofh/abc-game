@@ -5,10 +5,9 @@
         <div class="time">倒计时：{{countDown}}</div>
         <div class="score">得分：{{score}}</div>
       </div>
-
-      <div class="bgMusic bgMusicAnimate" @click="togglePlay" ref="bgMusicBox" id="bgMusicBox">
+      <div class="bgMusic bgMusicAnimate" @touchtap="togglePlay" ref="bgMusicBox" id="bgMusicBox">
         <audio autoplay loop  ref="bgMusic">
-          <source src="../../../../assets/music/hamster.mp3" >
+          <source src="../../../assets/music/hamster.mp3" >
           您的浏览器不支持 audio 元素。
         </audio>
       </div>
@@ -20,15 +19,15 @@
     </div>
     <div class="wordImg">
       <img v-show="wordImg" :src='wordImg' alt="单词对应的图片">
-      <!--<audio hidden ref="audio" controls>-->
-        <!--<source :src="audioSource" >-->
-        <!--您的浏览器不支持 audio 元素。-->
-      <!--</audio>-->
+      <audio hidden ref="audio" controls>
+        <source :src="audioSource" >
+        您的浏览器不支持 audio 元素。
+      </audio>
     </div>
     <div class="content">
       <div class="hole-box">
         <div class="first-row">
-          <div @click="choseWord(index,letter.letter)" v-for="(letter,index) in letters" class="hole"
+          <div @touchstart="choseWord(index,letter.letter)" v-for="(letter,index) in letters" class="hole"
                v-if="index===0||index===1||index===2">
             <div class="hole-img"></div>
             <div class="slice-hole-img"></div>
@@ -38,7 +37,7 @@
           </div>
         </div>
         <div class="two-row">
-          <div v-if="index===3||index===4||index===5" @click="choseWord(index,letter.letter)"
+          <div v-if="index===3||index===4||index===5" @touchstart="choseWord(index,letter.letter)"
                v-for="(letter,index) in letters" class="hole">
             <div class="hole-img"></div>
             <div class="slice-hole-img"></div>
@@ -48,7 +47,7 @@
           </div>
         </div>
         <div class="three-row">
-          <div v-if="index===6||index===7||index===8" @click="choseWord(index,letter.letter)"
+          <div v-if="index===6||index===7||index===8" @touchstart="choseWord(index,letter.letter)"
                v-for="(letter,index) in letters" class="hole">
             <div class="hole-img"></div>
             <div class="slice-hole-img"></div>
@@ -64,10 +63,10 @@
     </div>
     <div class="footer">
       <div class="back">
-        <button @click="back"></button>
+        <button @touchstart="back"></button>
       </div>
       <div class="next">
-        <button @click="nextWord">next</button>
+        <button @touchstart="nextWord">next</button>
       </div>
     </div>
     <div class="congratulate" v-show="good">
@@ -78,12 +77,12 @@
         得分:{{score}}
       </p>
       <div class="buttonBox">
-        <button class="onceMore" @click="onceMore"></button>
-        <button class="rank" @click="goToRank"></button>
+        <button class="onceMore" @touchstart="onceMore"></button>
+        <button class="rank" @touchstart="goToRank"></button>
       </div>
     </div>
     <div class="go" v-show="!isBegin">
-       <button @click="begin"></button>
+       <button @touchstart="begin"></button>
     </div>
   </div>
 </template>
@@ -91,7 +90,7 @@
   .box {
     width: 100%;
     height: 100%;
-    background: url('../../../../assets/img/hamster/grassland.png');
+    background: url('../../../assets/img/hamster/grassland.png');
     background-size: cover;
     position: relative;
     .header {
@@ -111,7 +110,7 @@
         width:30px;
         height:30px;
         border-radius: 50%;
-        background:url('../../../../assets/img/hamster/music.png') no-repeat;
+        background:url('../../../assets/img/hamster/music.png') no-repeat;
         background-size: cover;
       }
       .bgMusicAnimate{
@@ -179,7 +178,7 @@
           .hole-img {
             width: 100%;
             height: 40px;
-            background: url('../../../../assets/img/hamster/hole.png');
+            background: url('../../../assets/img/hamster/hole.png');
             background-size: 100% 100%;
             position: absolute;
             bottom: 0;
@@ -187,7 +186,7 @@
           .slice-hole-img {
             width: 100%;
             height: 20px;
-            background: url('../../../../assets/img/hamster/slice-holes.png');
+            background: url('../../../assets/img/hamster/slice-holes.png');
             background-size: 100% 100%;
             position: absolute;
             bottom: 0;
@@ -196,22 +195,22 @@
           .hamster {
             width: 50px;
             height: 50px;
-            background: url('../../../../assets/img/hamster/hamster_2.png');
+            background: url('../../../assets/img/hamster/hamster_2.png');
             background-size: 100% 100%;
             position: absolute;
             left: 50%;
             margin-left: -25px;
             top: 120px;
-            transition: top 0.1s;
-            -moz-transition: top .1s; /* Firefox 4 */
-            -webkit-transition: top .1s; /* Safari 和 Chrome */
-            -o-transition: top .1s; /* Opera */
+            transition: top 0.2s;
+            -moz-transition: top .2s; /* Firefox 4 */
+            -webkit-transition: top .2s; /* Safari 和 Chrome */
+            -o-transition: top .2s; /* Opera */
             .word {
               position: absolute;
               width: 40px;
               height: 25px;
               text-align: center;
-              background: url('../../../../assets/img/hamster/wordbg.png');
+              background: url('../../../assets/img/hamster/wordbg.png');
               background-size: 100% 100%;
               top: -25px;
               left: 15px;
@@ -251,7 +250,7 @@
         margin: 0 auto;
         width: 35px;
         height: 35px;
-        background: url('../../../../assets/img/hamster/back.png');
+        background: url('../../../assets/img/hamster/back.png');
         background-size: 100% 100%;
         border: none;
         outline: none;
@@ -266,7 +265,7 @@
       margin-top: -150px;
       margin-left: -100px;
       /*background: #d8d8d8;*/
-      background: url('../../../../assets/img/hamster/dialog.png') no-repeat;
+      background: url('../../../assets/img/hamster/dialog.png') no-repeat;
       background-size: 100% 100%;
       z-index: 100;
       .score {
@@ -293,12 +292,12 @@
           height: 30px;
         }
         .onceMore {
-          background: url('../../../../assets/img/hamster/onceMore.png') no-repeat;
+          background: url('../../../assets/img/hamster/onceMore.png') no-repeat;
           background-size: 100% 100%;
           margin-right: 10px;
         }
         .rank {
-          background: url('../../../../assets/img/hamster/rankBtn.png') no-repeat;
+          background: url('../../../assets/img/hamster/rankBtn.png') no-repeat;
           background-size: 100% 100%;
           margin-left: 10px;
         }
@@ -315,7 +314,7 @@
         position: absolute;
         width:80px;
         height:80px;
-        background: url('../../../../assets/img/hamster/go.png') no-repeat;
+        background: url('../../../assets/img/hamster/go.png') no-repeat;
         background-size: 100% 100%;
         border-radius: 50%;
         top:50%;
@@ -378,10 +377,8 @@
       }
     },
     mounted() {
-      console.log(this.$router, 'router is :')
       wordAudio=this.$refs['audio']
-
-      this.getTrueWord();
+      this.isGameOver=false;
     },
     beforeDestroy() {
       clearTimeout(giveLetterTimer)
@@ -402,11 +399,11 @@
       },
       //根据单词获取对应的图片
       getImg(trueWordObj) {
-        this.wordImg = require(`../../../../assets/img/hamster/${trueWordObj.word}.jpeg`)
+        this.wordImg = require(`../../../assets/img/hamster/${trueWordObj.word}.jpeg`)
       },
 
       getAudioSource(trueWordObj){
-        this.audioSource = require(`../../../../assets/pronunciation/${trueWordObj.word}.mp3`)
+        this.audioSource = require(`../../../assets/pronunciation/${trueWordObj.word}.mp3`)
         wordAudio.load();
         wordAudio.play();
       },
@@ -423,7 +420,7 @@
         this.wordImg = '';
       },
       goToRank() {
-        this.$router.push('/rankings')
+        this.$emit('rank',3)
       },
       /*
       * 游戏开始
@@ -434,9 +431,9 @@
         this.isBegin = true
         clearInterval(giveLetterTimer)
         clearInterval(hideHamsterTime)
-//        this.getTrueWord();
+        this.getTrueWord();
         this.getImg(trueWordObj);
-//        this.getAudioSource(trueWordObj);
+        this.getAudioSource(trueWordObj);
         this.giveLetter(trueWordObj);
         //this.speakWord();
         this.hideHamster();
@@ -447,7 +444,7 @@
           let i = 0
           for (; i < len; i++) {
             let item = this.letters[i]
-            if (item.letter && item.showTime && (Date.now() - item.showTime > 1000)) {
+            if (item.letter && item.showTime && (Date.now() - item.showTime > 2000)) {
               this.letters.splice(i, 1, {letter: '', showTime: 0})
               this.toggleHamster(i, false)
             }
@@ -459,10 +456,9 @@
       },
       /*下一个单词*/
       nextWord() {
+        console.log(this.isBegin,'isBegin is ')
         if(this.isBegin){
           this.selectWord = ''
-          this.getTrueWord();
-
           this.begin()
         }
       },
@@ -481,7 +477,7 @@
               this.toggleHamster(index, false)
               setTimeout(() => {
                 this.toggleHamster(index, true)
-              }, 200)
+              }, 400)
 
             } else {
               this.toggleHamster(index, true)
