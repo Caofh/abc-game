@@ -12,7 +12,8 @@ Object.assign(actions, payrollActions)
 Object.assign(mutations, payrollMutations)
 
 let state = {
-  test: 1
+  test: 1,
+  resourceUrl: 'http://tpdoc.cn:3001/upload'
 }
 // 合并各个页面的store值
 state = Object.assign(state, payrollState)
