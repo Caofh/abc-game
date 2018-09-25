@@ -6,7 +6,7 @@
         <div class="score">得分：{{score}}</div>
       </div>
       <div class="bgMusic bgMusicAnimate" @touchstart="togglePlay" ref="bgMusicBox" id="bgMusicBox">
-        <audio autoplay loop  ref="bgMusic">
+        <audio loop  ref="bgMusic">
           <source src="../../../assets/music/hamster.mp3" >
           您的浏览器不支持 audio 元素。
         </audio>
@@ -379,6 +379,8 @@
     mounted() {
       wordAudio=this.$refs['audio']
       this.isGameOver=false;
+      let bgMusic=this.$refs['bgMusic'];
+      bgMusic.play();
     },
     beforeDestroy() {
       clearTimeout(giveLetterTimer)
