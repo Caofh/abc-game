@@ -345,7 +345,7 @@
   let wordAudio;
   export default {
     name: "HamsterItem",
-    props:['bgMusic'],
+    props:['bgMusic','step'],
     data() {
       return {
         //单词对应的图片
@@ -380,12 +380,19 @@
     mounted() {
       wordAudio=this.$refs['audio']
       this.isGameOver=false;
-      let bgMusic=this.$refs['bgMusic'];
-      bgMusic.play();
     },
     beforeDestroy() {
       clearTimeout(giveLetterTimer)
       clearTimeout(hideHamsterTime)
+    },
+
+    watch:{
+      'step':function (newVal) {
+        if(newVal===2){
+          let bgMusic=this.$refs['bgMusic'];
+          bgMusic.play();
+        }
+      }
     },
 
     methods: {
