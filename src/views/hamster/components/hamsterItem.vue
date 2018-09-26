@@ -7,7 +7,7 @@
       </div>
       <div class="bgMusic bgMusicAnimate" @touchstart="togglePlay" ref="bgMusicBox" id="bgMusicBox">
         <audio loop  ref="bgMusic">
-          <source src="../../../assets/music/hamster.mp3" >
+          <source :src="bgMusic" >
           您的浏览器不支持 audio 元素。
         </audio>
       </div>
@@ -345,6 +345,7 @@
   let wordAudio;
   export default {
     name: "HamsterItem",
+    props:['bgMusic','step'],
     data() {
       return {
         //单词对应的图片
@@ -379,12 +380,19 @@
     mounted() {
       wordAudio=this.$refs['audio']
       this.isGameOver=false;
-      let bgMusic=this.$refs['bgMusic'];
-      bgMusic.play();
     },
     beforeDestroy() {
       clearTimeout(giveLetterTimer)
       clearTimeout(hideHamsterTime)
+    },
+
+    watch:{
+      'step':function (newVal) {
+        if(newVal===2){
+          let bgMusic=this.$refs['bgMusic'];
+          bgMusic.play();
+        }
+      }
     },
 
     methods: {
