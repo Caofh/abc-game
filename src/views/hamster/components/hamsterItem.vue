@@ -7,7 +7,7 @@
       </div>
       <div class="bgMusic bgMusicAnimate" @touchstart="togglePlay" ref="bgMusicBox" id="bgMusicBox">
         <audio loop  ref="bgMusic">
-          <source :src="bgMusic" >
+          <source src="../../../assets/music/hamster.mp3" >
           您的浏览器不支持 audio 元素。
         </audio>
       </div>
@@ -345,7 +345,7 @@
   let wordAudio;
   export default {
     name: "HamsterItem",
-    props:['bgMusic','step'],
+    props:['trueWordPronunciation','trueWordImgUrl'],
     data() {
       return {
         //单词对应的图片
@@ -380,19 +380,12 @@
     mounted() {
       wordAudio=this.$refs['audio']
       this.isGameOver=false;
+      let bgMusic=this.$refs['bgMusic'];
+      bgMusic.play();
     },
     beforeDestroy() {
       clearTimeout(giveLetterTimer)
       clearTimeout(hideHamsterTime)
-    },
-
-    watch:{
-      'step':function (newVal) {
-        if(newVal===2){
-          let bgMusic=this.$refs['bgMusic'];
-          bgMusic.play();
-        }
-      }
     },
 
     methods: {
@@ -409,11 +402,13 @@
       },
       //根据单词获取对应的图片
       getImg(trueWordObj) {
-        this.wordImg = require(`../../../assets/img/hamster/${trueWordObj.word}.jpeg`)
+        //this.wordImg = require(`../../../assets/img/hamster/${trueWordObj.word}.jpeg`)
+        this.wordImg = this.trueWordImgUrl
       },
 
       getAudioSource(trueWordObj){
-        this.audioSource = require(`../../../assets/pronunciation/${trueWordObj.word}.mp3`)
+        //this.audioSource = require(`../../../assets/pronunciation/${trueWordObj.word}.mp3`)
+        this.audioSource = this.trueWordPronunciation
         wordAudio.load();
         wordAudio.play();
       },
