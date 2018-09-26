@@ -1,2 +1,0 @@
-webpackJsonp([20],{Eg0p:function(n,t,e){"use strict";function o(){var n=!1;return 90!=window.orientation&&-90!=window.orientation||(n=!0),n}Object.defineProperty(t,"__esModule",{value:!0}),e.d(t,"orientation",function(){return o})}},["Eg0p"]);
-//# sourceMappingURL=fun.8ff642e7bbb2a5676758.js.map
