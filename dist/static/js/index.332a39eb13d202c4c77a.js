@@ -1,2 +1,0 @@
-webpackJsonp([14],{ey7a:function(e,n,t){"use strict";Object.defineProperty(n,"__esModule",{value:!0});var a=t("IvJb"),u=t("zO6J");a.a.use(u.a),n.default=new u.a({routes:[{path:"/",name:"Hamster",component:function(){return t.e(0).then(t.bind(null,"i/bM"))}}]})}},["ey7a"]);
-//# sourceMappingURL=index.332a39eb13d202c4c77a.js.map
