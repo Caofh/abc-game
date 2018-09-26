@@ -1,7 +1,7 @@
 <template>
   <div class="box">
     <gameStart @play="play" v-show="step===1"></gameStart>
-    <hamsterItem @rank="play" v-show="step===2" :bgMusic="bgMusic" :step="step"></hamsterItem>
+    <hamsterItem @rank="play" v-show="step===2" :trueWordPronunciation="trueWordPronunciation" :trueWordImgUrl="trueWordImgUrl"></hamsterItem>
     <rankings @onceMore="play" v-show="step===3"></rankings>
   </div>
 </template>
@@ -10,21 +10,30 @@
   import gameStart from './gameStart'
   import rankings from './rankings'
   import hamsterItem from './hamsterItem'
-
+  import allWords from './words.json'
+  let trueWordObj
+  let random = (n, m) => {
+    return Math.random() * (m - n) + n;
+  }
   export default {
     name: "hamster",
     components: {gameStart, rankings, hamsterItem},
     data() {
       return {
         step: 1,
-        bgMusic:require('../../../assets/music/hamster.mp3')
+        trueWordPronunciation:'',
+        trueWordImgUrl:''
       }
     },
-    methods:{
-      play(step){
-        console.log(step,'step is :=========')
-        this.step=step;
+    methods: {
+      play(step) {
+        this.step = step;
       }
+    },
+    mounted() {
+      trueWordObj = allWords[Math.floor(random(0, allWords.length))]
+      this.trueWordPronunciation = require(`../../../assets/pronunciation/${trueWordObj.word}.mp3`)
+      this.trueWordImgUrl = require(`../../../assets/img/hamster/${trueWordObj.word}.jpeg`)
     }
   }
 </script>
