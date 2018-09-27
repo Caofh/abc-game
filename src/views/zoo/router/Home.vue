@@ -1,8 +1,63 @@
 <template>
   <div :class="['zoo-home']">
-    <div class="title"><img src="../assets/img/home/zoo-title.png"></div>
+    <!--<div class="title"><img src="../assets/img/home/zoo-title.png"></div>-->
 
-    <div class="abc-img"><img src="../assets/img/home/icon/icon_1.png"></div>
+    <div @click="chooseAnimal(item)" v-if="gradeMark" v-for="(item, index) in animalData" class="abc-img"
+      :style="{'left': item.x + 'px', 'top': item.y + 'px', '-webkit-transform': 'rotate('+item.deg+'deg)', 'transform': 'rotate('+item.deg+'deg)'}">
+      <img :src="item.src">
+    </div>
+
+
+
+    <!--任务描述-->
+    <div v-if="beforeGameMark" class="before-start abc-flex-y-center">
+      <div class="base-body abc-flex-y-center">
+        <div class="content">
+          Please select <span class="point">{{ animalName || '' }}</span> in
+          <span class="point">{{ second || 0 }}</span> seconds
+        </div>
+
+        <div @click="startGame" class="btn">
+          Start
+        </div>
+      </div>
+    </div>
+
+    <!--游戏关卡提示-->
+    <div v-if="gamingMark" class="before-start abc-flex-y-center">
+      <div class="base-body abc-flex-y-center">
+        <div class="point-title">第{{progress || 1}}关</div>
+        <div class="content">
+          Please select <span class="point">{{ animalName || '' }}</span> in
+          <span class="point">{{ second || 0 }}</span> seconds
+        </div>
+
+        <div @click="continueGame" class="btn">
+          Go
+        </div>
+      </div>
+    </div>
+
+    <!--游戏失败提示-->
+    <div v-if="gameFailMark" class="before-start abc-flex-y-center">
+      <div class="base-body abc-flex-y-center">
+        <div class="point-title">闯关失败</div>
+
+        <div @click="restartGame" class="btn">
+          Restart
+        </div>
+      </div>
+    </div>
+
+    <!--倒计时及金币数量-->
+    <div v-if="gradeMark" class="money-par abc-flex-x-center">
+      <div class="time">{{second || 0}}</div>
+
+      <div class="abc-flex-x-center">
+        <div class="abc-img"><img src="../assets/img/home/money.png"></div>
+        <div>{{ moneyCount || 0 }}</div>
+      </div>
+    </div>
 
   </div>
 
@@ -14,6 +69,7 @@
 //  import { addUser, updateUser, getUserList, getRandomWords } from '@/api/chooseWord'
 
   import getRandom from '../assets/js/getRandomArr'
+  import { checkpoint, animalNameList } from '../assets/js/fun'
 
 
 
@@ -26,18 +82,29 @@
         clientWidth: '', //设备宽度
         clientHeight: '', //设备高度
         title: {}, // 动物园标题的位置及大小
+        usedArea: {}, // 真正内容的可用坐标范围
 
+        progress: '', // 游戏主进度(关数，共12关)
+        animalName: '', // 当前任务的动物名称
+        animalCount: '', // animal数量
+        second: '', // 游戏读秒
+        moneyCount: 10, // 金币数
+        animalData: [], // 动物数据
+        blackList: [], // 动物图片黑名单
 
-        animalCount_1: 10,
-        animalCount_2: 20,
-        animalCount_3: 24,
+        beforeGameMark: true, // 任务描述标识
+        gamingMark: false, // 游戏过程中，下一关的文案提示
+        gradeMark: false, // 成绩显示标识标识
+        gameFailMark: false, // 闯关失败标识
 
+        loopTime: '', // 倒计时定时变量
       }
     },
     computed: {
       ...mapState([
         'resourceUrl' // 静态资源路径，服务器静态资源的host
       ]),
+
     },
     created () {
 
@@ -51,12 +118,6 @@
 
              最终排行榜以金币总是制作排行榜（用不清空）
        */
-
-
-
-
-
-      console.log(getRandom.getNorepeatArr(1, 360))
 
     },
     watch: {
@@ -82,13 +143,184 @@
         // 获取zoo的title位置及大小
         this.getTitle()
 
+        // 配置游戏关卡:第一关
+        this.confGame(1)
 
+        // 获取当前关卡配置
+//        const gameConfig = checkpoint(12)
+//        console.log(gameConfig)
 
-
-
+//        setInterval(() => {
+//          let a = checkpoint(2)
+//          console.log(a)
+//
+//
+////          this.progress++
+////          console.log(this.progress)
+////          this.confGame(5)
+//        }, 2000)
 
       },
 
+      // 开始游戏
+      startGame () {
+        this.beforeGameMark = false
+        this.gradeMark = true
+
+        // 倒计时计时
+        this.moveTime()
+
+      },
+
+      // 继续游戏
+      continueGame () {
+        this.gamingMark = false
+        this.gradeMark = true
+
+        // 倒计时计时
+        this.moveTime()
+      },
+
+      // 失败重新开始游戏
+      restartGame () {
+        this.beforeGameMark = true
+
+        // 配置游戏关卡:第一关
+        this.confGame(1)
+
+      },
+
+      // 配置游戏关卡初始化(progress:第几关)
+      confGame (progress) {
+        // 重置相关变量
+        this.progress = progress, // 游戏主进度(关数，共12关)
+        this.animalName = '', // 当前任务的动物名称
+        this.animalData = [], // 动物数据
+        this.blackList = [], // 动物图片黑名单
+        this.gradeMark = false // 成绩显示标识标识
+        this.gameFailMark = false // 闯关失败标识
+
+        // 获取当前关卡配置
+        const gameConfig = checkpoint(progress)
+        this.animalCount = gameConfig.animalCount
+        this.second = gameConfig.second
+
+        // 渲染随机动图图片
+        this.renderImg()
+
+      },
+
+      // 点击动物方法
+      chooseAnimal (item) {
+        console.log(item)
+        const name = item.animalName || ''
+        console.log(this.animalName)
+        if (name === this.animalName) {
+          console.log('答对了')
+
+          clearInterval(this.loopTime)
+
+          console.log('progress', this.progress)
+          if (this.progress < 12) {
+            // 配置游戏关卡
+            this.progress++
+            this.confGame(this.progress)
+
+            // 显示过关提示
+            this.gamingMark = true
+
+          } else {
+            console.log('超过12关')
+
+          }
+
+
+          console.log(this.progress)
+        } else {
+          console.log('答错了')
+        }
+
+      },
+
+      // 渲染随机动物图片
+      renderImg () {
+        let aniArr = []
+        const randomArr = getRandom.getNorepeatArr(this.animalCount, [1, 24])
+        // 随机生成当前需选择的动物文案
+        const ranIndex = getRandom.getNorepeatArr(1, [0, (this.animalCount)])
+        this.animalName = animalNameList(randomArr[ranIndex])
+
+        for (let i = 0; i < this.animalCount; i++) {
+          // 循环动物图片静态资源
+          let imgResource = require(`../assets/img/home/icon/icon_${randomArr[i]}.png`)
+
+          // 去重覆盖动物坐标问题.
+          let randomX = ''
+          let randomY = ''
+          for (let i = 0; true; i++) {
+            let currNumX = parseInt(getRandom.getNorepeatArr(1, [0, (this.clientWidth - 80)] )[0])
+            let currNumY = parseInt(getRandom.getNorepeatArr(1, [0, (this.clientHeight - 80)] )[0])
+
+            // 判断当前随机坐标是否重复标识
+            const mark = this.onlyPosition(currNumX, currNumY)
+            if (mark) {
+              randomX = currNumX
+              randomY = currNumY
+              break;
+            }
+          }
+          // 去重覆盖动物坐标问题结束.
+
+          let obj = {
+            x: parseInt(randomX),
+            y: parseInt(randomY),
+            deg: getRandom.getNorepeatArr(1, [0, 360])[0],
+            src: imgResource,
+            animalName: animalNameList(randomArr[i])
+          }
+
+          // 将当前区域加入黑名单，去重使用
+          this.blackList.push({
+            x: [obj.x - 80, obj.x + 80],
+            y: [obj.y - 80, obj.y + 80]
+          })
+
+          aniArr.push(obj)
+        }
+
+        this.animalData = aniArr
+
+      },
+
+      // 倒计时计时
+      moveTime () {
+        this.loopTime = setInterval(() => {
+          this.second -= 1
+
+          if (this.second <= 0) {
+            clearInterval(this.loopTime)
+
+            // 闯关失败弹窗
+            this.gameFailMark = true
+          }
+        }, 1000)
+
+      },
+
+      // 去重动物坐标重复问题，并返回最终新坐标
+      onlyPosition (currNumX, currNumY) {
+        let mark = true
+        if (this.blackList.length) {
+          this.blackList.map((item) => {
+            if (currNumX > item.x[0] && currNumX < item.x[1] && currNumY > item.y[0] && currNumY < item.y[1]) {
+              mark = false
+            }
+          })
+        }
+
+        return mark
+
+      },
 
       // 强制横屏
       orientation () {
@@ -97,7 +329,7 @@
         // 利用 CSS3 旋转 对根容器逆时针旋转 90 度
         let detectOrient = function() {
           let width = document.documentElement.clientWidth,
-            height =  document.documentElement.clientHeight
+            height = document.documentElement.clientHeight
 
           if( width >= height ){ // 横屏
 
@@ -151,6 +383,12 @@
           height: titleHeight
         }
 
+        // 真正内容可用坐标范围
+        this.usedArea = {
+          x: [(parseInt(this.clientWidth) - parseInt(titleWidth)), parseInt(this.clientWidth)],
+          y: [(parseInt(this.clientHeight) - parseInt(titleHeight)), parseInt(this.clientHeight)]
+        }
+
       }
     },
     components: {
@@ -198,6 +436,64 @@
       position: absolute;
       width: pr(80);
       height: pr(80);
+    }
+
+    /*任务描述*/
+    .before-start {
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+
+      .base-body {
+        position: absolute;
+        width: pr(350);
+        height: pr(200);
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: pr(20);
+        padding: pr(10);
+
+        .point-title {
+          font-size: pr(20);
+        }
+
+        .content {
+          font-size: pr(30);
+          .point {
+            font-size: pr(34);
+            color: #F5A623;
+          }
+        }
+
+        .btn {
+          width: pr(150);
+          height: pr(50);
+          line-height: pr(50);
+          background: #F8E71C;
+          color: #fff;
+          text-align: center;
+          border-radius: pr(28);
+          font-size: pr(30);
+          margin-top: pr(10);
+        }
+
+      }
+    }
+
+    .money-par {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: pr(80);
+      height: pr(50);
+      font-size: pr(24);
+      color: #fff;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 0 0 0 pr(10);
+
+      .abc-img {
+        width: pr(30);
+        height: pr(30);
+      }
     }
 
   }

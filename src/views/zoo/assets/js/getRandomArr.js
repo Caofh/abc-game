@@ -16,6 +16,7 @@ index.getNorepeatArr = function (length, range) {
   var arr = []
   for (var i = 0; true; i++) {
     var random = index.getRandom(range)
+
     if (arr.indexOf(random) < 0) {
       arr.push(random)
     }
@@ -30,11 +31,14 @@ index.getNorepeatArr = function (length, range) {
 }
 
 // 随机出0-（length - 1）之间的整数
-index.getRandom = function (length) {
-  var random = Math.floor(Math.random() * length)
+index.getRandom = function (arr) {
+  let start = arr[0]
+  let end = arr[1] - start
 
-  if (random == length) {
-    index.getRandom(length)
+  var random = Math.floor(Math.random() * end) + start
+
+  if (random == end + start) {
+    index.getRandom(arr)
   }
 
   return random
