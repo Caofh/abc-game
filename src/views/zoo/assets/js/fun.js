@@ -22,18 +22,31 @@ function checkpoint (progress) {
   let second = ''
 
   switch (num) {
+    // case (1): animalCount = 10; second = 5; break;
+    // case (2): animalCount = 10; second = 5; break;
+    // case (3): animalCount = 18; second = 5; break;
+    // case (4): animalCount = 18; second = 5; break;
+    // case (5): animalCount = 22; second = 5; break;
+    // case (6): animalCount = 22; second = 5; break;
+    // case (7): animalCount = 18; second = 3; break;
+    // case (8): animalCount = 18; second = 3; break;
+    // case (9): animalCount = 22; second = 3; break;
+    // case (10): animalCount = 22; second = 3; break;
+    // case (11): animalCount = 22; second = 2; break;
+    // case (12): animalCount = 22; second = 1; break;
+
     case (1): animalCount = 10; second = 5; break;
     case (2): animalCount = 10; second = 5; break;
-    case (3): animalCount = 18; second = 5; break;
-    case (4): animalCount = 18; second = 5; break;
-    case (5): animalCount = 22; second = 5; break;
-    case (6): animalCount = 22; second = 5; break;
-    case (7): animalCount = 18; second = 3; break;
-    case (8): animalCount = 18; second = 3; break;
-    case (9): animalCount = 22; second = 3; break;
-    case (10): animalCount = 22; second = 3; break;
-    case (11): animalCount = 22; second = 2; break;
-    case (12): animalCount = 22; second = 1; break;
+    case (3): animalCount = 10; second = 5; break;
+    case (4): animalCount = 10; second = 5; break;
+    case (5): animalCount = 10; second = 5; break;
+    case (6): animalCount = 10; second = 5; break;
+    case (7): animalCount = 10; second = 3; break;
+    case (8): animalCount = 10; second = 3; break;
+    case (9): animalCount = 10; second = 3; break;
+    case (10): animalCount = 10; second = 3; break;
+    case (11): animalCount = 10; second = 2; break;
+    case (12): animalCount = 10; second = 1; break;
   }
 
   return {
