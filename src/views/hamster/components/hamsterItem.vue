@@ -6,7 +6,7 @@
         <div class="score">得分：{{score}}</div>
       </div>
       <div class="bgMusic bgMusicAnimate" @touchstart="togglePlay" ref="bgMusicBox" id="bgMusicBox">
-        <audio loop  ref="bgMusic" autoplay>
+        <audio loop  ref="bgMusic">
           <source src="../../../assets/music/hamster.mp3" >
           您的浏览器不支持 audio 元素。
         </audio>
@@ -345,7 +345,7 @@
   let wordAudio;
   export default {
     name: "HamsterItem",
-    props:['trueWordPronunciation','trueWordImgUrl'],
+    props:['trueWordPronunciation','trueWordImgUrl','step'],
     data() {
       return {
         //单词对应的图片
@@ -377,11 +377,18 @@
         return `${m}′${s}″`
       }
     },
+    watch:{
+      'step':function (newVal) {
+        if(newVal===2){
+          let bgMusic=this.$refs['bgMusic'];
+          bgMusic.play();
+        }
+      }
+    },
     mounted() {
       wordAudio=this.$refs['audio']
       this.isGameOver=false;
-      let bgMusic=this.$refs['bgMusic'];
-      bgMusic.play();
+
     },
     beforeDestroy() {
       clearTimeout(giveLetterTimer)
