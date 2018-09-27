@@ -1,7 +1,7 @@
 <template>
   <div class="box">
     <gameStart @play="play" v-show="step===1"></gameStart>
-    <hamsterItem @rank="play" v-show="step===2" :trueWordPronunciation="trueWordPronunciation" :trueWordImgUrl="trueWordImgUrl"></hamsterItem>
+    <hamsterItem @rank="play" v-show="step===2" :trueWordPronunciation="trueWordPronunciation" :trueWordImgUrl="trueWordImgUrl" :step="step"></hamsterItem>
     <rankings @onceMore="play" v-show="step===3"></rankings>
   </div>
 </template>
