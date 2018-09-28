@@ -26,14 +26,14 @@ function checkpoint (progress) {
     case (2): animalCount = 6; second = 5; break;
     case (3): animalCount = 10; second = 5; break;
     case (4): animalCount = 10; second = 5; break;
-    case (5): animalCount = 15; second = 5; break;
-    case (6): animalCount = 15; second = 5; break;
+    case (5): animalCount = 18; second = 5; break;
+    case (6): animalCount = 18; second = 5; break;
     case (7): animalCount = 10; second = 3; break;
     case (8): animalCount = 10; second = 3; break;
-    case (9): animalCount = 15; second = 3; break;
-    case (10): animalCount = 15; second = 3; break;
-    case (11): animalCount = 15; second = 2; break;
-    case (12): animalCount = 15; second = 1; break;
+    case (9): animalCount = 18; second = 3; break;
+    case (10): animalCount = 18; second = 3; break;
+    case (11): animalCount = 18; second = 2; break;
+    case (12): animalCount = 18; second = 1; break;
   }
 
   return {
