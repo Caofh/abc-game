@@ -319,8 +319,8 @@
 
           // 将当前区域加入黑名单，去重使用
           this.blackList.push({
-            x: [obj.x - 80, obj.x + 80],
-            y: [obj.y - 80, obj.y + 80]
+            x: [obj.x - 50, obj.x + 50],
+            y: [obj.y - 50, obj.y + 50]
           })
 
           aniArr.push(obj)
@@ -477,8 +477,8 @@
 
       .abc-img {
         position: absolute;
-        width: pr(80);
-        height: pr(80);
+        width: pr(50);
+        height: pr(50);
       }
     }
 
