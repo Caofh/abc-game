@@ -426,7 +426,7 @@
       },
       playAudioSource(){
         this.audioSource=this.preAudioSource
-        wordAudio.load();
+        //wordAudio.load();
         wordAudio.play();
       },
       gameOver() {
