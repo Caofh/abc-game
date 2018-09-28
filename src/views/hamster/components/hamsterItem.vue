@@ -368,6 +368,8 @@
         selectWord: '',
         isGameOver: false,
         audioSource:'',
+        isFirst:true,
+        firstImgUrl:''
       }
     },
     computed: {
@@ -386,9 +388,13 @@
       }
     },
     mounted() {
+      console.log('哈哈哈')
       wordAudio=this.$refs['audio']
       this.isGameOver=false;
-
+      this.getTrueWord();
+      this.firstImgUrl = require(`../../../assets/img/hamster/${trueWordObj.word}.jpeg`)
+      this.audioSource = require(`../../../assets/pronunciation/${trueWordObj.word}.mp3`)
+      wordAudio.load();
     },
     beforeDestroy() {
       clearTimeout(giveLetterTimer)
@@ -409,13 +415,11 @@
       },
       //根据单词获取对应的图片
       getImg(trueWordObj) {
-        //this.wordImg = require(`../../../assets/img/hamster/${trueWordObj.word}.jpeg`)
-        this.wordImg = this.trueWordImgUrl
+        this.wordImg = require(`../../../assets/img/hamster/${trueWordObj.word}.jpeg`)
       },
 
       getAudioSource(trueWordObj){
-        //this.audioSource = require(`../../../assets/pronunciation/${trueWordObj.word}.mp3`)
-        this.audioSource = this.trueWordPronunciation
+        this.audioSource = require(`../../../assets/pronunciation/${trueWordObj.word}.mp3`)
         wordAudio.load();
         wordAudio.play();
       },
@@ -444,8 +448,15 @@
         clearInterval(giveLetterTimer)
         clearInterval(hideHamsterTime)
         this.getTrueWord();
-        this.getImg(trueWordObj);
-        this.getAudioSource(trueWordObj);
+        if(this.isFirst){
+          wordAudio.play();
+          this.wordImg=this.firstImgUrl;
+          this.isFirst = false;
+        }else{
+          this.getAudioSource(trueWordObj);
+          this.getImg(trueWordObj);
+        }
+
         this.giveLetter(trueWordObj);
         //this.speakWord();
         this.hideHamster();
