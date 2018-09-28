@@ -1,7 +1,7 @@
 <template>
   <div class="box">
     <gameStart @play="play" v-show="step===1"></gameStart>
-    <hamsterItem @rank="play" v-show="step===2" :trueWordPronunciation="trueWordPronunciation" :trueWordImgUrl="trueWordImgUrl" :step="step"></hamsterItem>
+    <hamsterItem @rank="play" v-show="step===2"  :step="step"></hamsterItem>
     <rankings @onceMore="play" v-show="step===3"></rankings>
   </div>
 </template>
@@ -21,19 +21,12 @@
     data() {
       return {
         step: 1,
-        trueWordPronunciation:'',
-        trueWordImgUrl:''
       }
     },
     methods: {
       play(step) {
         this.step = step;
       }
-    },
-    mounted() {
-      trueWordObj = allWords[Math.floor(random(0, allWords.length))]
-      this.trueWordPronunciation = require(`../../../assets/pronunciation/${trueWordObj.word}.mp3`)
-      this.trueWordImgUrl = require(`../../../assets/img/hamster/${trueWordObj.word}.jpeg`)
     }
   }
 </script>
