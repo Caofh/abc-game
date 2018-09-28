@@ -2,7 +2,7 @@
   <div class="box">
     <gameStart @play="play" v-show="step===1"></gameStart>
     <hamsterItem @rank="play" v-show="step===2"  :step="step"></hamsterItem>
-    <rankings @onceMore="play" v-show="step===3"></rankings>
+    <rankings @onceMore="play" v-show="step===3" :step="step"></rankings>
   </div>
 </template>
 

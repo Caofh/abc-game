@@ -16,6 +16,9 @@
 </template>
 
 <script>
+  import {addUser} from "../../../api/hamster"
+  import {to} from '../../../api/_util'
+
   export default {
     name: "gameStart",
     data() {
@@ -24,8 +27,20 @@
       }
     },
     methods: {
-      play() {
-        this.$emit('play',2)
+      async play() {
+        let [err, res] = await to(addUser({nickname: this.username}))
+        if (err) {
+          alert(`addUser接口请求失败${err}`)
+          return false;
+        }
+        window.localStorage.setItem('hamster_nickname', this.username)
+        this.$emit('play', 2)
+      }
+    },
+    mounted(){
+      let nickname = window.localStorage.getItem('hamster_nickname')
+      if(nickname){
+        this.$emit('play', 2)
       }
     }
   }
@@ -88,7 +103,7 @@
           outline: none;
           margin-left: -7px;
           vertical-align: middle;
-          padding:0 0 0 5px;
+          padding: 0 0 0 5px;
         }
       }
     }
@@ -96,7 +111,7 @@
       background: #db9403;
       color: #fff;
       padding: 10px;
-      border:0;
+      border: 0;
       border-radius: 50%;
       outline: none;
     }

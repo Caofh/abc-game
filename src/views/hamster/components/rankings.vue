@@ -26,8 +26,10 @@
 </template>
 
 <script>
+  import {getUserList} from '../../../api/hamster'
   export default {
     name: "rankings",
+    props:['step'],
     data() {
       return {
         rank: [
@@ -55,6 +57,13 @@
     methods: {
       onceMore() {
         this.$emit('onceMore',2)
+      }
+    },
+    watch:{
+      'step':function (newVal) {
+        if(newVal === 3) {
+          getUserList()
+        }
       }
     }
   }
