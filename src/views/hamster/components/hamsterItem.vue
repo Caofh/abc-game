@@ -418,10 +418,10 @@
         this.wordImg = require(`../../../assets/img/hamster/${trueWordObj.word}.jpeg`)
       },
 
-      getAudioSource(trueWordObj){
-        this.audioSource = require(`../../../assets/pronunciation/${trueWordObj.word}.mp3`)
-        wordAudio.load();
-        wordAudio.play();
+      async getAudioSource(trueWordObj){
+        this.audioSource = await require(`../../../assets/pronunciation/${trueWordObj.word}.mp3`)
+        await wordAudio.load();
+        await wordAudio.play();
       },
       gameOver() {
         // MessageBox({
