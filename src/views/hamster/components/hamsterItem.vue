@@ -369,7 +369,8 @@
         isGameOver: false,
         audioSource:'',
         isFirst:true,
-        firstImgUrl:''
+        preWordImg:'',
+        preAudioSource:''
       }
     },
     computed: {
@@ -392,9 +393,8 @@
       wordAudio=this.$refs['audio']
       this.isGameOver=false;
       this.getTrueWord();
-      this.firstImgUrl = require(`../../../assets/img/hamster/${trueWordObj.word}.jpeg`)
-      this.audioSource = require(`../../../assets/pronunciation/${trueWordObj.word}.mp3`)
-      wordAudio.load();
+      this.preWordImg = require(`../../../assets/img/hamster/${trueWordObj.word}.jpeg`)
+      this.preAudioSource = require(`../../../assets/pronunciation/${trueWordObj.word}.mp3`)
     },
     beforeDestroy() {
       clearTimeout(giveLetterTimer)
@@ -415,13 +415,19 @@
       },
       //根据单词获取对应的图片
       getImg(trueWordObj) {
-        this.wordImg = require(`../../../assets/img/hamster/${trueWordObj.word}.jpeg`)
+        this.preWordImg = require(`../../../assets/img/hamster/${trueWordObj.word}.jpeg`)
       },
 
-      async getAudioSource(trueWordObj){
-        this.audioSource = await require(`../../../assets/pronunciation/${trueWordObj.word}.mp3`)
-        await wordAudio.load();
-        await wordAudio.play();
+      getAudioSource(trueWordObj){
+        this.preAudioSource = require(`../../../assets/pronunciation/${trueWordObj.word}.mp3`)
+      },
+      showImg(){
+        this.wordImg = this.preWordImg
+      },
+      playAudioSource(){
+        this.audioSource=this.preAudioSource
+        wordAudio.load();
+        wordAudio.play();
       },
       gameOver() {
         // MessageBox({
@@ -447,18 +453,12 @@
         this.isBegin = true
         clearInterval(giveLetterTimer)
         clearInterval(hideHamsterTime)
-        this.getTrueWord();
-        if(this.isFirst){
-          wordAudio.play();
-          this.wordImg=this.firstImgUrl;
-          this.isFirst = false;
-        }else{
-          this.audioSource = '';
-          this.getAudioSource(trueWordObj);
-          this.getImg(trueWordObj);
-        }
-
+        this.showImg();
+        this.playAudioSource();
         this.giveLetter(trueWordObj);
+        this.getTrueWord();
+        this.getImg(trueWordObj);
+        this.getAudioSource(trueWordObj);
         //this.speakWord();
         this.hideHamster();
       },
