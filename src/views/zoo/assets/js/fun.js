@@ -22,31 +22,18 @@ function checkpoint (progress) {
   let second = ''
 
   switch (num) {
-    // case (1): animalCount = 10; second = 5; break;
-    // case (2): animalCount = 10; second = 5; break;
-    // case (3): animalCount = 18; second = 5; break;
-    // case (4): animalCount = 18; second = 5; break;
-    // case (5): animalCount = 22; second = 5; break;
-    // case (6): animalCount = 22; second = 5; break;
-    // case (7): animalCount = 18; second = 3; break;
-    // case (8): animalCount = 18; second = 3; break;
-    // case (9): animalCount = 22; second = 3; break;
-    // case (10): animalCount = 22; second = 3; break;
-    // case (11): animalCount = 22; second = 2; break;
-    // case (12): animalCount = 22; second = 1; break;
-
     case (1): animalCount = 10; second = 5; break;
     case (2): animalCount = 10; second = 5; break;
-    case (3): animalCount = 10; second = 5; break;
-    case (4): animalCount = 10; second = 5; break;
-    case (5): animalCount = 10; second = 5; break;
-    case (6): animalCount = 10; second = 5; break;
-    case (7): animalCount = 10; second = 3; break;
-    case (8): animalCount = 10; second = 3; break;
-    case (9): animalCount = 10; second = 3; break;
-    case (10): animalCount = 10; second = 3; break;
-    case (11): animalCount = 10; second = 2; break;
-    case (12): animalCount = 10; second = 1; break;
+    case (3): animalCount = 18; second = 5; break;
+    case (4): animalCount = 18; second = 5; break;
+    case (5): animalCount = 20; second = 5; break;
+    case (6): animalCount = 20; second = 5; break;
+    case (7): animalCount = 18; second = 3; break;
+    case (8): animalCount = 18; second = 3; break;
+    case (9): animalCount = 20; second = 3; break;
+    case (10): animalCount = 20; second = 3; break;
+    case (11): animalCount = 20; second = 2; break;
+    case (12): animalCount = 20; second = 1; break;
   }
 
   return {
@@ -86,6 +73,21 @@ function animalNameList (num) {
     case (22): name = 'Tortoise'; break;
     case (23): name = 'Snake'; break;
     case (24): name = 'Crane'; break;
+    case (25): name = 'Strawberry'; break;
+    case (26): name = 'Cucumber'; break;
+    case (27): name = 'Eggplant'; break;
+    case (28): name = 'Potato'; break;
+    case (29): name = 'Lemon'; break;
+    case (30): name = 'Chestnut'; break;
+    case (31): name = 'Pear'; break;
+    case (32): name = 'Coconut'; break;
+    case (33): name = 'Cherry'; break;
+    case (34): name = 'Orange'; break;
+    case (35): name = 'Beef'; break;
+    case (36): name = 'Mango'; break;
+    case (37): name = 'Grape'; break;
+    case (38): name = 'Watermelon'; break;
+    case (39): name = 'Banana'; break;
   }
 
   return name

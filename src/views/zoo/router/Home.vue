@@ -2,13 +2,6 @@
   <div :class="['zoo-home']">
     <!--<div class="title"><img src="../assets/img/home/zoo-title.png"></div>-->
 
-    <div @click="chooseAnimal(item)" v-if="gradeMark" v-for="(item, index) in animalData" class="abc-img"
-      :style="{'left': item.x + 'px', 'top': item.y + 'px', '-webkit-transform': 'rotate('+item.deg+'deg)', 'transform': 'rotate('+item.deg+'deg)'}">
-      <img :src="item.src">
-    </div>
-
-
-
     <!--任务描述-->
     <div v-if="beforeGameMark" class="before-start abc-flex-y-center">
       <div class="base-body abc-flex-y-center">
@@ -41,21 +34,34 @@
     <!--游戏失败提示-->
     <div v-if="gameFailMark" class="before-start abc-flex-y-center">
       <div class="base-body abc-flex-y-center">
-        <div class="point-title">闯关失败</div>
+        <div class="point-title">闯关失败，您当前共获得{{moneyCount || 0}}个金币</div>
 
-        <div @click="restartGame" class="btn">
-          Restart
+        <div class="abc-flex-x-center">
+          <div @click="restartGame" class="btn">
+            Restart
+          </div>
+          <div @click="restartGame" class="btn">
+            排行榜
+          </div>
         </div>
       </div>
     </div>
 
     <!--倒计时及金币数量-->
-    <div v-if="gradeMark" class="money-par abc-flex-x-center">
-      <div class="time">{{second || 0}}</div>
+    <div class="money-par abc-flex-x-center">
+      <div :class="['time', {'hidden': !gradeMark}]">{{second || 0}}</div>
 
-      <div class="abc-flex-x-center">
+      <div class="grade-count abc-flex-x-center">
         <div class="abc-img"><img src="../assets/img/home/money.png"></div>
         <div>{{ moneyCount || 0 }}</div>
+      </div>
+    </div>
+
+    <!--随机的动物图片-->
+    <div v-if="gradeMark" class="real-content">
+      <div @click="chooseAnimal(item)" v-for="(item, index) in animalData" class="abc-img"
+           :style="{'left': item.x + 'px', 'top': item.y + 'px', '-webkit-transform': 'rotate('+item.deg+'deg)', 'transform': 'rotate('+item.deg+'deg)'}">
+        <img :src="item.src">
       </div>
     </div>
 
@@ -88,7 +94,7 @@
         animalName: '', // 当前任务的动物名称
         animalCount: '', // animal数量
         second: '', // 游戏读秒
-        moneyCount: 10, // 金币数
+        moneyCount: 0, // 金币数
         animalData: [], // 动物数据
         blackList: [], // 动物图片黑名单
 
@@ -185,6 +191,9 @@
       restartGame () {
         this.beforeGameMark = true
 
+        // 重置分数
+        this.moneyCount = 0
+
         // 配置游戏关卡:第一关
         this.confGame(1)
 
@@ -222,6 +231,11 @@
 
           console.log('progress', this.progress)
           if (this.progress < 12) {
+
+            // 根据当前通关数，设置金币
+            const moneyCount = this.setMoney(this.progress)
+            this.moneyCount = moneyCount
+
             // 配置游戏关卡
             this.progress++
             this.confGame(this.progress)
@@ -242,10 +256,34 @@
 
       },
 
+      // 设置金币数
+      setMoney (progress) {
+        const progressNew = parseInt(progress)
+        let moneyCount = 0
+
+        switch(progressNew) {
+          case (1): moneyCount = 1; break;
+          case (2): moneyCount = 2; break;
+          case (3): moneyCount = 3; break;
+          case (4): moneyCount = 5; break;
+          case (5): moneyCount = 7; break;
+          case (6): moneyCount = 10; break;
+          case (7): moneyCount = 13; break;
+          case (8): moneyCount = 17; break;
+          case (9): moneyCount = 21; break;
+          case (10): moneyCount = 26; break;
+          case (11): moneyCount = 36; break;
+          case (12): moneyCount = 56; break;
+        }
+
+        return moneyCount
+
+      },
+
       // 渲染随机动物图片
       renderImg () {
         let aniArr = []
-        const randomArr = getRandom.getNorepeatArr(this.animalCount, [1, 24])
+        const randomArr = getRandom.getNorepeatArr(this.animalCount, [1, 39])
         // 随机生成当前需选择的动物文案
         const ranIndex = getRandom.getNorepeatArr(1, [0, (this.animalCount)])
         this.animalName = animalNameList(randomArr[ranIndex])
@@ -432,10 +470,16 @@
       height: pr(160);
     }
 
-    & > .abc-img {
-      position: absolute;
-      width: pr(80);
-      height: pr(80);
+    .real-content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+
+      .abc-img {
+        position: absolute;
+        width: pr(80);
+        height: pr(80);
+      }
     }
 
     /*任务描述*/
@@ -446,7 +490,7 @@
 
       .base-body {
         position: absolute;
-        width: pr(350);
+        width: pr(450);
         height: pr(200);
         background-color: rgba(255, 255, 255, 0.9);
         border-radius: pr(20);
@@ -474,6 +518,7 @@
           border-radius: pr(28);
           font-size: pr(30);
           margin-top: pr(10);
+          margin-right: pr(10);
         }
 
       }
@@ -490,10 +535,19 @@
       background: rgba(255, 255, 255, 0.5);
       border-radius: 0 0 0 pr(10);
 
-      .abc-img {
-        width: pr(30);
-        height: pr(30);
+      .time {
+        &.hidden {
+          opacity: 0;
+        }
       }
+
+      .grade-count {
+        .abc-img {
+          width: pr(30);
+          height: pr(30);
+        }
+      }
+
     }
 
   }
