@@ -17,10 +17,10 @@
         {{selectWord}}
       </span>
     </div>
-    <div class="wordImg">
-      <img v-show="wordImg" :src='wordImg' alt="单词对应的图片">
-      <audio hidden ref="audio" controls>
-        <source :src="audioSource" >
+    <div class="wordImg" v-for="(word,index) in wordsList" v-show="showIndex===index">
+      <img :src='word.imgUrl' alt="单词对应的图片">
+      <audio hidden :id="`${word.word}${index}`" controls >
+        <source :src="word.pronunciation">
         您的浏览器不支持 audio 元素。
       </audio>
     </div>
@@ -370,7 +370,9 @@
         audioSource:'',
         isFirst:true,
         preWordImg:'',
-        preAudioSource:''
+        preAudioSource:'',
+        wordsList:[],
+        showIndex:-1
       }
     },
     computed: {
@@ -393,8 +395,6 @@
       wordAudio=this.$refs['audio']
       this.isGameOver=false;
       this.getTrueWord();
-      this.preWordImg = require(`../../../assets/img/hamster/${trueWordObj.word}.jpeg`)
-      this.preAudioSource = require(`../../../assets/pronunciation/${trueWordObj.word}.mp3`)
     },
     beforeDestroy() {
       clearTimeout(giveLetterTimer)
@@ -419,15 +419,17 @@
       },
 
       getAudioSource(trueWordObj){
-        this.preAudioSource = require(`../../../assets/pronunciation/${trueWordObj.word}.mp3`)
+        console.log(this.audioSource,'audioSource5')
+        this.audioSource = require(`../../../assets/pronunciation/${trueWordObj.word}.mp3`)
+        wordAudio.load();
       },
       showImg(){
         this.wordImg = this.preWordImg
       },
-      playAudioSource(){
-        this.audioSource=this.preAudioSource
-        //wordAudio.load();
-        wordAudio.play();
+      playAudioSource(index,showWord){
+        console.log(`${showWord.word}${index}`)
+        document.querySelector(`#${showWord.word}${index}`).play();
+
       },
       gameOver() {
         // MessageBox({
@@ -451,15 +453,13 @@
       * */
       begin() {
         this.isBegin = true
+        this.showIndex+=1
+        let showWord=this.wordsList[this.showIndex]
         clearInterval(giveLetterTimer)
         clearInterval(hideHamsterTime)
         this.showImg();
-        this.playAudioSource();
-        this.giveLetter(trueWordObj);
-        this.getTrueWord();
-        this.getImg(trueWordObj);
-        this.getAudioSource(trueWordObj);
-        //this.speakWord();
+        this.playAudioSource(this.showIndex,showWord)
+        this.giveLetter(showWord)
         this.hideHamster();
       },
       hideHamster() {
@@ -476,7 +476,13 @@
         }, 1500)
       },
       getTrueWord() {
-        trueWordObj = allWords[Math.floor(random(0, wordLength))]
+        let word;
+        for(let i=0;i<10;i++){
+          word=allWords[Math.floor(random(0, wordLength))]
+          word.imgUrl=require(`../../../assets/img/hamster/${word.word}.jpeg`)
+          word.pronunciation=require(`../../../assets/pronunciation/${word.word}.mp3`)
+          this.wordsList.push(word)
+        }
       },
       /*下一个单词*/
       nextWord() {
