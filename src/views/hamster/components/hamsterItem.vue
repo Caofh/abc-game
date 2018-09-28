@@ -348,8 +348,6 @@
     props:['trueWordPronunciation','trueWordImgUrl','step'],
     data() {
       return {
-        //单词对应的图片
-        wordImg: '',
         //洞中对应的单词队列
         letters: [{letter: 'a', showTime: 0}, {letter: 'b', showTime: 0}, {letter: 'c', showTime: 0}, {
           letter: 'd',
@@ -367,10 +365,6 @@
         isBegin: false,
         selectWord: '',
         isGameOver: false,
-        audioSource:'',
-        isFirst:true,
-        preWordImg:'',
-        preAudioSource:'',
         wordsList:[],
         showIndex:-1
       }
@@ -394,7 +388,7 @@
       console.log('哈哈哈')
       wordAudio=this.$refs['audio']
       this.isGameOver=false;
-      this.getTrueWord();
+      this.getTrueWord(10);
     },
     beforeDestroy() {
       clearTimeout(giveLetterTimer)
@@ -413,32 +407,12 @@
           bgMusicBox.classList.remove('bgMusicAnimate')
         }
       },
-      //根据单词获取对应的图片
-      getImg(trueWordObj) {
-        this.preWordImg = require(`../../../assets/img/hamster/${trueWordObj.word}.jpeg`)
-      },
-
-      getAudioSource(trueWordObj){
-        console.log(this.audioSource,'audioSource5')
-        this.audioSource = require(`../../../assets/pronunciation/${trueWordObj.word}.mp3`)
-        wordAudio.load();
-      },
-      showImg(){
-        this.wordImg = this.preWordImg
-      },
       playAudioSource(index,showWord){
         console.log(`${showWord.word}${index}`)
         document.querySelector(`#${showWord.word}${index}`).play();
 
       },
       gameOver() {
-        // MessageBox({
-        //   title: 'game over',
-        //   message: `恭喜，你的得分是 ${this.score}，你可以邀请你的小伙伴一起玩，或者查看你的排名哦`,
-        //   showCancelButton: true,
-        //   confirmButtonText: '邀请',
-        //   cancelButtonText: '排行'
-        // });
         this.isGameOver = true;
         this.isBegin = false;
         this.wordImg = '';
@@ -453,11 +427,13 @@
       * */
       begin() {
         this.isBegin = true
+        if(this.showIndex%5===0){
+          this.getTrueWord(5,true)
+        }
         this.showIndex+=1
         let showWord=this.wordsList[this.showIndex]
         clearInterval(giveLetterTimer)
         clearInterval(hideHamsterTime)
-        this.showImg();
         this.playAudioSource(this.showIndex,showWord)
         this.giveLetter(showWord)
         this.hideHamster();
@@ -475,9 +451,9 @@
           }
         }, 1500)
       },
-      getTrueWord() {
+      getTrueWord(len) {
         let word;
-        for(let i=0;i<10;i++){
+        for(let i=0;i<len;i++){
           word=allWords[Math.floor(random(0, wordLength))]
           word.imgUrl=require(`../../../assets/img/hamster/${word.word}.jpeg`)
           word.pronunciation=require(`../../../assets/pronunciation/${word.word}.mp3`)
