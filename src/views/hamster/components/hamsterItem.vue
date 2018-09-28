@@ -453,6 +453,7 @@
           this.wordImg=this.firstImgUrl;
           this.isFirst = false;
         }else{
+          this.audioSource = '';
           this.getAudioSource(trueWordObj);
           this.getImg(trueWordObj);
         }
