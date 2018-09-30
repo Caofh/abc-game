@@ -852,7 +852,7 @@
           input{
             width: pr(150);
             height: pr(30);
-            line-height: pr(100);
+            line-height: pr(30);
             color: #fff;
             font-size: pr(24);
             background: rgba(255, 255, 255, 0);
