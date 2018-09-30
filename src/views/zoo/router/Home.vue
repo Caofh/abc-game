@@ -2,6 +2,77 @@
   <div :class="['zoo-home']">
     <!--<div class="title"><img src="../assets/img/home/zoo-title.png"></div>-->
 
+    <!--首页-->
+    <div v-if="homeMark" class="home abc-flex-y-center">
+    <!--<div v-if="false" class="home abc-flex-y-center">-->
+      <div class="base-body abc-flex-y-center">
+        <div class="home-title">
+          找一找
+        </div>
+
+        <div @click="rankingShow" class="ranking abc-img">
+          <img src="../assets/img/home/ranking.png">
+        </div>
+
+        <div @click="homeStart" class="btn">
+          Start
+        </div>
+
+      </div>
+    </div>
+
+    <!--输入昵称浮层-->
+    <div v-if="nicknameMark" class="nickname-par abc-flex-y-center">
+    <!--<div v-if="false" class="nickname-par abc-flex-y-center">-->
+      <div class="content abc-flex-x-center">
+        <div class="content-nickname abc-flex-y-center"><input @input="nicknameInput" v-model="nickname" type="text" placeholder="请填写昵称"></div>
+        <div @click="nickGo" class="btn">Go</div>
+
+        <div v-if="nickname && tipMark" class="tip abc-img"><img src="../assets/img/home/tip_yes.png"></div>
+        <div v-if="nickname && !tipMark" class="tip abc-img"><img src="../assets/img/home/tip_no.png"></div>
+      </div>
+    </div>
+
+    <!--排行榜-->
+    <div v-if="rankingMark" class="ranking-par abc-flex-x-center">
+    <!--<div v-if="true" class="ranking-par abc-flex-x-center">-->
+
+      <div @click="rankingBack" class="back abc-img">
+        <img src="../assets/img/home/back.png">
+      </div>
+
+      <div class="ranking-me abc-flex-y-center">
+        <div class="congratulation abc-img"><img src="../assets/img/home/congratulation.png"></div>
+
+        <div class="money abc-flex-x-start">
+          <div class="abc-img"><img src="../assets/img/home/money.png"></div>
+          <div class="num">{{ rankingDataMe && rankingDataMe[0] && rankingDataMe[0].time_stamp ? rankingDataMe[0].time_stamp : '-' }}</div>
+        </div>
+
+        <div class="rank abc-flex-x-start">
+          <div class="abc-img"><img src="../assets/img/home/ranking_icon.png"></div>
+          <div class="num">{{ rankingDataMe && rankingDataMe[0] && rankingDataMe[0].ranking ? rankingDataMe[0].ranking : '-' }}</div>
+        </div>
+      </div>
+
+      <div class="ranking-data abc-flex-y-center">
+        <div class="ranking-data-title">全球前五</div>
+
+        <div class="real-info abc-flex-y-start">
+          <div v-for="(item, index) in rankingData" class="item abc-flex-x-center">
+            <div class="order">{{ (index + 1) }}</div>
+            <div class="name abc-ellipsis-single">{{ item.nickname || '' }}</div>
+            <div class="money-num abc-flex-x-start">
+              <img src="../assets/img/home/money.png">
+              <div class="money-info">{{ item.time_stamp || '' }}</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
     <!--任务描述-->
     <div v-if="beforeGameMark" class="before-start abc-flex-y-center">
       <div class="base-body abc-flex-y-center">
@@ -34,13 +105,33 @@
     <!--游戏失败提示-->
     <div v-if="gameFailMark" class="before-start abc-flex-y-center">
       <div class="base-body abc-flex-y-center">
-        <div class="point-title">闯关失败，您当前共获得{{moneyCount || 0}}个金币</div>
+        <div class="point-title">闯关失败，您本次游戏共获得{{moneyCount || 0}}个金币</div>
+
+        <div class="point-title-all">总金币数：<span class="count">{{moneyAll || 0}}</span></div>
 
         <div class="abc-flex-x-center">
           <div @click="restartGame" class="btn">
             Restart
           </div>
+          <div @click="rankingOpen" class="btn">
+            排行榜
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--游戏成功提示-->
+    <div v-if="gameSuccessMark" class="before-start abc-flex-y-center">
+      <div class="base-body abc-flex-y-center">
+        <div class="point-title">闯关成功(12关)，您本次游戏共获得{{moneyCount || 0}}个金币</div>
+
+        <div class="point-title-all">总金币数：<span class="count">{{moneyAll || 0}}</span></div>
+
+        <div class="abc-flex-x-center">
           <div @click="restartGame" class="btn">
+            Restart
+          </div>
+          <div @click="rankingOpen" class="btn">
             排行榜
           </div>
         </div>
@@ -48,8 +139,8 @@
     </div>
 
     <!--倒计时及金币数量-->
-    <div class="money-par abc-flex-x-center">
-      <div :class="['time', {'hidden': !gradeMark}]">{{second || 0}}</div>
+    <div v-if="!homeMark && !rankingMark" class="money-par abc-flex-x-center">
+      <div :class="['time', {'hidden': !gradeMark, 'move': gradeMark}]">{{second || 0}}</div>
 
       <div class="grade-count abc-flex-x-center">
         <div class="abc-img"><img src="../assets/img/home/money.png"></div>
@@ -59,11 +150,17 @@
 
     <!--随机的动物图片-->
     <div v-if="gradeMark" class="real-content">
-      <div @click="chooseAnimal(item)" v-for="(item, index) in animalData" class="abc-img"
+      <div @click="chooseAnimal(item, index)" v-for="(item, index) in animalData" :class="['abc-img', {'selected': item.selected}]"
            :style="{'left': item.x + 'px', 'top': item.y + 'px', '-webkit-transform': 'rotate('+item.deg+'deg)', 'transform': 'rotate('+item.deg+'deg)'}">
         <img :src="item.src">
       </div>
     </div>
+
+
+
+    <!--音乐（音效）资源-->
+    <audio class="money-audio" src="/static/mp3/zoo/moneyNew.mp3" style="display: none;"></audio>
+    <audio class="time-audio" src="/static/mp3/zoo/timeMove.mp3" style="display: none;"></audio>
 
   </div>
 
@@ -72,7 +169,7 @@
 <script>
   import { mapState } from "vuex"
 //  import moment from 'moment'
-//  import { addUser, updateUser, getUserList, getRandomWords } from '@/api/chooseWord'
+  import { addUser, updateUser, getUserList, getRandomWords } from '@/api/zoo'
 
   import getRandom from '../assets/js/getRandomArr'
   import { checkpoint, animalNameList } from '../assets/js/fun'
@@ -89,21 +186,33 @@
         clientHeight: '', //设备高度
         title: {}, // 动物园标题的位置及大小
         usedArea: {}, // 真正内容的可用坐标范围
+        nickname: '', // 用户昵称
+        tipMark: true, // 名称是否重复标识
 
         progress: '', // 游戏主进度(关数，共12关)
         animalName: '', // 当前任务的动物名称
         animalCount: '', // animal数量
         second: '', // 游戏读秒
+        moneyAll: 0, // 当前用户的历史总金币数
         moneyCount: 0, // 金币数
         animalData: [], // 动物数据
         blackList: [], // 动物图片黑名单
 
+        homeMark: true, // 首页弹窗标识
+        nicknameMark: false, // 昵称弹窗标识
+        rankingMark: false, // 排行榜标识
         beforeGameMark: true, // 任务描述标识
         gamingMark: false, // 游戏过程中，下一关的文案提示
         gradeMark: false, // 成绩显示标识标识
         gameFailMark: false, // 闯关失败标识
+        gameSuccessMark: false, // 闯关成功标识
+        registerMark: true, // 禁止重复注册标识
+        resultMark: false, // 是从闯关失败弹窗->排行榜弹窗的标识（区分从首页进入）
 
         loopTime: '', // 倒计时定时变量
+
+        rankingData: [], // 排行榜数据
+        rankingDataMe: [], // 排行榜的个人数据
       }
     },
     computed: {
@@ -113,7 +222,6 @@
 
     },
     created () {
-
       /*
         积分规则：
         1.   5s内选出正确动物（动物数10）；  5s内选出正确动物（动物数10）；  5s内选出正确动物（动物数20）；  5s内选出正确动物（动物数20）；
@@ -136,9 +244,6 @@
       // doc操作初始化
       doc.init(this)
 
-
-
-
     },
     methods: {
       // 页面初始化(模拟背景闪屏效果)
@@ -152,19 +257,133 @@
         // 配置游戏关卡:第一关
         this.confGame(1)
 
-        // 获取当前关卡配置
-//        const gameConfig = checkpoint(12)
-//        console.log(gameConfig)
+      },
 
-//        setInterval(() => {
-//          let a = checkpoint(2)
-//          console.log(a)
-//
-//
-////          this.progress++
-////          console.log(this.progress)
-////          this.confGame(5)
-//        }, 2000)
+      homeStart () {
+        this.homeMark = false
+
+        const nickname = window.localStorage.getItem('zooNickname')
+        if (!nickname) {
+          // 开启昵称浮层
+          this.nicknameMark = true
+        } else {
+          // 请求当前数据
+          this.getRankingInfo()
+
+        }
+
+      },
+
+      // 首页点击排行榜
+      rankingShow () {
+        this.homeMark = false
+        this.rankingMark = true
+
+        this.getRankingInfo() // 请求排行榜信息
+
+      },
+
+      // 挑战失败弹窗点击排行榜
+      rankingOpen () {
+        this.rankingMark = true
+        this.resultMark = true
+
+        this.getRankingInfo() // 请求排行榜信息
+      },
+
+      // 排行榜返回
+      rankingBack () {
+
+        if (this.resultMark) {
+          this.rankingMark = false
+          this.resultMark = false
+
+        } else {
+          this.homeMark = true
+          this.rankingMark = false
+        }
+
+      },
+
+      // 请求排行榜信息
+      async getRankingInfo () {
+        try {
+          const meName = window.localStorage.getItem('zooNickname')
+
+          const para = 'start=0&count=5'
+          const paraMe = 'nickname='+meName+''
+
+          // 请求排行榜信息
+          Promise.all([getUserList(para), getUserList(paraMe)]).then((data) => {
+//            console.log(data)
+            const dataAll = data[0] || ''
+            const dataMe = data[1] || ''
+
+            this.rankingData = dataAll.data || []
+            this.rankingDataMe = dataMe.data || []
+
+            // 存储当前用户的总金币数
+            this.moneyAll = this.rankingDataMe && this.rankingDataMe.length ? this.rankingDataMe[0].time_stamp : 0
+
+          })
+
+        } catch (error) {
+          console.log(error.message || '')
+
+        }
+
+      },
+
+      // 昵称input事件
+      async nicknameInput () {
+        try {
+          const para = this.nickname ? 'nickname=' + this.nickname : ''
+          const dataList = await getUserList(para)
+
+          // 如果当前库中存在此用户名，则弹出提示
+          this.tipMark = true
+          if (dataList.data && dataList.data.length) {
+            this.tipMark = false
+          }
+
+        } catch (error) {
+          console.log(error)
+        }
+
+      },
+      async nickGo () {
+        const nickname = this.nickname
+        const data = {
+          nickname: nickname
+        }
+        if (nickname) {
+          // 如果此昵称已经被注册过得话，则禁止注册
+          if (!this.tipMark) return
+
+          // 禁止重复注册
+          if (!this.registerMark) return
+          this.registerMark = false
+
+          try {
+            const dataList = await addUser(data)
+
+            window.localStorage.setItem('zooNickname', nickname) // 将本次nickname加入到locaStorage中
+
+            // 关闭昵称浮层
+            this.nicknameMark = false
+
+            // 请求当前数据
+            this.getRankingInfo()
+
+          } catch (error) {
+            this.registerMark = true // 恢复重复注册开关
+
+            console.log(error)
+          }
+
+        } else {
+          console.log('未填写昵称')
+        }
 
       },
 
@@ -190,6 +409,7 @@
       // 失败重新开始游戏
       restartGame () {
         this.beforeGameMark = true
+        this.homeMark = true
 
         // 重置分数
         this.moneyCount = 0
@@ -219,18 +439,24 @@
 
       },
 
-      // 点击动物方法
-      chooseAnimal (item) {
+      // 点击动物方法（正确或错误）
+      chooseAnimal (item, index) {
         console.log(item)
         const name = item.animalName || ''
-        console.log(this.animalName)
+//        console.log(this.animalName)
+
         if (name === this.animalName) {
           console.log('答对了')
 
           clearInterval(this.loopTime)
 
-          console.log('progress', this.progress)
+//          console.log('progress', this.progress)
           if (this.progress < 12) {
+
+            // 启动金币音效
+            $('.money-audio')[0].play()
+            // 关闭倒计时音效
+            this.closeTimeMoveBg()
 
             // 根据当前通关数，设置金币
             const moneyCount = this.setMoney(this.progress)
@@ -244,14 +470,29 @@
             this.gamingMark = true
 
           } else {
-            console.log('超过12关')
+//            console.log('超过12关')
+
+            // 关闭倒计时音效
+            this.closeTimeMoveBg()
+
+            clearInterval(this.loopTime)
+
+            // 闯关成功弹窗
+            this.gameSuccessMark = true
+
+            // 提交成绩
+            this.updateGrade()
 
           }
 
-
-          console.log(this.progress)
         } else {
-          console.log('答错了')
+//          console.log('答错了')
+
+          this.animalData[index].selected = true
+          setTimeout(() => {
+            this.animalData[index].selected = false
+          }, 1000)
+
         }
 
       },
@@ -332,17 +573,62 @@
 
       // 倒计时计时
       moveTime () {
+        // 启动倒计时音效
+        $('.time-audio')[0].play()
+
         this.loopTime = setInterval(() => {
           this.second -= 1
 
           if (this.second <= 0) {
             clearInterval(this.loopTime)
+            this.gradeMark = false // 停止展示倒计时
+
+            // 关闭倒计时音效
+            this.closeTimeMoveBg()
 
             // 闯关失败弹窗
             this.gameFailMark = true
+
+            // 提交成绩
+            this.updateGrade()
+//            console.log(this.moneyAll)
+//            console.log(this.moneyCount)
           }
         }, 1000)
 
+      },
+
+      // 关闭倒计时音效
+      closeTimeMoveBg () {
+        // 关闭倒计时音效
+        let bgAudio = $(".time-audio")[0];
+        bgAudio.pause(); // 停止播放背景音乐
+        bgAudio.currentTime = 0.0 // 背景音乐时间重置
+
+      },
+
+      // 提交成绩
+      async updateGrade () {
+        const nickname = window.localStorage.getItem('zooNickname')
+        const use_time = this.moneyAll + this.moneyCount || ''
+        const time_stamp = this.moneyAll + this.moneyCount || ''
+
+        const data = {
+          nickname,
+          use_time,
+          time_stamp
+        }
+
+        try {
+          const dataList = await updateUser(data)
+//          console.log(dataList)
+
+          // 请求当前数据
+          this.getRankingInfo()
+
+        } catch (error) {
+          console.log(error)
+        }
       },
 
       // 去重动物坐标重复问题，并返回最终新坐标
@@ -464,6 +750,7 @@
     width: 100%;
     height: 100%;
     background: url("../assets/img/home/bg.jpg") no-repeat center / cover;
+    overflow: hidden;
 
     .title {
       width: pr(300);
@@ -479,7 +766,238 @@
         position: absolute;
         width: pr(60);
         height: pr(60);
+
+        &.selected {
+          -webkit-animationn: imgMove 1s;
+          -moz-animation: imgMove 1s;
+          -o-animation: imgMove 1s;
+          animation: imgMove 1s;
+
+          @keyframes imgMove{
+            0% {
+              margin-left: 0;
+            }
+            15% {
+              margin-left: pr(-10);
+            }
+            30% {
+              margin-left: pr(10);
+            }
+            45% {
+              margin: 0;
+            }
+          }
+        }
       }
+    }
+
+    // 首页样式
+    .home {
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+
+      .base-body {
+        position: absolute;
+        width: pr(450);
+        height: 100%;
+        /*background-color: rgba(255, 255, 255, 0.9);*/
+        border-radius: pr(20);
+        padding: pr(10);
+
+        .home-title {
+          font-size: pr(40);
+          color: #fff;
+        }
+
+        .ranking {
+          width: pr(67);
+          height: pr(67);
+          margin: pr(50) 0 pr(10) 0;
+        }
+
+        .btn {
+          width: pr(180);
+          height: pr(50);
+          line-height: pr(50);
+          text-align: center;
+          color: #000;
+          font-size: pr(40);
+          background: #fff;
+          border-radius: pr(40);
+        }
+
+      }
+    }
+
+    // 昵称弹窗样式
+    .nickname-par {
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 999;
+
+      .content {
+        position: relative;
+        width: pr(450);
+        height: pr(70);
+
+        .content-nickname {
+          width: pr(200);
+          height: pr(70);
+          background: rgba(255, 255, 255, 0.6);
+          border-radius: pr(100) 0 0 pr(100);
+          padding-left: pr(10);
+
+          input{
+            width: pr(150);
+            height: pr(30);
+            line-height: pr(100);
+            color: #fff;
+            font-size: pr(24);
+            background: rgba(255, 255, 255, 0);
+          }
+        }
+
+        .btn {
+          width: pr(80);
+          height: pr(70);
+          line-height: pr(70);
+          text-align: center;
+          font-size: pr(30);
+          color: #fff;
+          background: #4E860D;
+          border-radius: 0 pr(100) pr(100) 0;
+          cursor: pointer;
+          margin-left: pr(-1);
+
+          &:hover, &:active {
+            background: rgba(78, 134, 13, 0.7);
+          }
+        }
+
+        .tip {
+          position: absolute;
+          right: pr(15);
+          width: pr(60);
+          height: pr(60);
+        }
+      }
+    }
+
+    .ranking-par {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 999;
+
+      .back {
+        position: absolute;
+        top: pr(20);
+        left: pr(20);
+        width: pr(30);
+        height: pr(30);
+      }
+
+      .ranking-me {
+        width: pr(200);
+        height: pr(300);
+        background: rgba(0, 0, 0, 0.3);
+        margin-right: pr(20);
+
+        .congratulation {
+          width: pr(160);
+          height: pr(50);
+        }
+
+        .money {
+          width: pr(120);
+          margin: pr(20) 0 pr(20) 0;
+
+          .abc-img {
+            width: pr(50);
+            height: pr(50);
+            margin-right: pr(10);
+          }
+
+          .num {
+            font-size: pr(24);
+            color: #fff;
+          }
+        }
+
+        .rank {
+          width: pr(120);
+
+          .abc-img {
+            width: pr(50);
+            height: pr(50);
+            margin-right: pr(10);
+          }
+
+          .num {
+            font-size: pr(24);
+            color: #fff;
+          }
+        }
+
+
+      }
+
+      .ranking-data {
+        width: pr(400);
+        height: pr(300);
+        background: rgba(0, 0, 0, 0.3);
+        padding-top: pr(10);
+
+        .ranking-data-title {
+          font-size: pr(28);
+          color: #fff;
+        }
+
+        .real-info {
+          width: 100%;
+          height: pr(400);
+
+          .item {
+            height: pr(40);
+            color: #fff;
+            font-size: pr(24);
+            margin-bottom: pr(5);
+
+            .order {
+              width: pr(50);
+              margin-right: pr(30);
+              margin-left: pr(30);
+            }
+
+            .name {
+              text-align: left;
+              width: pr(170);
+            }
+
+            .money-num {
+              width: pr(110);
+
+              img {
+                width: pr(40);
+                height: pr(40);
+                margin-right: pr(10);
+              }
+
+              .money-info {
+                font-size: pr(24);
+                color: #fff;
+              }
+
+            }
+          }
+
+        }
+
+      }
+
     }
 
     /*任务描述*/
@@ -498,6 +1016,14 @@
 
         .point-title {
           font-size: pr(20);
+        }
+
+        .point-title-all {
+          font-size: pr(20);
+
+          .count {
+            color: #f71;
+          }
         }
 
         .content {
@@ -528,7 +1054,7 @@
       position: absolute;
       top: 0;
       right: 0;
-      width: pr(80);
+      width: pr(100);
       height: pr(50);
       font-size: pr(24);
       color: #fff;
@@ -536,9 +1062,34 @@
       border-radius: 0 0 0 pr(10);
 
       .time {
+        width: pr(25);
+        color: #ff0000;
+        font-weight: 600;
+        margin-right: pr(5);
+
         &.hidden {
           opacity: 0;
         }
+
+        &.move {
+          -webkit-animationn: timeMove 1s infinite;
+          -moz-animation: timeMove 1s infinite;
+          -o-animation: timeMove 1s infinite;
+          animation: timeMove 1s infinite;
+
+          @keyframes timeMove{
+            0% {
+              font-size: pr(24);
+            }
+            50% {
+              font-size: pr(40);
+            }
+            100% {
+              font-size: pr(24);
+            }
+          }
+        }
+
       }
 
       .grade-count {
