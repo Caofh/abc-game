@@ -19,6 +19,7 @@
     </div>
     <div class="wordImg" v-for="(word,index) in wordsList" v-show="showIndex===index">
       <img :src='word.imgUrl' alt="单词对应的图片">
+      <span class="next" @touchstart="nextWord"></span>
       <audio hidden :id="`${word.word}${index}`" controls>
         <source :src="word.pronunciation">
         您的浏览器不支持 audio 元素。
@@ -61,14 +62,14 @@
         </div>
       </div>
     </div>
-    <div class="footer">
-      <div class="back">
-        <button @touchstart="back"></button>
-      </div>
-      <div class="next">
-        <button @touchstart="nextWord">next</button>
-      </div>
-    </div>
+    <!--<div class="footer">-->
+      <!--<div class="back">-->
+        <!--<button @touchstart="back"></button>-->
+      <!--</div>-->
+      <!--<div class="next">-->
+        <!--<button @touchstart="nextWord">next</button>-->
+      <!--</div>-->
+    <!--</div>-->
     <div class="congratulate" v-show="good">
       <div>good</div>
     </div>
@@ -149,9 +150,21 @@
       width: 100%;
       height: 100px;
       text-align: center;
+      position: relative;
       img {
         width: 100px;
         height: 100px;
+        vertical-align: middle;
+      }
+      .next{
+        position: absolute;
+        width:30px;
+        height:30px;
+        background:url("../../../assets/img/hamster/next.png") no-repeat;
+        background-size: 100% 100%;
+        vertical-align: middle;
+        margin-left:20px;
+        top:40px;
       }
     }
     .content {
@@ -311,11 +324,10 @@
       z-index: 2;
       button {
         position: absolute;
-        width: 80px;
-        height: 80px;
-        background: url('../../../assets/img/hamster/go.png') no-repeat;
+        width: 100px;
+        height: 40px;
+        background: url('../../../assets/img/hamster/begin.png');
         background-size: 100% 100%;
-        border-radius: 50%;
         top: 50%;
         left: 50%;
         margin-left: -40px;
