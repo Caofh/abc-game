@@ -70,3 +70,20 @@ function callApi (apiRoot = '/') {
 
   return obj
 }
+
+//使用async/await时处理报错的方法
+export function to(promise) {
+  if (!promise || !Promise.prototype.isPrototypeOf(promise)) {
+    return new Promise((resolve, reject) => {
+      reject(new Error("requires promises as the param"));
+    }).catch((err) => {
+      return [err, null];
+    });
+  }
+  return promise.then(function () {
+    console.log(arguments,'arguments')
+    return [null, ...arguments];
+  }).catch(err => {
+    return [err, null];
+  });
+}

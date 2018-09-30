@@ -5,22 +5,22 @@
         <div class="time">倒计时：{{countDown}}</div>
         <div class="score">得分：{{score}}</div>
       </div>
-      <div class="bgMusic bgMusicAnimate" @touchstart="togglePlay" ref="bgMusicBox" id="bgMusicBox">
-        <audio loop  ref="bgMusic">
-          <source src="../../../assets/music/hamster.mp3" >
-          您的浏览器不支持 audio 元素。
-        </audio>
-      </div>
+      <!--<div class="bgMusic bgMusicAnimate" @touchstart="togglePlay" ref="bgMusicBox" id="bgMusicBox">-->
+        <!--<audio loop ref="bgMusic">-->
+          <!--<source src="../../../assets/music/hamster.mp3">-->
+          <!--您的浏览器不支持 audio 元素。-->
+        <!--</audio>-->
+      <!--</div>-->
     </header>
     <div class="selectWord">
       <span>
         {{selectWord}}
       </span>
     </div>
-    <div class="wordImg">
-      <img v-show="wordImg" :src='wordImg' alt="单词对应的图片">
-      <audio hidden ref="audio" controls>
-        <source :src="audioSource" >
+    <div class="wordImg" v-for="(word,index) in wordsList" v-show="showIndex===index">
+      <img :src='word.imgUrl' alt="单词对应的图片">
+      <audio hidden :id="`${word.word}${index}`" controls>
+        <source :src="word.pronunciation">
         您的浏览器不支持 audio 元素。
       </audio>
     </div>
@@ -82,7 +82,7 @@
       </div>
     </div>
     <div class="go" v-show="!isBegin">
-       <button @touchstart="begin"></button>
+      <button @touchstart="begin"></button>
     </div>
   </div>
 </template>
@@ -100,25 +100,24 @@
       font-weight: 600;
       padding: 10px;
       box-sizing: border-box;
-      .timeAndScore{
-        float:left;
+      .timeAndScore {
+        float: left;
       }
-      .bgMusic{
+      .bgMusic {
         position: relative;
-        z-index:3;
+        z-index: 3;
         float: right;
-        width:30px;
-        height:30px;
+        width: 30px;
+        height: 30px;
         border-radius: 50%;
-        background:url('../../../assets/img/hamster/music.png') no-repeat;
+        background: url('../../../assets/img/hamster/music.png') no-repeat;
         background-size: cover;
       }
-      .bgMusicAnimate{
-        animation:mymove 3s infinite linear;
-        -webkit-animation:mymove 3s infinite linear; /*Safari and Chrome*/
+      .bgMusicAnimate {
+        animation: mymove 3s infinite linear;
+        -webkit-animation: mymove 3s infinite linear; /*Safari and Chrome*/
       }
-      @keyframes mymove
-      {
+      @keyframes mymove {
         from {
           -webkit-transform: rotate(0deg);
         }
@@ -232,11 +231,11 @@
       .next {
         float: right;
       }
-      .back{
+      .back {
         float: left;
       }
       .next button {
-        padding:8px;
+        padding: 8px;
         background: #ffa61f;
         border-radius: 5px;
         color: #fff;
@@ -303,24 +302,24 @@
         }
       }
     }
-    .go{
+    .go {
       position: absolute;
-      top:0;
-      left:0;
-      bottom:0;
-      right:0;
-      z-index:2;
-      button{
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      z-index: 2;
+      button {
         position: absolute;
-        width:80px;
-        height:80px;
+        width: 80px;
+        height: 80px;
         background: url('../../../assets/img/hamster/go.png') no-repeat;
         background-size: 100% 100%;
         border-radius: 50%;
-        top:50%;
-        left:50%;
-        margin-left:-40px;
-        margin-top:-40px;
+        top: 50%;
+        left: 50%;
+        margin-left: -40px;
+        margin-top: -40px;
         border: none;
         outline: none;
       }
@@ -341,23 +340,22 @@
   let giveLetterTimer, hideHamsterTime;
 
   let time = 1 * 60 * 1000;
-
-  let wordAudio;
   export default {
     name: "HamsterItem",
-    props:['trueWordPronunciation','trueWordImgUrl','step'],
+    props: ['step'],
     data() {
       return {
-        //单词对应的图片
-        wordImg: '',
         //洞中对应的单词队列
-        letters: [{letter: 'a', showTime: 0}, {letter: 'b', showTime: 0}, {letter: 'c', showTime: 0}, {
-          letter: 'd',
-          showTime: 0
-        }, {letter: 'e', showTime: 0}, {letter: 'f', showTime: 0}, {letter: 'g', showTime: 0}, {
-          letter: 'h',
-          showTime: 0
-        }, {letter: 'i', showTime: 0}],
+        letters: [
+          {letter: 'a', showTime: 0},
+          {letter: 'b', showTime: 0},
+          {letter: 'c', showTime: 0},
+          {letter: 'd', showTime: 0},
+          {letter: 'e', showTime: 0},
+          {letter: 'f', showTime: 0},
+          {letter: 'g', showTime: 0},
+          {letter: 'h', showTime: 0},
+          {letter: 'i', showTime: 0}],
         //倒计时
         time: time,
         //得分
@@ -367,7 +365,8 @@
         isBegin: false,
         selectWord: '',
         isGameOver: false,
-        audioSource:'',
+        wordsList: [],
+        showIndex: -1
       }
     },
     computed: {
@@ -377,18 +376,15 @@
         return `${m}′${s}″`
       }
     },
-    watch:{
-      'step':function (newVal) {
-        if(newVal===2){
-          let bgMusic=this.$refs['bgMusic'];
-          bgMusic.play();
+    watch: {
+      'step': function (newVal) {
+        if (newVal === 2) {
+         // let bgMusic = this.$refs['bgMusic'];
+         // bgMusic.play();
+          //先加载10个单词
+          this.getWordList(10);
         }
       }
-    },
-    mounted() {
-      wordAudio=this.$refs['audio']
-      this.isGameOver=false;
-
     },
     beforeDestroy() {
       clearTimeout(giveLetterTimer)
@@ -396,43 +392,43 @@
     },
 
     methods: {
-      togglePlay(e){
-        let bgMusic=this.$refs['bgMusic'];
-        let bgMusicBox=this.$refs['bgMusicBox'];
-        if(bgMusic.paused){
+      togglePlay(e) {
+        let bgMusic = this.$refs['bgMusic'];
+        let bgMusicBox = this.$refs['bgMusicBox'];
+        if (bgMusic.paused) {
           bgMusic.play();
           bgMusicBox.classList.add('bgMusicAnimate')
-        }else{
+        } else {
           bgMusic.pause();
           bgMusicBox.classList.remove('bgMusicAnimate')
         }
       },
-      //根据单词获取对应的图片
-      getImg(trueWordObj) {
-        //this.wordImg = require(`../../../assets/img/hamster/${trueWordObj.word}.jpeg`)
-        this.wordImg = this.trueWordImgUrl
+      playAudioSource(index, showWord) {
+        document.querySelector(`#${showWord.word}${index}`).play();
       },
+      initData() {
+        this.good = false
+        this.isBegin = false
+        this.selectWord = ''
+        this.isGameOver = false
+        this.wordsList = []
+        this.showIndex = -1
+        this.time = time
 
-      getAudioSource(trueWordObj){
-        //this.audioSource = require(`../../../assets/pronunciation/${trueWordObj.word}.mp3`)
-        this.audioSource = this.trueWordPronunciation
-        wordAudio.load();
-        wordAudio.play();
+      },
+      //提交得分
+      submitScore() {
+
       },
       gameOver() {
-        // MessageBox({
-        //   title: 'game over',
-        //   message: `恭喜，你的得分是 ${this.score}，你可以邀请你的小伙伴一起玩，或者查看你的排名哦`,
-        //   showCancelButton: true,
-        //   confirmButtonText: '邀请',
-        //   cancelButtonText: '排行'
-        // });
-        this.isGameOver = true;
-        this.isBegin = false;
-        this.wordImg = '';
+        clearInterval(giveLetterTimer)
+        this.isGameOver = true
+        this.isBegin = false
+        this.submitScore()
       },
       goToRank() {
-        this.$emit('rank',3)
+        this.initData()
+        this.$emit('rank', 3)
       },
       /*
       * 游戏开始
@@ -443,11 +439,14 @@
         this.isBegin = true
         clearInterval(giveLetterTimer)
         clearInterval(hideHamsterTime)
-        this.getTrueWord();
-        this.getImg(trueWordObj);
-        this.getAudioSource(trueWordObj);
-        this.giveLetter(trueWordObj);
-        //this.speakWord();
+        //如果拼写了5个或者10个，需要再添加5个，以免拼写完
+        if (this.showIndex % 5 === 0) {
+          this.getWordList(5, true)
+        }
+        this.showIndex += 1
+        trueWordObj = this.wordsList[this.showIndex]
+        this.playAudioSource(this.showIndex, trueWordObj)
+        this.giveLetter(trueWordObj)
         this.hideHamster();
       },
       hideHamster() {
@@ -463,13 +462,18 @@
           }
         }, 1500)
       },
-      getTrueWord() {
-        trueWordObj = allWords[Math.floor(random(0, wordLength))]
+      getWordList(len) {
+        let word;
+        for (let i = 0; i < len; i++) {
+          word = allWords[Math.floor(random(0, wordLength))]
+          word.imgUrl = require(`../../../assets/img/hamster/${word.word}.jpeg`)
+          word.pronunciation = require(`../../../assets/pronunciation/${word.word}.mp3`)
+          this.wordsList.push(word)
+        }
       },
       /*下一个单词*/
       nextWord() {
-        console.log(this.isBegin,'isBegin is ')
-        if(this.isBegin){
+        if (this.isBegin) {
           this.selectWord = ''
           this.begin()
         }
@@ -496,7 +500,6 @@
             }
             this.time -= 1000
             if (this.time <= 0) {
-              clearInterval(giveLetterTimer)
               this.gameOver()
             }
           }, 500)
@@ -515,7 +518,6 @@
         this.toggleHamster(index, false)
         this.letters.splice(index, 1, {letter: '', showTime: 0})
         this.selectWord += letter
-        console.log(this.selectWord, 'selectWord')
         if (this.selectWord === trueWordObj.word) {
           this.score++
           this.nextWord();
