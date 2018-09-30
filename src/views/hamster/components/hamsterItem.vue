@@ -6,10 +6,10 @@
         <div class="score">得分：{{score}}</div>
       </div>
       <!--<div class="bgMusic bgMusicAnimate" @touchstart="togglePlay" ref="bgMusicBox" id="bgMusicBox">-->
-        <!--<audio loop ref="bgMusic">-->
-          <!--<source src="../../../assets/music/hamster.mp3">-->
-          <!--您的浏览器不支持 audio 元素。-->
-        <!--</audio>-->
+      <!--<audio loop ref="bgMusic">-->
+      <!--<source src="../../../assets/music/hamster.mp3">-->
+      <!--您的浏览器不支持 audio 元素。-->
+      <!--</audio>-->
       <!--</div>-->
     </header>
     <div class="selectWord">
@@ -332,6 +332,8 @@
     return Math.random() * (m - n) + n;
   }
   import allWords from './words.json'
+  import {submitScore} from "../../../api/hamster"
+  import {to} from '../../../api/_util'
 
   let wordLength = allWords.length;
 
@@ -379,8 +381,8 @@
     watch: {
       'step': function (newVal) {
         if (newVal === 2) {
-         // let bgMusic = this.$refs['bgMusic'];
-         // bgMusic.play();
+          // let bgMusic = this.$refs['bgMusic'];
+          // bgMusic.play();
           //先加载10个单词
           this.getWordList(10);
         }
@@ -418,7 +420,12 @@
       },
       //提交得分
       submitScore() {
-
+        let data = {
+          nickname: window.localStorage.getItem('hamster_nickname'),
+          use_time: this.score+'',
+          time_stamp: this.score+''
+        }
+        submitScore(data)
       },
       gameOver() {
         clearInterval(giveLetterTimer)

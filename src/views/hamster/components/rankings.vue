@@ -7,62 +7,63 @@
         <tr>
           <th>昵称</th>
           <th>得分</th>
-          <th>积分</th>
+          <th>排行</th>
           <th>奖励</th>
         </tr>
         </thead>
         <tbody>
         <tr v-for="item in rank">
-          <td>{{item.name}}</td>
-          <td>{{item.score}}</td>
-          <td>{{item.integral}}</td>
+          <td>{{item.nickname}}</td>
+          <td>{{item.use_time}}</td>
+          <td>{{item.ranking}}</td>
           <td><a class="exchange">兑换</a></td>
         </tr>
         </tbody>
       </table>
+      <div class="userInfo">
+        <span class="name">{{userInfo.nickname}}</span>
+        <span class="score">{{userInfo.use_time}}</span>
+      </div>
     </div>
-    <button class="onceMore" @touchstart="onceMore">再来一局</button>
+    <div class="footer">
+      <button class="onceMore" @touchstart="onceMore">再来一局</button>
+    </div>
   </div>
 </template>
 
 <script>
   import {getUserList} from '../../../api/hamster'
+  import {to} from '../../../api/_util'
+
   export default {
     name: "rankings",
-    props:['step'],
+    props: ['step'],
     data() {
       return {
-        rank: [
-          {name: 'haha', score: 10, integral: 0},
-          {name: 'hehe', score: 10, integral: 2},
-          {name: 'hehe1', score: 10, integral: 3},
-          {name: 'hehe2', score: 10, integral: 4},
-          {name: 'hehe3', score: 10, integral: 5},
-          {name: 'hehe4', score: 10, integral: 6},
-          {name: 'hehe5', score: 10, integral: 7},
-          {name: 'hehe6', score: 10, integral: 8},
-          {name: 'hehe7', score: 10, integral: 9},
-          {name: 'hehe8', score: 10, integral: 10},
-          {name: 'hehe9', score: 10, integral: 11},
-          {name: 'hehe10', score: 10, integral: 12},
-          {name: 'hehe11', score: 10, integral: 13},
-          {name: 'hehe12', score: 10, integral: 14},
-          {name: 'hehe13', score: 10, integral: 15},
-          {name: 'hehe13', score: 10, integral: 15},
-          {name: 'hehe13', score: 10, integral: 15},
-          {name: 'hehe13', score: 10, integral: 15},
-        ]
+        rank: [],
+        userInfo: {},
       }
     },
     methods: {
       onceMore() {
-        this.$emit('onceMore',2)
+        this.$emit('onceMore', 2)
       }
     },
-    watch:{
-      'step':function (newVal) {
-        if(newVal === 3) {
+    watch: {
+      'step': function (newVal) {
+        if (newVal === 3) {
           getUserList()
+            .then((res) => {
+              this.rank = res.data || []
+            }).catch((err) => {
+            console.log(err)
+          })
+          getUserList(window.localStorage.getItem('hamster_nickname'))
+            .then((res) => {
+              this.userInfo = res.data[0]
+            }).catch((err) => {
+            console.log(err)
+          })
         }
       }
     }
@@ -78,6 +79,7 @@
     display: flex;
     display: -webkit-flex;
     flex-direction: column;
+    justify-content:space-between;
     ul, li {
       list-style: none;
     }
@@ -90,32 +92,58 @@
     .rankData {
       height: 500px;
       overflow: auto;
-      flex: 0 1 auto;
-    }
-    table, thead, tbody {
-      width: 100%;
-    }
-    tbody {
-      font-size: 16px;
-      .exchange {
-        display: inline-block;
-        padding: 5px;
-        background: #ffa61f;
-        color: #fff;
+      flex: 1 1 auto;
+      display: flex;
+      display: -webkit-flex;
+      flex-direction: column;
+      justify-content:space-between;
+      table, thead, tbody {
+        width: 100%;
+      }
+      tbody {
+        font-size: 16px;
+        .exchange {
+          display: inline-block;
+          padding: 5px;
+          background: #ffa61f;
+          color: #fff;
+          border-radius: 5px;
+          font-weight: 600;
+        }
+      }
+
+      .userInfo {
+        width:80%;
+        padding:0 20px;
+        height:50px;
+        line-height:50px;
+        margin:0 auto;
+        overflow: hidden;
+        background: rgba(204,204,204,0.4);
+        background-size: 100% 100%;
         border-radius: 5px;
+        color:#00abfb;
         font-weight: 600;
+        .name{
+          float:left;
+        }
+        .score{
+          float:right;
+        }
       }
     }
-    .onceMore {
-      width: 80px;
-      height: 35px;
-      background: #03a9f4;
-      border-radius: 10px;
-      margin: 20px auto;
-      font-weight: 600;
-      color: #fff;
-      border: none;
-      outerline: none;
+    .footer{
+      .onceMore {
+        width: 80px;
+        height: 35px;
+        background: #03a9f4;
+        border-radius: 10px;
+        margin: 20px auto;
+        font-weight: 600;
+        color: #fff;
+        border: none;
+        outerline: none;
+      }
     }
     /*.rank {*/
     /*width: 100%;*/
