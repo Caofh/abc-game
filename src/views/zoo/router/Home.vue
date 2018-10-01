@@ -472,8 +472,14 @@
           } else {
 //            console.log('超过12关')
 
+            // 启动金币音效
+            $('.money-audio')[0].play()
             // 关闭倒计时音效
             this.closeTimeMoveBg()
+
+            // 根据当前通关数，设置金币
+            const moneyCount = this.setMoney(this.progress)
+            this.moneyCount = moneyCount
 
             clearInterval(this.loopTime)
 
