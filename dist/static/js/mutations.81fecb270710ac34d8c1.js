@@ -1,2 +1,0 @@
-webpackJsonp([18],{oM8R:function(e,t,o){"use strict";Object.defineProperty(t,"__esModule",{value:!0});t.default={setTest:function(e,t){e.test=t}}}},["oM8R"]);
-//# sourceMappingURL=mutations.81fecb270710ac34d8c1.js.map

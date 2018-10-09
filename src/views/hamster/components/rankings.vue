@@ -93,6 +93,10 @@
       height: 500px;
       flex: 1 1 auto;
       overflow: auto;
+      display: flex;
+      display: -webkit-flex;
+      flex-direction: column;
+      justify-content:space-between;
       table{
         flex: 1 1 auto;
       }
@@ -110,25 +114,26 @@
           font-weight: 600;
         }
       }
-    }
-    .userInfo {
-      flex: 0 0 auto;
-      width:80%;
-      padding:0 20px;
-      height:50px;
-      line-height:50px;
-      margin:0 auto;
-      overflow: hidden;
-      background: rgba(204,204,204,0.4);
-      background-size: 100% 100%;
-      border-radius: 5px;
-      color:#00abfb;
-      font-weight: 600;
-      .name{
-        float:left;
-      }
-      .score{
-        float:right;
+
+      .userInfo {
+        flex: 0 0 auto;
+        width:80%;
+        padding:0 20px;
+        height:50px;
+        line-height:50px;
+        margin:0 auto;
+        overflow: hidden;
+        background: rgba(204,204,204,0.4);
+        background-size: 100% 100%;
+        border-radius: 5px;
+        color:#00abfb;
+        font-weight: 600;
+        .name{
+          float:left;
+        }
+        .score{
+          float:right;
+        }
       }
     }
     .footer{

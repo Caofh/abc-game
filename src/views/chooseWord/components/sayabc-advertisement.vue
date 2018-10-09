@@ -142,15 +142,15 @@
         position: absolute;
         width: pr(50);
         height: pr(50);
-        top: pr(20);
-        right: pr(20);
+        top: pr(5);
+        right: pr(5);
         z-index: 1000;
       }
 
       .header {
         .abc-img {
-          width: pr(120);
-          height: pr(120);
+          width: pr(110);
+          height: pr(94);
         }
 
         .title {
