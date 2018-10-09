@@ -114,8 +114,6 @@
       }
       .userName {
         width: 100%;
-        height:40px;
-        line-height:40px;
         margin: 0 auto;
         position: absolute;
         bottom: 10px;
@@ -166,6 +164,7 @@
     }
     .playButton {
       border-radius: 5px;
+      margin-top:5px;
     }
     .ranking {
       width: 35px;
