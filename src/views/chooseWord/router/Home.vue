@@ -155,6 +155,11 @@
 
     </div>
 
+    <div class="sayabc-Advertisement">
+      <div @click="showAdvertisement" class="up-show abc-img"><img src="../assets/img/home/upShow.png"></div>
+      <Advertisement :show="showAdvertisement" :hide="hideAdvertisement"></Advertisement>
+    </div>
+
     <!--音乐（音效）资源-->
     <audio class="click-audio" src="/static/mp3/click.mp3" style="display: none;"></audio>
     <audio class="click-audio-Bomb" src="/static/mp3/blast.mp3" style="display: none;"></audio>
@@ -185,6 +190,8 @@
   import bg_2 from '../assets/img/home/bg/sayabc_bg_2.png' // 背景图3
   import bg_3 from '../assets/img/home/bg/sayabc_bg_3.png' // 背景图4
   import bg_4 from '../assets/img/home/bg/sayabc_bg_4.png' // 背景图5
+
+  import Advertisement from '../components/sayabc-advertisement.vue'
 
   // Qos打点
   import log from '@/api/log'
@@ -297,6 +304,24 @@
         }
 
 
+      },
+
+      // 展示广告
+      showAdvertisement () {
+        $('.sayabc-Advertisement').css({
+          top: 0
+        })
+      },
+      // 关闭广告
+      hideAdvertisement () {
+        $('.sayabc-Advertisement').css({
+          top: '100%'
+        })
+
+        // 停止并还原视频
+        const videoNode = $('#video')[0]
+        videoNode.pause()
+        videoNode.currentTime = 0.0
       },
 
       // 拼读单词
@@ -529,14 +554,14 @@
           this.getBestGrade()
 
           // Qos数据统计
-          log.log({
-            event: 'ABC_GAME_CLICKONECLICK',
-            subEvent: 'CLICK_UPDATE_GRADE',
-            extra: {
-              msg: nickname,
-              message: new Date().getTime() + ' , ' + use_time
-            }
-          });
+//          log.log({
+//            event: 'ABC_GAME_CLICKONECLICK',
+//            subEvent: 'CLICK_UPDATE_GRADE',
+//            extra: {
+//              msg: nickname,
+//              message: new Date().getTime() + ' , ' + use_time
+//            }
+//          });
 
         } catch (error) {
           console.log(error)
@@ -587,6 +612,9 @@
           // 展示成绩板
           doc.vueObj.resultShow = true
 
+          // 弹出广告
+          doc.vueObj.showAdvertisement()
+
         } catch (error) {
           console.log(error)
         }
@@ -635,7 +663,7 @@
 
     },
     components: {
-
+      Advertisement
     }
 
   }
@@ -877,6 +905,8 @@
         }
 
       }
+
+      // 游戏完成
       if (index >= doc.vueObj.wordArr[0].length + doc.vueObj.wordArr[1].length + doc.vueObj.wordArr[2].length - 1) {
         $('.item-icon').addClass('selected')
 
