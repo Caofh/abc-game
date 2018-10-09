@@ -125,11 +125,11 @@
     padding: pr(20);
 
     .up-show {
-      position: relative;
+      position: absolute;
       width: pr(60);
       height: pr(60);
-      top: pr(-80);
-
+      top: pr(-60);
+      left: pr(60);
     }
 
     .sayabc-Advertisement-body {
@@ -143,6 +143,7 @@
         height: pr(50);
         top: pr(25);
         right: pr(28);
+        z-index: 1000;
       }
 
       .header {
