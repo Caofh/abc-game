@@ -133,6 +133,7 @@
     }
 
     .sayabc-Advertisement-body {
+      position: relative;
       width: 100%;
       height: 100%;
       overflow-y: scroll;
@@ -141,8 +142,8 @@
         position: absolute;
         width: pr(50);
         height: pr(50);
-        top: pr(25);
-        right: pr(28);
+        top: pr(20);
+        right: pr(20);
         z-index: 1000;
       }
 
