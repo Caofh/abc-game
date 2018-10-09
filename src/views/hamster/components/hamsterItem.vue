@@ -5,30 +5,39 @@
         <div class="time">倒计时：{{countDown}}</div>
         <div class="score">得分：{{score}}</div>
       </div>
-      <!--<div class="bgMusic bgMusicAnimate" @touchstart="togglePlay" ref="bgMusicBox" id="bgMusicBox">-->
-      <!--<audio loop ref="bgMusic">-->
-      <!--<source src="../../../assets/music/hamster.mp3">-->
-      <!--您的浏览器不支持 audio 元素。-->
-      <!--</audio>-->
-      <!--</div>-->
+      <div class="bgMusic bgMusicAnimate" @touchstart="togglePlay" ref="bgMusicBox" id="bgMusicBox">
+      <audio loop ref="bgMusic">
+      <source src="../../../assets/music/hamster.mp3">
+      您的浏览器不支持 audio 元素。
+      </audio>
+      </div>
     </header>
     <div class="selectWord">
       <span>
         {{selectWord}}
       </span>
     </div>
+    <!--防止读音在切换单词时加载不出来，先把所有的单词读音加载出来，需要显示哪个就显示哪个-->
     <div class="wordImg" v-for="(word,index) in wordsList" v-show="showIndex===index">
-      <img :src='word.imgUrl' alt="单词对应的图片">
+      <img :src='word.img_url' alt="单词对应的图片">
       <span class="next" @touchstart="nextWord"></span>
       <audio hidden :id="`${word.word}${index}`" controls>
-        <source :src="word.pronunciation">
+        <source :src="word.resource_url">
         您的浏览器不支持 audio 元素。
       </audio>
     </div>
     <div class="content">
+      <audio hidden ref="clickMusic" controls>
+        <source src="../../../assets/music/click.mp3">
+        您的浏览器不支持 audio 元素。
+      </audio>
+      <audio hidden ref="wrongMusic" controls>
+        <source src="../../../assets/music/wrong.wav">
+        您的浏览器不支持 audio 元素。
+      </audio>
       <div class="hole-box">
         <div class="first-row">
-          <div @touchstart="choseWord(index,letter.letter)" v-for="(letter,index) in letters" class="hole"
+          <div @touchstart="chooseWord(index,letter.letter)" v-for="(letter,index) in letters" class="hole"
                v-if="index===0||index===1||index===2">
             <div class="hole-img"></div>
             <div class="slice-hole-img"></div>
@@ -38,7 +47,7 @@
           </div>
         </div>
         <div class="two-row">
-          <div v-if="index===3||index===4||index===5" @touchstart="choseWord(index,letter.letter)"
+          <div v-if="index===3||index===4||index===5" @touchstart="chooseWord(index,letter.letter)"
                v-for="(letter,index) in letters" class="hole">
             <div class="hole-img"></div>
             <div class="slice-hole-img"></div>
@@ -48,7 +57,7 @@
           </div>
         </div>
         <div class="three-row">
-          <div v-if="index===6||index===7||index===8" @touchstart="choseWord(index,letter.letter)"
+          <div v-if="index===6||index===7||index===8" @touchstart="chooseWord(index,letter.letter)"
                v-for="(letter,index) in letters" class="hole">
             <div class="hole-img"></div>
             <div class="slice-hole-img"></div>
@@ -63,16 +72,13 @@
       </div>
     </div>
     <!--<div class="footer">-->
-      <!--<div class="back">-->
-        <!--<button @touchstart="back"></button>-->
-      <!--</div>-->
-      <!--<div class="next">-->
-        <!--<button @touchstart="nextWord">next</button>-->
-      <!--</div>-->
+    <!--<div class="back">-->
+    <!--<button @touchstart="back"></button>-->
     <!--</div>-->
-    <div class="congratulate" v-show="good">
-      <div>good</div>
-    </div>
+    <!--<div class="next">-->
+    <!--<button @touchstart="nextWord">next</button>-->
+    <!--</div>-->
+    <!--</div>-->
     <div class="gameOver" v-show="isGameOver">
       <p class="score">
         得分:{{score}}
@@ -156,15 +162,15 @@
         height: 100px;
         vertical-align: middle;
       }
-      .next{
+      .next {
         position: absolute;
-        width:30px;
-        height:30px;
-        background:url("../../../assets/img/hamster/next.png") no-repeat;
+        width: 30px;
+        height: 30px;
+        background: url("../../../assets/img/hamster/next.png") no-repeat;
         background-size: 100% 100%;
         vertical-align: middle;
-        margin-left:20px;
-        top:40px;
+        margin-left: 20px;
+        top: 40px;
       }
     }
     .content {
@@ -344,7 +350,7 @@
     return Math.random() * (m - n) + n;
   }
   import allWords from './words.json'
-  import {submitScore} from "../../../api/hamster"
+  import {submitScore, getWords} from "../../../api/hamster"
   import {to} from '../../../api/_util'
 
   let wordLength = allWords.length;
@@ -354,6 +360,7 @@
   let giveLetterTimer, hideHamsterTime;
 
   let time = 1 * 60 * 1000;
+  let clickMusic, wrongMusic, bgMusic;
   export default {
     name: "HamsterItem",
     props: ['step'],
@@ -375,7 +382,6 @@
         //得分
         score: 0,
         holeNum: 9,
-        good: false,
         isBegin: false,
         selectWord: '',
         isGameOver: false,
@@ -393,8 +399,7 @@
     watch: {
       'step': function (newVal) {
         if (newVal === 2) {
-          // let bgMusic = this.$refs['bgMusic'];
-          // bgMusic.play();
+          bgMusic.play();
           //先加载10个单词
           this.getWordList(10);
         }
@@ -404,9 +409,14 @@
       clearTimeout(giveLetterTimer)
       clearTimeout(hideHamsterTime)
     },
+    mounted() {
+      clickMusic = this.$refs['clickMusic']
+      wrongMusic = this.$refs['wrongMusic']
+      bgMusic = this.$refs['bgMusic']
+    },
 
     methods: {
-      togglePlay(e) {
+      togglePlay() {
         let bgMusic = this.$refs['bgMusic'];
         let bgMusicBox = this.$refs['bgMusicBox'];
         if (bgMusic.paused) {
@@ -417,11 +427,12 @@
           bgMusicBox.classList.remove('bgMusicAnimate')
         }
       },
-      playAudioSource(index, showWord) {
-        document.querySelector(`#${showWord.word}${index}`).play();
+      async playAudioSource(index, showWord) {
+        await bgMusic.pause()
+        await document.querySelector(`#${showWord.word}${index}`).play()
+        await bgMusic.play()
       },
       initData() {
-        this.good = false
         this.isBegin = false
         this.selectWord = ''
         this.isGameOver = false
@@ -434,18 +445,22 @@
       submitScore() {
         let data = {
           nickname: window.localStorage.getItem('hamster_nickname'),
-          use_time: this.score+'',
-          time_stamp: this.score+''
+          use_time: this.score + '',
+          time_stamp: this.score + ''
         }
         submitScore(data)
       },
       gameOver() {
         clearInterval(giveLetterTimer)
+        this.initData()
         this.isGameOver = true
-        this.isBegin = false
         this.submitScore()
       },
+      stopBgMusic(){
+        bgMusic.pause()
+      },
       goToRank() {
+        this.stopBgMusic()
         this.initData()
         this.$emit('rank', 3)
       },
@@ -459,14 +474,16 @@
         clearInterval(giveLetterTimer)
         clearInterval(hideHamsterTime)
         //如果拼写了5个或者10个，需要再添加5个，以免拼写完
-        if (this.showIndex % 5 === 0) {
+        if (this.showIndex % 5 === 0 && this.showIndex!==0) {
+          console.log(this.showIndex, 'showIndex is :=====')
           this.getWordList(5, true)
         }
         this.showIndex += 1
         trueWordObj = this.wordsList[this.showIndex]
+        console.log(this.wordsList,this.showIndex,trueWordObj,'trueWordObj is :=====')
         this.playAudioSource(this.showIndex, trueWordObj)
         this.giveLetter(trueWordObj)
-        this.hideHamster();
+        this.hideHamster()
       },
       hideHamster() {
         let len = this.letters.length
@@ -481,14 +498,14 @@
           }
         }, 1500)
       },
-      getWordList(len) {
-        let word;
-        for (let i = 0; i < len; i++) {
-          word = allWords[Math.floor(random(0, wordLength))]
-          word.imgUrl = require(`../../../assets/img/hamster/${word.word}.jpeg`)
-          word.pronunciation = require(`../../../assets/pronunciation/${word.word}.mp3`)
-          this.wordsList.push(word)
+      async getWordList(len) {
+        let [err, res] = await to(getWords(len))
+        if (err) {
+          return false
         }
+        res.data.forEach((item) => {
+          this.wordsList.push(item)
+        })
       },
       /*下一个单词*/
       nextWord() {
@@ -527,31 +544,46 @@
       toggleHamster(index, isShow) {
         this.$refs['hamster'][index].style.top = isShow ? '25px' : '120px';
       },
-      /*
-      * 选择正确时，得分，开始下一个单词
-      * */
-      choseWord(index, letter) {
-        if (!this.isBegin) {
-          return false;
-        }
-        this.toggleHamster(index, false)
-        this.letters.splice(index, 1, {letter: '', showTime: 0})
+      musicPlay() {
+        clickMusic.play();
+      },
+      trueWord(letter) {
         this.selectWord += letter
         if (this.selectWord === trueWordObj.word) {
           this.score++
           this.nextWord();
-          this.good = true
           let time = setTimeout(() => {
-            this.good = false
             clearTimeout(time)
           }, 1000)
         }
       },
+      isWrongWord(letter) {
+        if (trueWordObj.word[this.selectWord.length] !== letter) {
+          wrongMusic.play()
+          return true;
+        }
+      },
+      initLetter(index, letter) {
+        this.letters.splice(index, 1, {letter: '', showTime: 0})
+      },
+      /*
+      * 选择正确时，得分，开始下一个单词
+      * */
+      chooseWord(index, letter) {
+        if (!this.isBegin || !letter) {
+          return false;
+        }
+        this.toggleHamster(index, false)
+        this.initLetter(index, letter)
+        let isWrongWord = this.isWrongWord(letter)
+        if (!isWrongWord) {
+          this.musicPlay()
+          this.trueWord(letter)
+        }
+      },
       onceMore() {
-        this.isGameOver = false;
-        this.time = time;
-        this.selectWord = '';
-        this.score = 0;
+        this.isGameOver = false
+        this.getWordList(10)
       }
     }
 

@@ -22,7 +22,7 @@
       </table>
       <div class="userInfo">
         <span class="name">{{userInfo.nickname}}</span>
-        <span class="score">{{userInfo.use_time}}</span>
+        <span class="score">{{userInfo.use_time==='null'?0:userInfo.use_time}}</span>
       </div>
     </div>
     <div class="footer">
@@ -46,7 +46,7 @@
     },
     methods: {
       onceMore() {
-        this.$emit('onceMore', 2)
+        this.$emit('onceMore', 1)
       }
     },
     watch: {

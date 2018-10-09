@@ -20,3 +20,8 @@ export function getUserList(nickname) {
 export function submitScore(data) {
   return axios.post('/updateUser_hamster',data)
 }
+
+//获取随机单词
+export function getWords(num) {
+  return axios.get(`/getRandomWords_hamster?count=${num}`)
+}
