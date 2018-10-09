@@ -91,6 +91,7 @@
     }
     .rankData {
       height: 500px;
+      flex: 1 1 auto;
       overflow: auto;
       display: flex;
       display: -webkit-flex;
