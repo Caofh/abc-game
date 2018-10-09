@@ -92,11 +92,13 @@
     .rankData {
       height: 500px;
       overflow: auto;
-      flex: 1 1 auto;
       display: flex;
       display: -webkit-flex;
       flex-direction: column;
       justify-content:space-between;
+      table{
+        flex: 1 1 auto;
+      }
       table, thead, tbody {
         width: 100%;
       }
