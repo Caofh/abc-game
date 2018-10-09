@@ -117,7 +117,7 @@
       padding:0 20px;
       height:50px;
       line-height:50px;
-      margin:0 auto;
+      margin:8px auto;
       overflow: hidden;
       background: rgba(204,204,204,0.4);
       background-size: 100% 100%;
