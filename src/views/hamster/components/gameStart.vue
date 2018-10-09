@@ -114,7 +114,7 @@
       }
       .userName {
         width: 100%;
-        margin: 0 auto;
+        margin: 5px auto 0;
         position: absolute;
         bottom: 10px;
         /*label {*/
@@ -164,7 +164,6 @@
     }
     .playButton {
       border-radius: 5px;
-      margin-top:5px;
     }
     .ranking {
       width: 35px;
