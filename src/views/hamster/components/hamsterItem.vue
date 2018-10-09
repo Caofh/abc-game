@@ -452,7 +452,6 @@
       },
       gameOver() {
         clearInterval(giveLetterTimer)
-        this.initData()
         this.isGameOver = true
         this.submitScore()
       },

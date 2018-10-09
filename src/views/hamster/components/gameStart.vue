@@ -159,7 +159,7 @@
       outline: none;
       font-weight: 600;
       font-size: 16px;
-      vertical-align: bottom;
+      vertical-align: middle;
       margin-left:-7px;
     }
     .playButton {
