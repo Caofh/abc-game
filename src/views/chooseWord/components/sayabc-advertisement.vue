@@ -1,6 +1,5 @@
 <template>
   <div class="sayabc-Advertisement-body">
-    <div @click="show" class="up-show abc-img"><img src="../assets/img/home/upShow.png"></div>
     <div @click="close" class="close abc-img"><img src="../assets/img/home/close.png"/></div>
 
     <div class="header abc-flex-x-center">
@@ -11,7 +10,8 @@
     <div class="video">
       <div class="title">美国国家地理学习 权威教材独家授权</div>
       <div class="video-content">
-        <video id="video" src=" http://static.sayabc.com/video/National_Geographic_Learning_480p2.mp4" controls="controls"></video>
+        <video id="video" src=" http://static.sayabc.com/video/National_Geographic_Learning_480p2.mp4" controls="controls"
+               poster="../assets/img/home/cover-map.jpeg"></video>
       </div>
     </div>
 
@@ -124,27 +124,25 @@
     z-index: 999;
     padding: pr(20);
 
+    .up-show {
+      position: relative;
+      width: pr(60);
+      height: pr(60);
+      top: pr(-80);
 
+    }
 
     .sayabc-Advertisement-body {
       width: 100%;
       height: 100%;
       overflow-y: scroll;
 
-      .up-show {
-        position: absolute;
-        width: pr(60);
-        height: pr(60);
-        top: pr(-60);
-        left: pr(40);
-      }
-
       .close {
         position: absolute;
-        width: pr(60);
-        height: pr(60);
-        top: pr(10);
-        right: pr(10);
+        width: pr(50);
+        height: pr(50);
+        top: pr(25);
+        right: pr(28);
       }
 
       .header {

@@ -156,8 +156,8 @@
     </div>
 
     <div class="sayabc-Advertisement">
+      <div @click="showAdvertisement" class="up-show abc-img"><img src="../assets/img/home/upShow.png"></div>
       <Advertisement :show="showAdvertisement" :hide="hideAdvertisement"></Advertisement>
-
     </div>
 
     <!--音乐（音效）资源-->
