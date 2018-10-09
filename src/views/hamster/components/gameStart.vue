@@ -166,7 +166,7 @@
     }
     .playButton {
       border-radius: 5px;
-      padding: 9px;
+      padding: 6px;
     }
     .ranking {
       width: 35px;

@@ -113,6 +113,7 @@
       }
 
       .userInfo {
+        flex: 0 0 auto;
         width:80%;
         padding:0 20px;
         height:50px;
