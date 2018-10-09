@@ -153,17 +153,20 @@
     .beginButton, .playButton {
       background: #db9403;
       color: #fff;
-      padding: 9px;
       border: 0;
-      border-radius:0 5px 5px 0;
       outline: none;
       font-weight: 600;
       font-size: 16px;
       vertical-align: middle;
       margin-left:-7px;
     }
+    .beginButton{
+      height:36px;
+      border-radius:0 5px 5px 0;
+    }
     .playButton {
       border-radius: 5px;
+      padding: 9px;
     }
     .ranking {
       width: 35px;
