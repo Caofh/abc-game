@@ -114,9 +114,7 @@
       }
       .userName {
         width: 100%;
-        height:40px;
-        line-height:40px;
-        margin: 0 auto;
+        margin: 5px auto 0;
         position: absolute;
         bottom: 10px;
         /*label {*/
@@ -155,17 +153,20 @@
     .beginButton, .playButton {
       background: #db9403;
       color: #fff;
-      padding: 9px;
       border: 0;
-      border-radius:0 5px 5px 0;
       outline: none;
       font-weight: 600;
       font-size: 16px;
-      vertical-align: bottom;
+      vertical-align: middle;
       margin-left:-7px;
+    }
+    .beginButton{
+      height:36px;
+      border-radius:0 5px 5px 0;
     }
     .playButton {
       border-radius: 5px;
+      padding: 6px;
     }
     .ranking {
       width: 35px;
