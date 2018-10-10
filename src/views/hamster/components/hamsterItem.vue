@@ -6,10 +6,10 @@
         <div class="score">得分：{{score}}</div>
       </div>
       <div class="bgMusic bgMusicAnimate" @touchstart="togglePlay" ref="bgMusicBox" id="bgMusicBox">
-      <audio loop ref="bgMusic">
-      <source src="../../../assets/music/hamster.mp3">
-      您的浏览器不支持 audio 元素。
-      </audio>
+        <audio loop ref="bgMusic">
+          <source src="../../../assets/music/hamster.mp3">
+          您的浏览器不支持 audio 元素。
+        </audio>
       </div>
     </header>
     <div class="selectWord">
@@ -350,7 +350,7 @@
     return Math.random() * (m - n) + n;
   }
   import allWords from './words.json'
-  import {submitScore, getWords} from "../../../api/hamster"
+  import {submitScore, getWords, getUserList} from "../../../api/hamster"
   import {to} from '../../../api/_util'
 
   let wordLength = allWords.length;
@@ -386,7 +386,8 @@
         selectWord: '',
         isGameOver: false,
         wordsList: [],
-        showIndex: -1
+        showIndex: -1,
+        userInfo: {}
       }
     },
     computed: {
@@ -402,6 +403,8 @@
           bgMusic.play();
           //先加载10个单词
           this.getWordList(10);
+          //获取分数
+          this.getUserInfo();
         }
       }
     },
@@ -416,6 +419,14 @@
     },
 
     methods: {
+      getUserInfo() {
+        getUserList(window.localStorage.getItem('hamster_nickname'))
+          .then((res) => {
+            this.userInfo = res.data[0]
+          }).catch((err) => {
+          console.log(err)
+        })
+      },
       togglePlay() {
         let bgMusic = this.$refs['bgMusic'];
         let bgMusicBox = this.$refs['bgMusicBox'];
@@ -428,9 +439,15 @@
         }
       },
       async playAudioSource(index, showWord) {
-        await bgMusic.pause()
-        await document.querySelector(`#${showWord.word}${index}`).play()
-        await bgMusic.play()
+        if(!bgMusic.paused) {
+          await bgMusic.pause()
+          await document.querySelector(`#${showWord.word}${index}`).play()
+          setTimeout(()=>{
+            bgMusic.play()
+          },1000)
+        }else{
+          document.querySelector(`#${showWord.word}${index}`).play()
+        }
       },
       initData() {
         this.isBegin = false
@@ -438,6 +455,7 @@
         this.isGameOver = false
         this.wordsList = []
         this.showIndex = -1
+        this.score = 0
         this.time = time
 
       },
@@ -445,8 +463,8 @@
       submitScore() {
         let data = {
           nickname: window.localStorage.getItem('hamster_nickname'),
-          use_time: this.score + '',
-          time_stamp: this.score + ''
+          use_time: this.userInfo.use_time === 'null' ? this.score + '' : +this.userInfo.use_time + this.score + '',
+          time_stamp: this.userInfo.use_time === 'null' ? this.score + '' : +this.userInfo.use_time + this.score + ''
         }
         submitScore(data)
       },
@@ -455,7 +473,7 @@
         this.isGameOver = true
         this.submitScore()
       },
-      stopBgMusic(){
+      stopBgMusic() {
         bgMusic.pause()
       },
       goToRank() {
@@ -473,13 +491,13 @@
         clearInterval(giveLetterTimer)
         clearInterval(hideHamsterTime)
         //如果拼写了5个或者10个，需要再添加5个，以免拼写完
-        if (this.showIndex % 5 === 0 && this.showIndex!==0) {
+        if (this.showIndex % 5 === 0 && this.showIndex !== 0) {
           console.log(this.showIndex, 'showIndex is :=====')
           this.getWordList(5, true)
         }
         this.showIndex += 1
         trueWordObj = this.wordsList[this.showIndex]
-        console.log(this.wordsList,this.showIndex,trueWordObj,'trueWordObj is :=====')
+        console.log(this.wordsList, this.showIndex, trueWordObj, 'trueWordObj is :=====')
         this.playAudioSource(this.showIndex, trueWordObj)
         this.giveLetter(trueWordObj)
         this.hideHamster()
@@ -518,26 +536,24 @@
       },
       giveLetter(trueWordObj) {
         let word = trueWordObj.word;
-        setTimeout(() => {
-          giveLetterTimer = setInterval(() => {
-            let index = Math.floor(random(0, 9))
-            let letterIndex = Math.floor(random(0, word.length))
-            let letter = word[letterIndex]
-            this.letters.splice(index, 1, {letter: letter, showTime: Date.now()})
-            if (this.$refs['hamster'][index].style.top === '25px') {
-              this.toggleHamster(index, false)
-              setTimeout(() => {
-                this.toggleHamster(index, true)
-              }, 400)
-
-            } else {
+        giveLetterTimer = setInterval(() => {
+          let index = Math.floor(random(0, 9))
+          let letterIndex = Math.floor(random(0, word.length))
+          let letter = word[letterIndex]
+          this.letters.splice(index, 1, {letter: letter, showTime: Date.now()})
+          if (this.$refs['hamster'][index].style.top === '25px') {
+            this.toggleHamster(index, false)
+            setTimeout(() => {
               this.toggleHamster(index, true)
-            }
-            this.time -= 1000
-            if (this.time <= 0) {
-              this.gameOver()
-            }
-          }, 500)
+            }, 400)
+
+          } else {
+            this.toggleHamster(index, true)
+          }
+          this.time -= 1000
+          if (this.time <= 0) {
+            this.gameOver()
+          }
         }, 500)
       },
       toggleHamster(index, isShow) {
@@ -581,7 +597,7 @@
         }
       },
       onceMore() {
-        this.isGameOver = false
+        this.initData()
         this.getWordList(10)
       }
     }
