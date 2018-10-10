@@ -367,7 +367,7 @@
 
   let trueWordObj = {};
 
-  let giveLetterTimer, hideHamsterTime;
+  let giveLetterTimer, hideHamsterTime, giveTrueLetterTimer;
 
   let time = 1 * 60 * 1000;
   let clickMusic, wrongMusic, bgMusic;
@@ -421,6 +421,7 @@
     beforeDestroy() {
       clearTimeout(giveLetterTimer)
       clearTimeout(hideHamsterTime)
+      clearTimeout(giveTrueLetterTimer)
     },
     mounted() {
       clickMusic = this.$refs['clickMusic']
@@ -500,6 +501,7 @@
         this.isBegin = true
         clearInterval(giveLetterTimer)
         clearInterval(hideHamsterTime)
+        clearInterval(giveTrueLetterTimer)
         //如果拼写了5个或者10个，需要再添加5个，以免拼写完
         if (this.showIndex % 5 === 0 && this.showIndex !== 0) {
           console.log(this.showIndex, 'showIndex is :=====')
@@ -544,27 +546,35 @@
       back() {
         this.selectWord = this.selectWord.substr(0, this.selectWord.length - 1)
       },
+      showLetter(index,letter){
+        this.letters.splice(index, 1, {letter: letter, showTime: Date.now()})
+        if (this.$refs['hamster'][index].style.top === '25px') {
+          this.toggleHamster(index, false)
+          setTimeout(() => {
+            this.toggleHamster(index, true)
+          }, 400)
+        } else {
+          this.toggleHamster(index, true)
+        }
+      },
       giveLetter(trueWordObj) {
-        let word = trueWordObj.word;
+        let word = trueWordObj.word
         giveLetterTimer = setInterval(() => {
           let index = Math.floor(random(0, 9))
           let letterIndex = Math.floor(random(0, word.length))
           let letter = word[letterIndex]
-          this.letters.splice(index, 1, {letter: letter, showTime: Date.now()})
-          if (this.$refs['hamster'][index].style.top === '25px') {
-            this.toggleHamster(index, false)
-            setTimeout(() => {
-              this.toggleHamster(index, true)
-            }, 400)
-
-          } else {
-            this.toggleHamster(index, true)
-          }
-          this.time -= 1000
+          this.showLetter(index,letter)
           if (this.time <= 0) {
             this.gameOver()
           }
         }, 500)
+        //每隔1000ms展示正确的字母，避免等待
+        giveTrueLetterTimer = setInterval(() => {
+          this.time -= 1000
+          let trueLetter = word[this.selectWord.length]
+          let index = Math.floor(random(0, 9))
+          this.showLetter(index,trueLetter)
+        },1000)
       },
       toggleHamster(index, isShow) {
         this.$refs['hamster'][index].style.top = isShow ? '25px' : '120px';
