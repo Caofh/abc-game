@@ -343,14 +343,14 @@
         outline: none;
       }
     }
-    .voice{
+    .voice {
       display: inline-block;
-      width:40px;
-      height:40px;
-      background:url('../../../assets/img/hamster/voice.png') no-repeat;
+      width: 40px;
+      height: 40px;
+      background: url('../../../assets/img/hamster/voice.png') no-repeat;
       background-size: 100% 100%;
       vertical-align: middle;
-      margin-right:10px;
+      margin-right: 10px;
     }
   }
 </style>
@@ -450,13 +450,13 @@
         }
       },
       async playAudioSource(index, showWord) {
-        if(!bgMusic.paused) {
+        if (!bgMusic.paused) {
           await bgMusic.pause()
           await document.querySelector(`#${showWord.word}${index}`).play()
-          setTimeout(()=>{
+          setTimeout(() => {
             bgMusic.play()
-          },1000)
-        }else{
+          }, 1000)
+        } else {
           document.querySelector(`#${showWord.word}${index}`).play()
         }
       },
@@ -480,7 +480,9 @@
         submitScore(data)
       },
       gameOver() {
-        clearInterval(giveLetterTimer)
+        clearTimeout(giveLetterTimer)
+        clearTimeout(hideHamsterTime)
+        clearTimeout(giveTrueLetterTimer)
         this.isGameOver = true
         this.submitScore()
       },
@@ -490,6 +492,7 @@
       goToRank() {
         this.stopBgMusic()
         this.initData()
+        this.hideAllHamster()
         this.$emit('rank', 3)
       },
       /*
@@ -527,6 +530,14 @@
           }
         }, 2500)
       },
+      hideAllHamster() {
+        let len = this.letters.length
+        let i = 0
+        for (; i < len; i++) {
+          this.letters.splice(i, 1, {letter: '', showTime: 0})
+          this.toggleHamster(i, false)
+        }
+      },
       async getWordList(len) {
         let [err, res] = await to(getWords(len))
         if (err) {
@@ -546,7 +557,7 @@
       back() {
         this.selectWord = this.selectWord.substr(0, this.selectWord.length - 1)
       },
-      showLetter(index,letter){
+      showLetter(index, letter) {
         this.letters.splice(index, 1, {letter: letter, showTime: Date.now()})
         if (this.$refs['hamster'][index].style.top === '25px') {
           this.toggleHamster(index, false)
@@ -563,7 +574,7 @@
           let index = Math.floor(random(0, 9))
           let letterIndex = Math.floor(random(0, word.length))
           let letter = word[letterIndex]
-          this.showLetter(index,letter)
+          this.showLetter(index, letter)
           if (this.time <= 0) {
             this.gameOver()
           }
@@ -573,8 +584,8 @@
           this.time -= 1000
           let trueLetter = word[this.selectWord.length]
           let index = Math.floor(random(0, 9))
-          this.showLetter(index,trueLetter)
-        },1000)
+          this.showLetter(index, trueLetter)
+        }, 1000)
       },
       toggleHamster(index, isShow) {
         this.$refs['hamster'][index].style.top = isShow ? '25px' : '120px';
