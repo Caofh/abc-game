@@ -19,6 +19,7 @@
     </div>
     <!--防止读音在切换单词时加载不出来，先把所有的单词读音加载出来，需要显示哪个就显示哪个-->
     <div class="wordImg" v-for="(word,index) in wordsList" v-show="showIndex===index">
+      <span class="voice" @touchstart="playAudioSource(index,word)"></span>
       <img :src='word.img_url' alt="单词对应的图片">
       <span class="next" @touchstart="nextWord"></span>
       <audio hidden :id="`${word.word}${index}`" controls>
@@ -342,6 +343,15 @@
         outline: none;
       }
     }
+    .voice{
+      display: inline-block;
+      width:40px;
+      height:40px;
+      background:url('../../../assets/img/hamster/voice.png') no-repeat;
+      background-size: 100% 100%;
+      vertical-align: middle;
+      margin-right:10px;
+    }
   }
 </style>
 <script>
@@ -508,12 +518,12 @@
           let i = 0
           for (; i < len; i++) {
             let item = this.letters[i]
-            if (item.letter && item.showTime && (Date.now() - item.showTime > 2000)) {
+            if (item.letter && item.showTime && (Date.now() - item.showTime > 3000)) {
               this.letters.splice(i, 1, {letter: '', showTime: 0})
               this.toggleHamster(i, false)
             }
           }
-        }, 1500)
+        }, 2500)
       },
       async getWordList(len) {
         let [err, res] = await to(getWords(len))
