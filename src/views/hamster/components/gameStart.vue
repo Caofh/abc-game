@@ -8,7 +8,7 @@
         <div class="userName">
           <div v-if="!nickname">
             <!--<label for="userName">Your Name</label>-->
-            <input type="text" id="userName" v-model="username" @input="checkUserName">
+            <input type="text" ref="userName"  v-model="username" @input="checkUserName">
             <button :disabled="!username" class="beginButton" @touchstart="go">GO</button>
             <span v-show="username && userNameExist" class="tip"></span>
           </div>
@@ -45,10 +45,11 @@
     },
     methods: {
       async go() {
+        this.$refs['userName'].blur()
         let [err, res] = await to(addUser({nickname: this.username}))
         if (err) {
           alert(`addUser接口请求失败${err}`)
-          return false;
+          return false
         }
         window.localStorage.setItem('hamster_nickname', this.username)
         this.$emit('play', 2)
