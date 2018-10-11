@@ -428,7 +428,10 @@
           this.getWordList(10);
           //获取分数
           this.getUserInfo();
-          this.togglePlay()
+          setTimeout(()=>{
+            this.togglePlay()
+          },1000)
+
         }
       }
     },
