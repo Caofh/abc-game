@@ -424,11 +424,11 @@
     watch: {
       'step': function (newVal) {
         if (newVal === 2) {
-          bgMusic.play();
           //先加载10个单词
           this.getWordList(10);
           //获取分数
           this.getUserInfo();
+          this.togglePlay()
         }
       }
     },
