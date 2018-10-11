@@ -85,12 +85,13 @@
         得分:{{score}}
       </p>
       <div class="buttonBox">
-        <button class="onceMore" @touchstart="onceMore"></button>
+        <button class="onceMore" @touchstart="onceMore" ></button>
         <button class="rank" @touchstart="goToRank"></button>
       </div>
     </div>
     <div class="go" v-show="!isBegin">
-      <button @touchstart="begin"></button>
+      <button v-if="isReady" @touchstart="begin" class="play"></button>
+      <button v-else class="wait"></button>
     </div>
   </div>
 </template>
@@ -329,18 +330,30 @@
       bottom: 0;
       right: 0;
       z-index: 2;
-      button {
+      button{
         position: absolute;
+        top: 50%;
+        left: 50%;
+        border: none;
+        outline: none;
+      }
+      .play {
         width: 100px;
         height: 40px;
         background: url('../../../assets/img/hamster/begin.png');
         background-size: 100% 100%;
-        top: 50%;
-        left: 50%;
         margin-left: -40px;
         margin-top: -40px;
-        border: none;
-        outline: none;
+      }
+      .wait{
+        width: 50px;
+        height: 50px;
+        background: url('../../../assets/img/hamster/wait.png');
+        background-size: 100% 100%;
+        margin-left: -25px;
+        margin-top: -25px;
+        animation: mymove 3s infinite linear;
+        -webkit-animation: mymove 3s infinite linear; /*Safari and Chrome*/
       }
     }
     .voice {
@@ -397,7 +410,8 @@
         isGameOver: false,
         wordsList: [],
         showIndex: -1,
-        userInfo: {}
+        userInfo: {},
+        isReady:false
       }
     },
     computed: {
@@ -546,6 +560,7 @@
         res.data.forEach((item) => {
           this.wordsList.push(item)
         })
+        this.isReady = true
       },
       /*下一个单词*/
       nextWord() {
