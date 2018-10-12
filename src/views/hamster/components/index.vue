@@ -1,8 +1,8 @@
 <template>
   <div class="box">
-    <gameStart @play="play" v-show="step===1" :step="step"></gameStart>
-    <hamsterItem @rank="play" v-show="step===2"  :step="step"></hamsterItem>
-    <rankings @onceMore="play" v-show="step===3" :step="step"></rankings>
+    <gameStart @play="play" v-if="step===1" :step="step"></gameStart>
+    <hamsterItem @rank="play" v-if="step===2"  :step="step"></hamsterItem>
+    <rankings @onceMore="play" v-if="step===3" :step="step"></rankings>
   </div>
 </template>
 

@@ -49,6 +49,20 @@
         this.$emit('onceMore', 1)
       }
     },
+    mounted(){
+      getUserList()
+        .then((res) => {
+          this.rank = res.data || []
+        }).catch((err) => {
+        console.log(err)
+      })
+      getUserList(window.localStorage.getItem('hamster_nickname'))
+        .then((res) => {
+          this.userInfo = res.data[0]
+        }).catch((err) => {
+        console.log(err)
+      })
+    },
     watch: {
       'step': function (newVal) {
         if (newVal === 3) {

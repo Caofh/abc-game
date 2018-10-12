@@ -6,7 +6,7 @@
         <div class="score">得分：{{score}}</div>
       </div>
       <div class="bgMusic bgMusicAnimate" @touchstart="togglePlay" ref="bgMusicBox" id="bgMusicBox">
-        <audio loop ref="bgMusic">
+        <audio loop ref="bgMusic" autoplay>
           <source src="../../../assets/music/hamster.mp3">
           您的浏览器不支持 audio 元素。
         </audio>
@@ -444,6 +444,10 @@
       clickMusic = this.$refs['clickMusic']
       wrongMusic = this.$refs['wrongMusic']
       bgMusic = this.$refs['bgMusic']
+      //先加载10个单词
+      this.getWordList(10);
+      //获取分数
+      this.getUserInfo();
     },
 
     methods: {
