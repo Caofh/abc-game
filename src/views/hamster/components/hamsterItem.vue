@@ -429,7 +429,7 @@
           //获取分数
           this.getUserInfo();
           setTimeout(()=>{
-            this.togglePlay()
+            bgMusic.play();
           },1000)
 
         }
