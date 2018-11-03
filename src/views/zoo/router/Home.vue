@@ -174,9 +174,8 @@
   import getRandom from '../assets/js/getRandomArr'
   import { checkpoint, animalNameList } from '../assets/js/fun'
 
-
-
-  import '@/assets/js/m'
+  // 自适应，适配恒屏游戏js.
+  import '@/assets/js/m_orientation'
 
   export default {
     name: 'Home',
@@ -678,8 +677,7 @@
             that.clientWidth = width
             that.clientHeight = height
 
-          }
-          else{ // 竖屏
+          } else { // 竖屏
             let style = {
               width: height + 'px',
               height: width + 'px',
