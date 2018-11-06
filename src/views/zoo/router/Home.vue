@@ -10,6 +10,26 @@
           找一找
         </div>
 
+        <div @click="click">
+          click me
+        </div>
+
+        <!--关卡-->
+        <div class="checkpointNode">
+          <div>
+            <div @click="chooseTheme(1)">一</div>
+
+            <div v-if="theme == 1" class="yes abc-img" style="width: 30px;height: 30px;"><img src="../assets/img/home/tip_yes.png"></div>
+          </div>
+          <div>
+            <div @click="chooseTheme(2)">二</div>
+
+            <div v-if="theme == 2" class="yes abc-img" style="width: 30px;height: 30px;"><img src="../assets/img/home/tip_yes.png"></div>
+
+            <div v-if="zooAuthLevel < 2" class="cover"></div>
+          </div>
+        </div>
+
         <div @click="rankingShow" class="ranking abc-img">
           <img src="../assets/img/home/ranking.png">
         </div>
@@ -90,7 +110,7 @@
     <!--游戏关卡提示-->
     <div v-if="gamingMark" class="before-start abc-flex-y-center">
       <div class="base-body abc-flex-y-center">
-        <div class="point-title">第{{progress || 1}}关</div>
+        <div class="point-title">{{progress || 1}}/10</div>
         <div class="content">
           Please select <span class="point">{{ animalName || '' }}</span> in
           <span class="point">{{ second || 0 }}</span> seconds
@@ -123,7 +143,7 @@
     <!--游戏成功提示-->
     <div v-if="gameSuccessMark" class="before-start abc-flex-y-center">
       <div class="base-body abc-flex-y-center">
-        <div class="point-title">闯关成功(12关)，您本次游戏共获得{{moneyCount || 0}}个金币</div>
+        <div class="point-title">闯关成功，您本次游戏共获得{{moneyCount || 0}}个金币</div>
 
         <div class="point-title-all">总金币数：<span class="count">{{moneyAll || 0}}</span></div>
 
@@ -174,6 +194,8 @@
   import getRandom from '../assets/js/getRandomArr'
   import { checkpoint, animalNameList } from '../assets/js/fun'
 
+  import { wxShare } from '@/api/zoo'
+
   // 自适应，适配恒屏游戏js.
   import '@/assets/js/m_orientation'
 
@@ -212,6 +234,10 @@
 
         rankingData: [], // 排行榜数据
         rankingDataMe: [], // 排行榜的个人数据
+
+        theme: 1, // 用户自主选择的主题
+        themeLength: 2, // 主题数量
+        zooAuthLevel: 1, // 当前用户解锁的权限等级(主题)
       }
     },
     computed: {
@@ -232,19 +258,95 @@
              最终排行榜以金币总是制作排行榜（用不清空）
        */
 
+      // 首先从localStorage中获取当前用户的权限等级
+      this.zooAuthLevel = localStorage.getItem('zooAuthLevel') || 1
+
     },
     watch: {
 
     },
-    mounted () {
+    async mounted () {
       // 初始化
       this.start()
 
       // doc操作初始化
       doc.init(this)
 
+
+
+      let apiList = [
+        'checkJsApi',
+        'openLocation',
+        'getLocation',
+        'onMenuShareTimeline',
+        'onMenuShareQZone',
+        'onMenuShareQQ',
+        'onMenuShareAppMessage',
+      ];
+
+      const res = await wxShare(encodeURIComponent(location.href+'&wxBack=true'))
+
+      console.log(res)
+
+      wx.config({
+        debug:false,
+        //debug: !/^www\.sayabc\.com$/i.test(location.hostname), // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+        appId: res.data.app_id, // 必填，公众号的唯一标识
+        timestamp: res.data.timestamp, // 必填，生成签名的时间戳
+        nonceStr: res.data.nonce_str, // 必填，生成签名的随机串
+        signature: res.data.signature, // 必填，签名，见附录1
+        jsApiList: apiList
+      })
+
     },
     methods: {
+      click () {
+
+
+        this.share({})
+
+      },
+
+      share:function(opt){
+        var shareConfig = {
+          'title': opt.title || 'SayABC体验课超值来袭！',
+          'desc': opt.content || '100%纯正欧美外教，1对4在线少儿英语课堂，快来抢购吧～',
+          'imgUrl': opt.imgUrl || 'https://static.sayabc.com/parentEnd/wx_logo2.png',
+          'link' : opt.link || location.href,
+          'shareSuccess': opt.shareSuccess || function () {
+
+            alert(123)
+
+          },
+        };
+        console.log('shareConfig',shareConfig);
+        wx.ready(function() {
+          //分享给朋友
+          wx.onMenuShareAppMessage({
+            title: shareConfig.title, // 分享标题
+            desc: shareConfig.desc, // 分享描述
+            link: shareConfig.link.replace(/(info_id=\d+&)|(info_id=\d+)/, ""), // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+            imgUrl: shareConfig.imgUrl, // 分享图标
+            success: shareConfig.shareSuccess // 分享朋友成功之后的回调函数
+          });
+          //分享朋友圈
+          wx.onMenuShareTimeline({
+            title: shareConfig.title, // 分享标题
+            link: shareConfig.link.replace(/(info_id=\d+&)|(info_id=\d+)/, ""), // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+            imgUrl: shareConfig.imgUrl, // 分享图标
+            // success: function() {
+            //     // 用户确认分享后执行的回调函数
+            //     //_this.wxAdd();
+            // }
+            success: shareConfig.shareSuccess // 分享朋友圈成功之后的回调函数
+          });
+        });
+      },
+
+
+
+
+
       // 页面初始化(模拟背景闪屏效果)
       async start () {
         // 强制横屏
@@ -256,6 +358,11 @@
         // 配置游戏关卡:第一关
         this.confGame(1)
 
+      },
+
+      // 用户自主选择主题
+      chooseTheme (num) {
+        this.theme = num
       },
 
       homeStart () {
@@ -367,6 +474,7 @@
             const dataList = await addUser(data)
 
             window.localStorage.setItem('zooNickname', nickname) // 将本次nickname加入到locaStorage中
+            window.localStorage.setItem('zooAuthLevel', 1) // 将本次权限等级加入localStorage
 
             // 关闭昵称浮层
             this.nicknameMark = false
@@ -408,6 +516,7 @@
       // 失败重新开始游戏
       restartGame () {
         this.beforeGameMark = true
+        this.gameSuccessMark = false
         this.homeMark = true
 
         // 重置分数
@@ -420,6 +529,8 @@
 
       // 配置游戏关卡初始化(progress:第几关)
       confGame (progress) {
+//        console.log(progress)
+
         // 重置相关变量
         this.progress = progress, // 游戏主进度(关数，共12关)
         this.animalName = '', // 当前任务的动物名称
@@ -444,13 +555,17 @@
         const name = item.animalName || ''
 //        console.log(this.animalName)
 
+        console.log(name)
+        console.log(this.animalName)
+
         if (name === this.animalName) {
           console.log('答对了')
 
           clearInterval(this.loopTime)
 
-//          console.log('progress', this.progress)
-          if (this.progress < 12) {
+          console.log('progress', this.progress)
+//          if (this.progress < 10) {
+          if (this.progress < 3) {
 
             // 启动金币音效
             $('.money-audio')[0].play()
@@ -487,6 +602,21 @@
 
             // 提交成绩
             this.updateGrade()
+
+            // 闯关成功，主题自动跳转到下一个.
+            if (this.theme < this.themeLength) {
+              this.theme++
+
+              const nowThemeLevel = localStorage.getItem('zooAuthLevel') || 1
+              if (this.theme > nowThemeLevel) {
+                this.zooAuthLevel = this.theme
+                localStorage.setItem('zooAuthLevel', this.theme)
+              }
+
+            } else {
+              alert('敬请期待下一主题...')
+            }
+
 
           }
 
@@ -529,14 +659,17 @@
       // 渲染随机动物图片
       renderImg () {
         let aniArr = []
-        const randomArr = getRandom.getNorepeatArr(this.animalCount, [1, 39])
+        const randomArr = getRandom.getNorepeatArr(this.animalCount, [1, 20])
         // 随机生成当前需选择的动物文案
         const ranIndex = getRandom.getNorepeatArr(1, [0, (this.animalCount)])
-        this.animalName = animalNameList(randomArr[ranIndex])
+        this.animalName = animalNameList(randomArr[ranIndex], this.theme)
+
+//        console.log(randomArr[ranIndex])
+//        console.log(this.animalName)
 
         for (let i = 0; i < this.animalCount; i++) {
           // 循环动物图片静态资源
-          let imgResource = require(`../assets/img/home/icon/icon_${randomArr[i]}.png`)
+          let imgResource = require(`../assets/img/home/icon_${this.theme}/icon_${randomArr[i]}.png`)
 
           // 去重覆盖动物坐标问题.
           let randomX = ''
@@ -560,7 +693,7 @@
             y: parseInt(randomY),
             deg: getRandom.getNorepeatArr(1, [0, 360])[0],
             src: imgResource,
-            animalName: animalNameList(randomArr[i])
+            animalName: animalNameList(randomArr[i], this.theme)
           }
 
           // 将当前区域加入黑名单，去重使用
@@ -571,6 +704,8 @@
 
           aniArr.push(obj)
         }
+
+//        console.log(aniArr)
 
         this.animalData = aniArr
 
@@ -812,6 +947,25 @@
         .home-title {
           font-size: pr(40);
           color: #fff;
+        }
+
+        .checkpointNode {
+          & > div {
+            position: relative;
+            width: pr(100);
+            height: pr(50);
+            background: #fff;
+            margin-bottom: pr(10);
+
+            .cover {
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              background: rgba(0, 0, 0, 0.5);
+            }
+          }
         }
 
         .ranking {

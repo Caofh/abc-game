@@ -1,6 +1,7 @@
 import { callApi } from './_util'
 
 const axios = callApi('http://tpdoc.cn:3001')
+const sayabc = callApi('http://gateway-dev.sayabc.com:8000')
 
 // 新增用户
 export function addUser (data) {
@@ -27,3 +28,10 @@ export function getRandomWords (para) {
 
   return axios.get('/getRandomWords' + data)
 }
+
+// 微信分享
+export function wxShare (para) {
+  return sayabc.get(`/student-dev-9091/api/v1/invitation/sign?url=${para}`)
+}
+
+

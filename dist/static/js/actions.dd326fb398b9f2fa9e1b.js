@@ -1,0 +1,2 @@
+webpackJsonp([20],{G54S:function(e,t,o){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var c={init:function(e,t){e.dispatch,e.commit;console.log(t)}};t.default=c}},["G54S"]);
+//# sourceMappingURL=actions.dd326fb398b9f2fa9e1b.js.map
