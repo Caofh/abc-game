@@ -322,15 +322,17 @@
         console.log('shareConfig',shareConfig);
         wx.ready(function() {
           //分享给朋友
-          wx.onMenuShareAppMessage({
-            title: shareConfig.title, // 分享标题
-            desc: shareConfig.desc, // 分享描述
-            link: shareConfig.link.replace(/(info_id=\d+&)|(info_id=\d+)/, ""), // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-            imgUrl: shareConfig.imgUrl, // 分享图标
-            success: shareConfig.shareSuccess // 分享朋友成功之后的回调函数
+            wx.updateAppMessageShareData({
+              title: shareConfig.title, // 分享标题
+              desc: shareConfig.desc, // 分享描述
+              link: shareConfig.link.replace(/(info_id=\d+&)|(info_id=\d+)/, ""), // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+              imgUrl: shareConfig.imgUrl, // 分享图标
+              success: shareConfig.shareSuccess // 分享朋友成功之后的回调函数
           });
+
+
           //分享朋友圈
-          wx.onMenuShareTimeline({
+          wx.updateTimelineShareData({
             title: shareConfig.title, // 分享标题
             link: shareConfig.link.replace(/(info_id=\d+&)|(info_id=\d+)/, ""), // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
             imgUrl: shareConfig.imgUrl, // 分享图标
