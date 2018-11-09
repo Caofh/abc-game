@@ -266,6 +266,9 @@
 
     },
     async mounted () {
+//      alert(location.href.split('#')[0])
+//      return false
+
       // 初始化
       this.start()
 
@@ -282,14 +285,17 @@
         'onMenuShareQZone',
         'onMenuShareQQ',
         'onMenuShareAppMessage',
+        'updateAppMessageShareData',
+        'updateTimelineShareData',
       ];
 
+//      const res = await wxShare(encodeURIComponent(location.href+'&wxBack=true'))
       const res = await wxShare(encodeURIComponent(location.href+'&wxBack=true'))
 
       console.log(res)
 
       wx.config({
-        debug:false,
+        debug:true,
         //debug: !/^www\.sayabc\.com$/i.test(location.hostname), // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
         appId: res.data.app_id, // 必填，公众号的唯一标识
         timestamp: res.data.timestamp, // 必填，生成签名的时间戳
@@ -321,6 +327,8 @@
         };
         console.log('shareConfig',shareConfig);
         wx.ready(function() {
+          console.log("errorToast(\"获取分享参数完成\",1);")
+
           //分享给朋友
             wx.updateAppMessageShareData({
               title: shareConfig.title, // 分享标题
